@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>true</InvariantGlobalization>
+    <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +17,12 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Vezeeta.Core\Vezeeta.Core.csproj" />
+    <ProjectReference Include="..\Vezeeta.Data\Vezeeta.Data.csproj" />
+    <ProjectReference Include="..\Vezeeta.Services\Vezeeta.Services.csproj" />
   </ItemGroup>
 
 </Project>
