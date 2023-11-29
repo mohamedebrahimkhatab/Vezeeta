@@ -3,7 +3,7 @@ using Vezeeta.Core.Enums;
 
 namespace Vezeeta.Core.Models;
 
-public class Person : BaseEntity
+public class User : BaseEntity
 {
     public string? FirstName { get; set; }
     
@@ -16,6 +16,8 @@ public class Person : BaseEntity
     public string? PhotoPath { get; set; }
 
     public Gender? Gender { get; set; }
+
+    public UserType? UserType { get; set; }
 
     public DateTime? DateOfBirth { get; set; }
 }

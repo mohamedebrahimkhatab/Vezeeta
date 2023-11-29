@@ -4,10 +4,9 @@ using Vezeeta.Core.Models;
 
 namespace Vezeeta.Data.Configurations
 {
-    public class PersonConfiguration<T> : BaseEntityConfiguration<T>
-        where T : Person
+    public class UserConfiguration : BaseEntityConfiguration<User>
     {
-        public override void Configure(EntityTypeBuilder<T> builder)
+        public override void Configure(EntityTypeBuilder<User> builder)
         {
             base.Configure(builder);
             builder.Property(p => p.FirstName).IsRequired().HasMaxLength(50);

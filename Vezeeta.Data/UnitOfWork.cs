@@ -9,13 +9,13 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
 
-    public IBaseRepository<Patient> Patients { get; private set; }
+    public IBaseRepository<User> Users { get; private set; }
     public IBaseRepository<Specialization> Specializations { get; private set; }
 
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
-        Patients = new BaseRepository<Patient>(_context);
+        Users = new BaseRepository<User>(_context);
         Specializations = new BaseRepository<Specialization>(_context);
     }
     public void Commit() => _context.SaveChanges();

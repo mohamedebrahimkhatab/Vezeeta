@@ -10,11 +10,11 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new PatientConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new SpecializationConfiguration());
 
     }
 
-    public DbSet<Patient> Patients { get; set; }
+    public DbSet<User> Users { get; set; }
     public DbSet<Specialization> Specializations { get; set; }
 }

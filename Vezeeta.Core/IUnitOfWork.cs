@@ -5,7 +5,7 @@ namespace Vezeeta.Core;
 
 public interface IUnitOfWork : IDisposable
 {
-    public IBaseRepository<Patient> Patients { get; }
+    public IBaseRepository<User> Users { get; }
     public IBaseRepository<Specialization> Specializations { get; }
     void Commit();
     Task CommitAsync();
