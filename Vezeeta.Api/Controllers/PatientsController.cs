@@ -28,7 +28,7 @@ namespace Vezeeta.Api.Controllers
             var result = await _patientService.GetById(id);
             if(result == null)
             {
-                return NotFound(new { id });
+                return NotFound();
             }
             return Ok(result);
         }
