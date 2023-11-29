@@ -11,14 +11,14 @@ public interface IBaseRepository<T> where T : BaseEntity
     IEnumerable<T> GetAll();
     Task<IEnumerable<T>> GetAllAsync();
 
-    T Find(Expression<Func<T, bool>> criteria, string[] includes = null);
-    Task<T> FindAsync(Expression<Func<T, bool>> criteria, string[] includes = null);
+    T Find(Expression<Func<T, bool>> criteria, params string[] includes);
+    Task<T> FindAsync(Expression<Func<T, bool>> criteria,params string[] includes);
 
-    IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, string[] includes = null);
+    IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params string[] includes);
     IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int take, int skip);
 
 
-    Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, string[] includes = null);
+    Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, params string[] includes);
     Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, int skip, int take);
 
 

@@ -21,7 +21,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 
     public async Task<IEnumerable<T>> GetAllAsync() => await _context.Set<T>().ToListAsync();
 
-    public T Find(Expression<Func<T, bool>> criteria, string[] includes = null)
+    public T Find(Expression<Func<T, bool>> criteria, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
 
@@ -32,7 +32,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return query.SingleOrDefault(criteria);
     }
 
-    public async Task<T> FindAsync(Expression<Func<T, bool>> criteria, string[] includes = null)
+    public async Task<T> FindAsync(Expression<Func<T, bool>> criteria, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
 
@@ -43,7 +43,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return await query.SingleOrDefaultAsync(criteria);
     }
 
-    public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, string[] includes = null)
+    public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
 
@@ -60,7 +60,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     }
 
 
-    public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, string[] includes = null)
+    public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
 
