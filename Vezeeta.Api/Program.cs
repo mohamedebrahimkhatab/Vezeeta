@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Vezeeta.Api.Helpers;
 using Vezeeta.Core;
 using Vezeeta.Core.Services;
 using Vezeeta.Data;
@@ -11,9 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), e => e.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<ISpecializationService, SpecializationService>();
+builder.Services.AddLocalServices();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

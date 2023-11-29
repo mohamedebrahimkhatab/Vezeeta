@@ -13,11 +13,11 @@ public class UserService : IUserService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<User> Create(User patient)
+    public async Task<User> Create(User user)
     {
-        await _unitOfWork.Users.AddAsync(patient);
+        await _unitOfWork.Users.AddAsync(user);
         await _unitOfWork.CommitAsync();
-        return patient;
+        return user;
     }
 
     public async Task<IEnumerable<User>> GetAll() => await _unitOfWork.Users.GetAllAsync();
