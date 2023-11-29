@@ -34,7 +34,7 @@ namespace Vezeeta.Api.Controllers
         }
 
         //[HttpPost]
-        //jjjjjjjjjjhghghjghkjghgh
+        //jjjjjjjjjj
         //public async Task<ActionResult<Patient>> Create()
     }
 }
