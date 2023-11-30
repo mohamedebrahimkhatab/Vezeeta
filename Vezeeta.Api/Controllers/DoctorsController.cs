@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Core.Contracts;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Services;
 using Vezeeta.Services.Local;
@@ -11,10 +13,12 @@ namespace Vezeeta.Api.Controllers
     public class DoctorsController : ControllerBase
     {
         private readonly IDoctorService _doctorService;
+        private readonly IMapper _mapper;
 
-        public DoctorsController(IDoctorService doctorService)
+        public DoctorsController(IDoctorService doctorService, IMapper mapper)
         {
             _doctorService = doctorService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -32,8 +36,9 @@ namespace Vezeeta.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Doctor>> Create(Doctor doctor)
+        public async Task<ActionResult<Doctor>> Add(CreateDoctorDto doctorDto)
         {
+            var doctor = _mapper.Map<Doctor>(doctorDto);
             await _doctorService.Create(doctor);
             return Ok(doctor);
         }

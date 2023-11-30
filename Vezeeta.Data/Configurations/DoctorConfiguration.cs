@@ -9,7 +9,7 @@ public class DoctorConfiguration : BaseEntityConfiguration<Doctor>
     public override void Configure(EntityTypeBuilder<Doctor> builder)
     {
         base.Configure(builder);
-        builder.Property(e => e.Price).IsRequired().HasPrecision(5,2);
+        builder.Property(e => e.Price).HasPrecision(5,2);
 
         builder.Property(e => e.UserId).IsRequired();
         builder.HasOne(e => e.User).WithOne().OnDelete(DeleteBehavior.Restrict);

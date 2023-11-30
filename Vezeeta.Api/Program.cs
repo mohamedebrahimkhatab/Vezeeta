@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Vezeeta.Api.Helpers;
+using Vezeeta.Api.Mapping;
 using Vezeeta.Core;
 using Vezeeta.Core.Services;
 using Vezeeta.Data;
@@ -16,6 +17,7 @@ builder.Services.AddLocalServices();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 

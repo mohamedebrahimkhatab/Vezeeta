@@ -2,7 +2,7 @@
 
 public class Doctor : BaseEntity
 {
-    public decimal Price { get; set; }
+    public decimal? Price { get; set; }
 
     public int UserId { get; set; }
     public User? User { get; set; }
