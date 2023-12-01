@@ -22,7 +22,7 @@ namespace Vezeeta.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Doctor>>> GetAll() => Ok(await _doctorService.GetAll());
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetAll(int page, int pageSize, string search) => Ok(await _doctorService.GetAll());
 
         [HttpGet]
         public async Task<ActionResult<Doctor>> GetById(int id)

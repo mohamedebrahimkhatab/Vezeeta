@@ -13,15 +13,15 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
         _context = context;
     }
-    public T GetById(int id) => _context.Set<T>().Find(id);
+    public T? GetById(int id) => _context.Set<T>().Find(id);
 
-    public async Task<T> GetByIdAsync(int id) => await _context.Set<T>().FindAsync(id);
+    public async Task<T?> GetByIdAsync(int id) => await _context.Set<T>().FindAsync(id);
 
     public IEnumerable<T> GetAll() => _context.Set<T>().ToList();
 
     public async Task<IEnumerable<T>> GetAllAsync() => await _context.Set<T>().ToListAsync();
 
-    public T Find(Expression<Func<T, bool>> criteria, params string[] includes)
+    public T? Find(Expression<Func<T, bool>> criteria, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
 
@@ -32,7 +32,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return query.SingleOrDefault(criteria);
     }
 
-    public async Task<T> FindAsync(Expression<Func<T, bool>> criteria, params string[] includes)
+    public async Task<T?> FindAsync(Expression<Func<T, bool>> criteria, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
 

@@ -5,14 +5,14 @@ namespace Vezeeta.Core.Repositories;
 
 public interface IBaseRepository<T> where T : BaseEntity
 {
-    T GetById(int id);
-    Task<T> GetByIdAsync(int id);
+    T? GetById(int id);
+    Task<T?> GetByIdAsync(int id);
 
     IEnumerable<T> GetAll();
     Task<IEnumerable<T>> GetAllAsync();
 
-    T Find(Expression<Func<T, bool>> criteria, params string[] includes);
-    Task<T> FindAsync(Expression<Func<T, bool>> criteria,params string[] includes);
+    T? Find(Expression<Func<T, bool>> criteria, params string[] includes);
+    Task<T?> FindAsync(Expression<Func<T, bool>> criteria,params string[] includes);
 
     IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params string[] includes);
     IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int take, int skip);

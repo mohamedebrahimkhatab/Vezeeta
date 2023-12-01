@@ -24,7 +24,7 @@ public class DoctorService : IDoctorService
         return await _unitOfWork.Doctors.GetAllAsync();
     }
 
-    public async Task<Doctor> GetById(int id)
+    public async Task<Doctor?> GetById(int id)
     {
         return await _unitOfWork.Doctors.FindAsync(e => e.Id == id, nameof(Doctor.User), nameof(Doctor.Specialization));
     }
