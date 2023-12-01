@@ -4,8 +4,7 @@ namespace Vezeeta.Core.Services;
 
 public interface IDoctorService
 {
-    Task<IEnumerable<Doctor>> GetAll();
+    Task<IEnumerable<Doctor>> GetAll(int page, int pageSize, string search);
     Task<Doctor?> GetById(int id);
-
     Task<Doctor> Create(Doctor doctor);
 }

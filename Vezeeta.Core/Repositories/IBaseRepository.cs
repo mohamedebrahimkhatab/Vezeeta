@@ -11,15 +11,17 @@ public interface IBaseRepository<T> where T : BaseEntity
     IEnumerable<T> GetAll();
     Task<IEnumerable<T>> GetAllAsync();
 
-    T? Find(Expression<Func<T, bool>> criteria, params string[] includes);
-    Task<T?> FindAsync(Expression<Func<T, bool>> criteria,params string[] includes);
+    T? FindWithCriteriaAndIncludes(Expression<Func<T, bool>> criteria, params string[] includes);
+    Task<T?> FindWithCriteriaAndIncludesAsync(Expression<Func<T, bool>> criteria,params string[] includes);
 
-    IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params string[] includes);
-    IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int take, int skip);
+    IEnumerable<T> FindAllWithCriteriaAndPagenation(Expression<Func<T, bool>> criteria, int take, int skip);
+    IEnumerable<T> FindAllWithCriteriaAndIncludes(Expression<Func<T, bool>> criteria, params string[] includes);
+    IEnumerable<T> FindAllWithCriteriaPagenationAndIncludes(Expression<Func<T, bool>> criteria, int take, int skip, params string[] includes);
 
 
-    Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, params string[] includes);
-    Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, int skip, int take);
+    Task<IEnumerable<T>> FindAllWithCriteriaAndIncludesAsync(Expression<Func<T, bool>> criteria, int skip, int take);
+    Task<IEnumerable<T>> FindAllWithCriteriaAndPagenationAsync(Expression<Func<T, bool>> criteria, params string[] includes);
+    Task<IEnumerable<T>> FindAllWithCriteriaPagenationAndIncludesAsync(Expression<Func<T, bool>> criteria, int take, int skip, params string[] includes);
 
 
     T Add(T entity);

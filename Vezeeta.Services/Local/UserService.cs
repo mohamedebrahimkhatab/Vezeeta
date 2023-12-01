@@ -22,7 +22,7 @@ public class UserService : IUserService
 
     public async Task<IEnumerable<User>> GetAll() => await _unitOfWork.Users.GetAllAsync();
 
-    public async Task<User> GetById(int id) => await _unitOfWork.Users.GetByIdAsync(id);
+    public async Task<User?> GetById(int id) => await _unitOfWork.Users.GetByIdAsync(id);
 
 
 }
