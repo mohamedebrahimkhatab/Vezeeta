@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Repositories;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Vezeeta.Data.Repositories;
 
@@ -21,26 +22,30 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 
     public async Task<IEnumerable<T>> GetAllAsync() => await _context.Set<T>().ToListAsync();
 
+    public IQueryable<T> IncludesQuery(IQueryable<T> query, params string[] includes)
+    {
+        if (includes != null)
+            foreach (string incluse in includes)
+                query = query.Include(incluse);
+        return query;
+    }
+
     public T? FindWithCriteriaAndIncludes(Expression<Func<T, bool>> criteria, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
 
-        if (includes != null)
-            foreach (string incluse in includes)
-                query = query.Include(incluse);
+        query = IncludesQuery(query, includes);
 
-        return query.SingleOrDefault(criteria);
+        return query.FirstOrDefault(criteria);
     }
 
     public async Task<T?> FindWithCriteriaAndIncludesAsync(Expression<Func<T, bool>> criteria, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
 
-        if (includes != null)
-            foreach (var incluse in includes)
-                query = query.Include(incluse);
+        query = IncludesQuery(query, includes);
 
-        return await query.SingleOrDefaultAsync(criteria);
+        return await query.FirstOrDefaultAsync(criteria);
     }
 
     public IEnumerable<T> FindAllWithCriteriaAndPagenation(Expression<Func<T, bool>> criteria, int skip, int take)
@@ -52,47 +57,42 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
         IQueryable<T> query = _context.Set<T>();
 
-        if (includes != null)
-            foreach (var include in includes)
-                query = query.Include(include);
+        query = IncludesQuery(query, includes);
 
         return query.Where(criteria).ToList();
     }
 
-    public IEnumerable<T> FindAllWithCriteriaPagenationAndIncludes(Expression<Func<T, bool>> criteria, int take, int skip, params string[] includes)
+    public IEnumerable<T> FindAllWithCriteriaPagenationAndIncludes(Expression<Func<T, bool>> criteria, int skip, int take, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
 
-        if (includes != null)
-            foreach (var include in includes)
-                query = query.Include(include);
+        query = IncludesQuery(query, includes);
 
-        return query.Where(criteria).Skip(skip).Take(take).ToList();
+        if (criteria != null)
+            query = query.Where(criteria);
+
+        return query.Skip(skip).Take(take).ToList();
     }
 
-    public async Task<IEnumerable<T>> FindAllWithCriteriaAndIncludesAsync(Expression<Func<T, bool>> criteria, int take, int skip)
+    public async Task<IEnumerable<T>> FindAllWithCriteriaAndPagenationAsync(Expression<Func<T, bool>> criteria, int skip, int take)
     {
         return await _context.Set<T>().Where(criteria).Skip(skip).Take(take).ToListAsync();
     }
 
-    public async Task<IEnumerable<T>> FindAllWithCriteriaAndPagenationAsync(Expression<Func<T, bool>> criteria, params string[] includes)
+    public async Task<IEnumerable<T>> FindAllWithCriteriaAndIncludesAsync(Expression<Func<T, bool>> criteria, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
 
-        if (includes != null)
-            foreach (var include in includes)
-                query = query.Include(include);
+        query = IncludesQuery(query, includes);
 
         return await query.Where(criteria).ToListAsync();
     }
 
-    public async Task<IEnumerable<T>> FindAllWithCriteriaPagenationAndIncludesAsync(Expression<Func<T, bool>> criteria, int take, int skip, params string[] includes)
+    public async Task<IEnumerable<T>> FindAllWithCriteriaPagenationAndIncludesAsync(Expression<Func<T, bool>> criteria, int skip, int take, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
 
-        if (includes != null)
-            foreach (var include in includes)
-                query = query.Include(include);
+        query = IncludesQuery(query, includes);
 
         return await query.Where(criteria).Skip(skip).Take(take).ToListAsync();
     }
