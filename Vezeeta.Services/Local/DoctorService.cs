@@ -14,12 +14,6 @@ public class DoctorService : IDoctorService
     {
         _unitOfWork = unitOfWork;
     }
-    public async Task<Doctor> Create(Doctor doctor)
-    {
-        await _unitOfWork.Doctors.AddAsync(doctor);
-        await _unitOfWork.CommitAsync();
-        return doctor;
-    }
 
     public async Task<IEnumerable<Doctor>> GetAll()
     {
@@ -46,5 +40,12 @@ public class DoctorService : IDoctorService
     public async Task<Doctor?> GetById(int id)
     {
         return await _unitOfWork.Doctors.FindWithCriteriaAndIncludesAsync(e => e.Id == id, nameof(Doctor.User), nameof(Doctor.Specialization));
+    }
+
+    public async Task<Doctor> Create(Doctor doctor)
+    {
+        await _unitOfWork.Doctors.AddAsync(doctor);
+        await _unitOfWork.CommitAsync();
+        return doctor;
     }
 }
