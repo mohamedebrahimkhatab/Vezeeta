@@ -14,12 +14,10 @@ public interface IBaseRepository<T> where T : BaseEntity
     T? FindWithCriteriaAndIncludes(Expression<Func<T, bool>> criteria, params string[] includes);
     Task<T?> FindWithCriteriaAndIncludesAsync(Expression<Func<T, bool>> criteria,params string[] includes);
 
-    IEnumerable<T> FindAllWithCriteriaAndPagenation(Expression<Func<T, bool>> criteria, int skip, int take);
     IEnumerable<T> FindAllWithCriteriaAndIncludes(Expression<Func<T, bool>> criteria, params string[] includes);
     IEnumerable<T> FindAllWithCriteriaPagenationAndIncludes(Expression<Func<T, bool>> criteria, int skip, int take, params string[] includes);
 
 
-    Task<IEnumerable<T>> FindAllWithCriteriaAndPagenationAsync(Expression<Func<T, bool>> criteria, int skip, int take);
     Task<IEnumerable<T>> FindAllWithCriteriaAndIncludesAsync(Expression<Func<T, bool>> criteria, params string[] includes);
     Task<IEnumerable<T>> FindAllWithCriteriaPagenationAndIncludesAsync(Expression<Func<T, bool>> criteria, int skip, int take, params string[] includes);
 

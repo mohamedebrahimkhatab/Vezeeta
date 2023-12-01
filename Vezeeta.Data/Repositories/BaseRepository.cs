@@ -22,7 +22,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 
     public async Task<IEnumerable<T>> GetAllAsync() => await _context.Set<T>().ToListAsync();
 
-    public IQueryable<T> IncludesQuery(IQueryable<T> query, params string[] includes)
+    private IQueryable<T> IncludesQuery(IQueryable<T> query, params string[] includes)
     {
         if (includes != null)
             foreach (string incluse in includes)
@@ -48,11 +48,6 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return await query.FirstOrDefaultAsync(criteria);
     }
 
-    public IEnumerable<T> FindAllWithCriteriaAndPagenation(Expression<Func<T, bool>> criteria, int skip, int take)
-    {
-        return _context.Set<T>().Where(criteria).Skip(skip).Take(take).ToList();
-    }
-
     public IEnumerable<T> FindAllWithCriteriaAndIncludes(Expression<Func<T, bool>> criteria, params string[] includes)
     {
         IQueryable<T> query = _context.Set<T>();
@@ -68,15 +63,9 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 
         query = IncludesQuery(query, includes);
 
-        if (criteria != null)
-            query = query.Where(criteria);
+        query = query.Where(criteria);
 
         return query.Skip(skip).Take(take).ToList();
-    }
-
-    public async Task<IEnumerable<T>> FindAllWithCriteriaAndPagenationAsync(Expression<Func<T, bool>> criteria, int skip, int take)
-    {
-        return await _context.Set<T>().Where(criteria).Skip(skip).Take(take).ToListAsync();
     }
 
     public async Task<IEnumerable<T>> FindAllWithCriteriaAndIncludesAsync(Expression<Func<T, bool>> criteria, params string[] includes)
