@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Vezeeta.Core.Contracts;
+using Vezeeta.Core.Contracts.DoctorDtos;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Services;
 using Vezeeta.Services.Local;
@@ -22,34 +23,43 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Doctor>>> GetAll()
+    public async Task<ActionResult<IEnumerable<GetDoctorDto>>> GetAll()
     {
-        return Ok(await _doctorService.GetAll());
+        IEnumerable<Doctor> result = await _doctorService.GetAll();
+
+        return Ok(_mapper.Map<IEnumerable<GetDoctorDto>>(result));
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Doctor>>> GetAllWithSearch(string search)
+    public async Task<ActionResult<IEnumerable<GetDoctorDto>>> GetAllWithSearch(string search)
     {
-        return Ok(await _doctorService.GetAllWithSearch(search));
+        IEnumerable<Doctor> result = await _doctorService.GetAllWithSearch(search);
+        return Ok(_mapper.Map<IEnumerable<GetDoctorDto>>(result));
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Doctor>>> GetAllWithPagenation(int page, int pageSize) 
-        => Ok(await _doctorService.GetAllWithPagenation(page, pageSize));
+    public async Task<ActionResult<IEnumerable<GetDoctorDto>>> GetAllWithPagenation(int page, int pageSize)
+    {
+        IEnumerable<Doctor> result = await _doctorService.GetAllWithPagenation(page, pageSize);
+        return Ok(_mapper.Map<IEnumerable<GetDoctorDto>>(result));
+    }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Doctor>>> GetAllWithPagenationAndSearch(int page, int pageSize, string search) 
-        => Ok(await _doctorService.GetAllWithPagenationAndSearch(page, pageSize, search));
+    public async Task<ActionResult<IEnumerable<GetDoctorDto>>> GetAllWithPagenationAndSearch(int page, int pageSize, string search)
+    {
+        IEnumerable<Doctor> result = await _doctorService.GetAllWithPagenationAndSearch(page, pageSize, search);
+        return Ok(_mapper.Map<IEnumerable<GetDoctorDto>>(result));
+    }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Doctor>> GetById(int id)
+    public async Task<ActionResult<GetIdDoctorDto>> GetById(int id)
     {
         var result = await _doctorService.GetById(id);
         if (result == null)
         {
             return NotFound();
         }
-        return Ok(result);
+        return Ok(_mapper.Map<GetIdDoctorDto>(result));
     }
 
     [HttpPost]
@@ -57,7 +67,7 @@ public class DoctorsController : ControllerBase
     {
         var doctor = _mapper.Map<Doctor>(doctorDto);
         await _doctorService.Create(doctor);
-        return Ok(doctor);
+        return Created();
     }
 
 }

@@ -1,6 +1,6 @@
 ﻿using Vezeeta.Core.Enums;
 
-namespace Vezeeta.Core.Contracts;
+namespace Vezeeta.Core.Contracts.DoctorDtos;
 
 public class UpdateDoctorDto
 {
