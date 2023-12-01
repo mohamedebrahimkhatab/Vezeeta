@@ -11,8 +11,8 @@ public class DoctorConfiguration : BaseEntityConfiguration<Doctor>
         base.Configure(builder);
         builder.Property(e => e.Price).HasPrecision(5,2);
 
-        builder.Property(e => e.UserId).IsRequired();
-        builder.HasOne(e => e.User).WithOne().OnDelete(DeleteBehavior.Restrict);
+        builder.Property(e => e.ApplicationUserId).IsRequired();
+        builder.HasOne(e => e.ApplicationUser).WithOne().OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(e => e.SpecializationId).IsRequired();
         builder.HasOne(e => e.Specialization).WithMany().HasForeignKey(e=>e.SpecializationId).OnDelete(DeleteBehavior.Restrict);
