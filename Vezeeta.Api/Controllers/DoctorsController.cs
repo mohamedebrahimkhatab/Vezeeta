@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Vezeeta.Core.Consts;
-using Vezeeta.Core.Contracts.DoctorDtos;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Services;
-using Vezeeta.Services.Local;
+using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Core.Models.Identity;
+using Microsoft.AspNetCore.Identity;
+using Vezeeta.Core.Contracts.DoctorDtos;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -59,7 +56,7 @@ public class DoctorsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<GetIdDoctorDto>> GetById(int id)
     {
-        var result = await _doctorService.GetById(id);
+        Doctor? result = await _doctorService.GetById(id);
         if (result == null)
         {
             return NotFound();
@@ -72,14 +69,19 @@ public class DoctorsController : ControllerBase
     {
         try
         {
-            var user = await _userManager.FindByEmailAsync(doctorDto.Email);
+            ApplicationUser? user = await _userManager.FindByEmailAsync(doctorDto.Email);
             if (user != null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "this email is already taken");
+                throw new Exception("this email is already taken");
             }
-            var doctor = _mapper.Map<Doctor>(doctorDto);
+            Doctor doctor = _mapper.Map<Doctor>(doctorDto);
 
-            await _userManager.CreateAsync(doctor.ApplicationUser, "Doc*1234");
+            IdentityResult result = await _userManager.CreateAsync(doctor.ApplicationUser, "Doc*1234");
+
+            if (!result.Succeeded)
+            {
+                throw new Exception(result.ToString());
+            }
 
             await _userManager.AddToRoleAsync(doctor.ApplicationUser, UserRoles.Doctor);
 
@@ -88,7 +90,7 @@ public class DoctorsController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.InnerException?.Message);
+            return BadRequest(e.Message);
         }
     }
 

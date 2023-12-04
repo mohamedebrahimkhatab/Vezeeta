@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Vezeeta.Core.Contracts.DoctorDtos;
 using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Models.Identity;
+using Vezeeta.Core.Contracts.DoctorDtos;
 
 namespace Vezeeta.Api.Mapping;
 

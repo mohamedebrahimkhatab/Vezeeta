@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using System.Text;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Core.Models.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Vezeeta.Core.Contracts.Authentication;
-using Vezeeta.Core.Models.Identity;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -26,11 +25,11 @@ public class AuthenticationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Login(Login login)
     {
-        var user = await _userManager.FindByEmailAsync(login.Email);
+        ApplicationUser? user = await _userManager.FindByEmailAsync(login.Email);
         if (user != null && await _userManager.CheckPasswordAsync(user, login.Password))
         {
-            var userRoles = await _userManager.GetRolesAsync(user);
-            var authClaims = new List<Claim>
+            IList<string> userRoles = await _userManager.GetRolesAsync(user);
+            List<Claim> authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
@@ -41,9 +40,9 @@ public class AuthenticationController : ControllerBase
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
             }
 
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
+            SymmetricSecurityKey authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
 
-            var token = new JwtSecurityToken(
+            JwtSecurityToken token = new JwtSecurityToken(
                 issuer: _configuration["JwtSettings:ValidIssuer"],
                 audience: _configuration["JwtSettings:ValidAudience"],
                 expires: DateTime.Now.AddHours(3),

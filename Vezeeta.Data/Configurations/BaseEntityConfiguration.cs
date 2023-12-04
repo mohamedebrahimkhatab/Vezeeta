@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Vezeeta.Core.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Vezeeta.Core.Models;
 
 namespace Vezeeta.Data.Configurations;
 
-public class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T>
+internal class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T>
     where T : BaseEntity
 {
     public virtual void Configure(EntityTypeBuilder<T> builder)

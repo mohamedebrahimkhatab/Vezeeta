@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Vezeeta.Core.Models;
+﻿using Vezeeta.Core.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Vezeeta.Data.Configurations;
 
-public class SpecializationConfiguration : BaseEntityConfiguration<Specialization>
+internal class SpecializationConfiguration : BaseEntityConfiguration<Specialization>
 {
     public override void Configure(EntityTypeBuilder<Specialization> builder)
     {

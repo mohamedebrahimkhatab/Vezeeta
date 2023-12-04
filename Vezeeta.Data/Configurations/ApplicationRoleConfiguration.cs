@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Vezeeta.Core.Models.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Vezeeta.Core.Models.Identity;
 
 namespace Vezeeta.Data.Configurations;
 

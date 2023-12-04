@@ -1,9 +1,5 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Identity;
-using System.Runtime.CompilerServices;
-using Vezeeta.Core;
+﻿using Vezeeta.Core;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Services;
 
 namespace Vezeeta.Services.Local;
@@ -24,7 +20,7 @@ public class DoctorService : IDoctorService
     public async Task<IEnumerable<Doctor>> GetAllWithSearch(string search)
     {
         return await _unitOfWork.Doctors.FindAllWithCriteriaAndIncludesAsync(e =>
-                            (e.ApplicationUser.FirstName.Contains(search) || e.ApplicationUser.LastName.Contains(search)),
+                            e.ApplicationUser.FirstName.Contains(search) || e.ApplicationUser.LastName.Contains(search),
                             nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
     }
     public async Task<IEnumerable<Doctor>> GetAllWithPagenation(int page, int pageSize)

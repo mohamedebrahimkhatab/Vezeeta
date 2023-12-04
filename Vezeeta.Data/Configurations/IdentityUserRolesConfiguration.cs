@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Vezeeta.Data.Configurations;
 
-public class IdentityUserRolesConfiguration : IEntityTypeConfiguration<IdentityUserRole<int>>
+internal class IdentityUserRolesConfiguration : IEntityTypeConfiguration<IdentityUserRole<int>>
 {
     public void Configure(EntityTypeBuilder<IdentityUserRole<int>> builder)
     {

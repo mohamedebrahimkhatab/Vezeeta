@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Vezeeta.Core.Models;
 using System.Linq.Expressions;
-using Vezeeta.Core.Models;
 using Vezeeta.Core.Repositories;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.EntityFrameworkCore;
 
 namespace Vezeeta.Data.Repositories;
 

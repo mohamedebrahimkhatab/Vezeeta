@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Vezeeta.Core.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Vezeeta.Core.Models;
 
 namespace Vezeeta.Data.Configurations;
 
-public class DoctorConfiguration : BaseEntityConfiguration<Doctor>
+internal class DoctorConfiguration : BaseEntityConfiguration<Doctor>
 {
     public override void Configure(EntityTypeBuilder<Doctor> builder)
     {

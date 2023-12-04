@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Vezeeta.Core.Models;
-using Vezeeta.Core.Models.Identity;
+﻿using Vezeeta.Core.Models;
 using Vezeeta.Data.Configurations;
+using Vezeeta.Core.Models.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Vezeeta.Data;
 
@@ -12,11 +12,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser,Applicatio
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new ApplicationUserConfiguration());
-        modelBuilder.ApplyConfiguration(new ApplicationRoleConfiguration());
-        modelBuilder.ApplyConfiguration(new IdentityUserRolesConfiguration());
         modelBuilder.ApplyConfiguration(new DoctorConfiguration());
         modelBuilder.ApplyConfiguration(new SpecializationConfiguration());
+        modelBuilder.ApplyConfiguration(new ApplicationRoleConfiguration());
+        modelBuilder.ApplyConfiguration(new ApplicationUserConfiguration());
+        modelBuilder.ApplyConfiguration(new IdentityUserRolesConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 

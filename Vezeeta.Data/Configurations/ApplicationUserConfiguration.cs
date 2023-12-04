@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Vezeeta.Core.Models.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Vezeeta.Core.Models.Identity;
 
 namespace Vezeeta.Data.Configurations;
 
@@ -9,11 +9,11 @@ internal class ApplicationUserConfiguration : IEntityTypeConfiguration<Applicati
 {
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
-        builder.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
-        builder.Property(e => e.LastName).IsRequired().HasMaxLength(50);
         builder.Property(e => e.Gender).IsRequired();
         builder.Property(e => e.UserType).IsRequired();
         builder.Property(e => e.DateOfBirth).IsRequired();
+        builder.Property(e => e.LastName).IsRequired().HasMaxLength(50);
+        builder.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
 
         ApplicationUser user = new()
         {
@@ -32,7 +32,6 @@ internal class ApplicationUserConfiguration : IEntityTypeConfiguration<Applicati
         };
 
         PasswordHasher<ApplicationUser> passwordHasher = new PasswordHasher<ApplicationUser>();
-        
         user.PasswordHash = passwordHasher.HashPassword(user, "Admin*123");
         builder.HasData(user);
     }
