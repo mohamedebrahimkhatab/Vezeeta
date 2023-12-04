@@ -47,4 +47,16 @@ public class DoctorService : IDoctorService
         await _unitOfWork.CommitAsync();
         return doctor;
     }
+
+    public async Task Update(Doctor doctor)
+    {
+        _unitOfWork.Doctors.Update(doctor);
+        await _unitOfWork.CommitAsync();
+    }
+
+    public async Task Delete(Doctor doctor)
+    {
+        _unitOfWork.Doctors.Delete(doctor);
+        await _unitOfWork.CommitAsync();
+    }
 }

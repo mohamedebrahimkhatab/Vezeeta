@@ -17,5 +17,5 @@ public class CreateDoctorDto
     public Gender? Gender { get; set; }
     public DateTime? DateOfBirth { get; set; }
 
-    public int SpecializationId { get; set; }
+    public string? Specialize { get; set; }
 }

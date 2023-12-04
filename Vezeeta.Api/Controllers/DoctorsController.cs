@@ -16,12 +16,17 @@ public class DoctorsController : ControllerBase
     private readonly IDoctorService _doctorService;
     private readonly IMapper _mapper;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ISpecializationService _specializationService;
 
-    public DoctorsController(IDoctorService doctorService, IMapper mapper, UserManager<ApplicationUser> userManager)
+    public DoctorsController(IDoctorService doctorService,
+                            IMapper mapper,
+                            UserManager<ApplicationUser> userManager,
+                            ISpecializationService specializationService)
     {
         _doctorService = doctorService;
         _mapper = mapper;
         _userManager = userManager;
+        _specializationService = specializationService;
     }
 
     [HttpGet]
@@ -65,22 +70,31 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Doctor>> Add(CreateDoctorDto doctorDto)
+    public async Task<IActionResult> Add(CreateDoctorDto doctorDto)
     {
         try
         {
             ApplicationUser? user = await _userManager.FindByEmailAsync(doctorDto.Email);
             if (user != null)
             {
-                throw new Exception("this email is already taken");
+                return StatusCode(StatusCodes.Status500InternalServerError, "this email is already taken");
             }
+
+            Specialization specialization = await _specializationService.GetByName(doctorDto.Specialize);
+
+            if (specialization == null)
+            {
+                return NotFound("Specialization Does not exist");
+            }
+
             Doctor doctor = _mapper.Map<Doctor>(doctorDto);
+            doctor.SpecializationId = specialization.Id;
 
             IdentityResult result = await _userManager.CreateAsync(doctor.ApplicationUser, "Doc*1234");
 
             if (!result.Succeeded)
             {
-                throw new Exception(result.ToString());
+                return StatusCode(StatusCodes.Status500InternalServerError, "this email is already taken");
             }
 
             await _userManager.AddToRoleAsync(doctor.ApplicationUser, UserRoles.Doctor);
@@ -94,4 +108,47 @@ public class DoctorsController : ControllerBase
         }
     }
 
+    [HttpPut]
+    public async Task<IActionResult> Update(UpdateDoctorDto doctorDto)
+    {
+        try
+        {
+            Doctor? doctor = await _doctorService.GetById(doctorDto.Id);
+            if (doctor == null)
+            {
+                throw new Exception("Doctor is Not exist");
+            }
+            Specialization specialization = await _specializationService.GetByName(doctorDto.Specialize);
+            if (specialization == null)
+            {
+                throw new Exception("Specialize is Not exist");
+            }
+            doctor.ApplicationUser.FirstName = doctorDto.FirstName;
+            doctor.ApplicationUser.LastName = doctorDto.LastName;
+            doctor.ApplicationUser.Email = doctorDto.Email;
+            doctor.ApplicationUser.PhoneNumber = doctorDto.Phone;
+            doctor.ApplicationUser.PhotoPath = doctorDto.PhotoPath;
+            doctor.ApplicationUser.Gender = doctorDto.Gender;
+            doctor.ApplicationUser.DateOfBirth = doctorDto.DateOfBirth;
+            doctor.SpecializationId = specialization.Id;
+
+            await _doctorService.Update(doctor);
+
+            return NoContent();
+        }
+        catch (Exception e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        Doctor? doctor = await _doctorService.GetById(id);
+        if (doctor == null)
+            return NotFound("Doctor is not exist");
+        await _doctorService.Delete(doctor);
+        return NoContent();
+    }
 }

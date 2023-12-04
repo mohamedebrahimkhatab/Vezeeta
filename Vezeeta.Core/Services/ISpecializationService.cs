@@ -6,5 +6,6 @@ public interface ISpecializationService
 {
     Task<IEnumerable<Specialization>> GetAll();
     Task<Specialization?> GetById(int id);
-    Task<IEnumerable<Specialization>> GetByName(string name);
+    Task<Specialization> GetByName(string name);
+    Task<IEnumerable<Specialization>> FindBySearch(string search);
 }

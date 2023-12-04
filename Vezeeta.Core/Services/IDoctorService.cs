@@ -10,4 +10,6 @@ public interface IDoctorService
     Task<IEnumerable<Doctor>> GetAllWithPagenationAndSearch(int page, int pageSize, string search);
     Task<Doctor?> GetById(int id);
     Task<Doctor> Create(Doctor doctor);
+    Task Update(Doctor doctor);
+    Task Delete(Doctor doctor);
 }

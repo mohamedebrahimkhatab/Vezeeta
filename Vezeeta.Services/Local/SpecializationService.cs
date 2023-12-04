@@ -12,9 +12,15 @@ public class SpecializationService : ISpecializationService
     {
         _unitOfWork = unitOfWork;
     }
-    public async Task<IEnumerable<Specialization>> GetAll() => await _unitOfWork.Specializations.GetAllAsync();
+    public async Task<IEnumerable<Specialization>> GetAll() 
+        => await _unitOfWork.Specializations.GetAllAsync();
 
-    public async Task<Specialization?> GetById(int id) => await _unitOfWork.Specializations.GetByIdAsync(id);
+    public async Task<Specialization?> GetById(int id) 
+        => await _unitOfWork.Specializations.GetByIdAsync(id);
 
-    public async Task<IEnumerable<Specialization>> GetByName(string name) => await _unitOfWork.Specializations.FindAllWithCriteriaAndIncludesAsync(e => e.Name.Contains(name));
+    public async Task<IEnumerable<Specialization>> FindBySearch(string search) 
+        => await _unitOfWork.Specializations.FindAllWithCriteriaAndIncludesAsync(e => e.Name.Contains(search));
+
+    public async Task<Specialization> GetByName(string name)
+        => await _unitOfWork.Specializations.FindWithCriteriaAndIncludesAsync(e => e.Name == name);
 }

@@ -16,7 +16,7 @@ public class UpdateDoctorDto
     public string? PhotoPath { get; set; }
 
     public Gender? Gender { get; set; }
-    public DateTime? DateOfBirth { get; set; }
+    public DateTime DateOfBirth { get; set; }
 
-    public int SpecializationId { get; set; }
+    public string? Specialize { get; set; }
 }

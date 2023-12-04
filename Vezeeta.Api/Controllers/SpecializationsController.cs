@@ -30,5 +30,8 @@ public class SpecializationsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Specialization>> GetByName(string name) => await _specializationService.GetByName(name);
+    public async Task<IEnumerable<Specialization>> FindBySearch(string search) => await _specializationService.FindBySearch(search);
+
+    [HttpGet]
+    public async Task<Specialization> GetByName(string name) => await _specializationService.GetByName(name);
 }
