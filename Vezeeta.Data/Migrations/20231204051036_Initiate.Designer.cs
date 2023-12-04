@@ -12,7 +12,7 @@ using Vezeeta.Data;
 namespace Vezeeta.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231201155355_Initiate")]
+    [Migration("20231204051036_Initiate")]
     partial class Initiate
     {
         /// <inheritdoc />
@@ -196,23 +196,20 @@ namespace Vezeeta.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "1",
                             Name = "Admin",
-                            NormalizedName = "Admin"
+                            NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "2",
                             Name = "Doctor",
-                            NormalizedName = "Doctor"
+                            NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "3",
                             Name = "Patient",
-                            NormalizedName = "Patient"
+                            NormalizedName = "PATIENT"
                         });
                 });
 
@@ -290,6 +287,9 @@ namespace Vezeeta.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<int>("UserType")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -307,18 +307,22 @@ namespace Vezeeta.Data.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "caa183aa-c183-4fdd-a68e-4e4749c5ea10",
+                            ConcurrencyStamp = "ba40c8d2-5bff-4711-9559-ee5a4e3f0ba8",
                             DateOfBirth = new DateTime(1980, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "admin@gmail.com",
+                            Email = "admin@vezeeta.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
                             Gender = 1,
                             LastName = "Admin",
                             LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@VEZEETA.COM",
+                            NormalizedUserName = "ADMIN@VEZEETA.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOjroekVwwqWUY5R0JggUWcCORYXrTfI+FXd0BorWyPKrER3GLeE4KYcMyrH4YuYCw==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
-                            UserName = "Admin"
+                            UserName = "admin@vezeeta.com",
+                            UserType = 0
                         });
                 });
 

@@ -10,7 +10,8 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<CreateDoctorDto, ApplicationUser>();
+        CreateMap<CreateDoctorDto, ApplicationUser>().ForMember(e => e.UserName, act => act.MapFrom(src => src.Email))
+                                                     .ForMember(e => e.UserType, act => act.MapFrom(src => UserType.Doctor));
         CreateMap<CreateDoctorDto, Doctor>().ForMember(e => e.ApplicationUser, act => act.MapFrom(src => src));
 
         CreateMap<Doctor, GetDoctorDto>().ForMember(e => e.FullName, act => act.MapFrom(src => src.ApplicationUser.FirstName + ' ' + src.ApplicationUser.LastName))

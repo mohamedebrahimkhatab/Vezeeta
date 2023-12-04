@@ -12,24 +12,28 @@ internal class ApplicationUserConfiguration : IEntityTypeConfiguration<Applicati
         builder.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
         builder.Property(e => e.LastName).IsRequired().HasMaxLength(50);
         builder.Property(e => e.Gender).IsRequired();
+        builder.Property(e => e.UserType).IsRequired();
         builder.Property(e => e.DateOfBirth).IsRequired();
 
         ApplicationUser user = new()
         {
             Id = 1,
-            UserName = "Admin",
+            UserName = "admin@vezeeta.com",
+            NormalizedUserName = "ADMIN@VEZEETA.COM",
+            Email = "admin@vezeeta.com",
+            NormalizedEmail = "ADMIN@VEZEETA.COM",
             FirstName = "Admin",
             LastName = "Admin",
             Gender = Core.Enums.Gender.Male,
+            UserType = Core.Enums.UserType.Admin,
             DateOfBirth = DateTime.Parse("1980-06-12"),
-            Email = "admin@gmail.com",
             LockoutEnabled = false,
             PhoneNumber = "1234567890"
         };
 
         PasswordHasher<ApplicationUser> passwordHasher = new PasswordHasher<ApplicationUser>();
-        passwordHasher.HashPassword(user, "Admin*123");
-
+        
+        user.PasswordHash = passwordHasher.HashPassword(user, "Admin*123");
         builder.HasData(user);
     }
 }

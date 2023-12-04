@@ -12,5 +12,8 @@ public class ApplicationUser : IdentityUser<int>
     public string? PhotoPath { get; set; }
 
     public Gender? Gender { get; set; }
+
+    public UserType? UserType { get; set; }
+
     public DateTime DateOfBirth { get; set; }
 }

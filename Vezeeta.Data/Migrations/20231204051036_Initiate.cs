@@ -38,6 +38,7 @@ namespace Vezeeta.Data.Migrations
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     PhotoPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Gender = table.Column<int>(type: "int", nullable: false),
+                    UserType = table.Column<int>(type: "int", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -210,15 +211,15 @@ namespace Vezeeta.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "1", "Admin", "Admin" },
-                    { 2, "2", "Doctor", "Doctor" },
-                    { 3, "3", "Patient", "Patient" }
+                    { 1, null, "Admin", "ADMIN" },
+                    { 2, null, "Doctor", "DOCTOR" },
+                    { 3, null, "Patient", "PATIENT" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "FirstName", "Gender", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "PhotoPath", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, "caa183aa-c183-4fdd-a68e-4e4749c5ea10", new DateTime(1980, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "admin@gmail.com", false, "Admin", 1, "Admin", false, null, null, null, null, "1234567890", false, null, null, false, "Admin" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "FirstName", "Gender", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "PhotoPath", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType" },
+                values: new object[] { 1, 0, "ba40c8d2-5bff-4711-9559-ee5a4e3f0ba8", new DateTime(1980, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "admin@vezeeta.com", false, "Admin", 1, "Admin", false, null, "ADMIN@VEZEETA.COM", "ADMIN@VEZEETA.COM", "AQAAAAIAAYagAAAAEOjroekVwwqWUY5R0JggUWcCORYXrTfI+FXd0BorWyPKrER3GLeE4KYcMyrH4YuYCw==", "1234567890", false, null, null, false, "admin@vezeeta.com", 0 });
 
             migrationBuilder.InsertData(
                 table: "Specializations",

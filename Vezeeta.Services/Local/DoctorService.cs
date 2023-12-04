@@ -11,12 +11,10 @@ namespace Vezeeta.Services.Local;
 public class DoctorService : IDoctorService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly UserManager<ApplicationUser> _userManager;
 
-    public DoctorService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+    public DoctorService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _userManager = userManager;
     }
 
     public async Task<IEnumerable<Doctor>> GetAll()
@@ -26,7 +24,8 @@ public class DoctorService : IDoctorService
     public async Task<IEnumerable<Doctor>> GetAllWithSearch(string search)
     {
         return await _unitOfWork.Doctors.FindAllWithCriteriaAndIncludesAsync(e =>
-                            (e.ApplicationUser.FirstName.Contains(search) || e.ApplicationUser.LastName.Contains(search)), nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
+                            (e.ApplicationUser.FirstName.Contains(search) || e.ApplicationUser.LastName.Contains(search)),
+                            nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
     }
     public async Task<IEnumerable<Doctor>> GetAllWithPagenation(int page, int pageSize)
     {
