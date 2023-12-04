@@ -3,7 +3,7 @@ using Vezeeta.Core.Models;
 
 namespace Vezeeta.Core.Repositories;
 
-public interface IBaseRepository<T> where T : BaseEntity
+public interface IBaseRepository<T> where T : class
 {
     T? GetById(int id);
     Task<T?> GetByIdAsync(int id);

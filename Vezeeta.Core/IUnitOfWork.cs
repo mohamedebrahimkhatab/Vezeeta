@@ -1,4 +1,5 @@
 ﻿using Vezeeta.Core.Models;
+using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Repositories;
 
 namespace Vezeeta.Core;
@@ -7,6 +8,7 @@ public interface IUnitOfWork : IDisposable
 {
     public IBaseRepository<Doctor> Doctors { get; }
     public IBaseRepository<Specialization> Specializations { get; }
+    public IBaseRepository<ApplicationUser> ApplicationUsers { get; }
 
     void Commit();
     Task CommitAsync();

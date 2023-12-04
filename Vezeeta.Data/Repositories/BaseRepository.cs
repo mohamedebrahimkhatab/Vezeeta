@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Vezeeta.Data.Repositories;
 
-public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
+public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
     private readonly ApplicationDbContext _context;
 

@@ -1,5 +1,6 @@
 ﻿using Vezeeta.Core;
 using Vezeeta.Core.Models;
+using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Repositories;
 using Vezeeta.Data.Repositories;
 
@@ -12,11 +13,14 @@ public class UnitOfWork : IUnitOfWork
     public IBaseRepository<Doctor> Doctors { get; private set; }
     public IBaseRepository<Specialization> Specializations { get; private set; }
 
+    public IBaseRepository<ApplicationUser> ApplicationUsers { get; private set; }
+
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
         Doctors = new BaseRepository<Doctor>(_context);
         Specializations = new BaseRepository<Specialization>(_context);
+        ApplicationUsers = new BaseRepository<ApplicationUser>(_context);
     }
     public void Commit() => _context.SaveChanges();
 

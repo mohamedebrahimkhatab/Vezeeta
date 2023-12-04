@@ -20,7 +20,7 @@ public class DoctorService : IDoctorService
     public async Task<IEnumerable<Doctor>> GetAllWithSearch(string search)
     {
         return await _unitOfWork.Doctors.FindAllWithCriteriaAndIncludesAsync(e =>
-                            e.ApplicationUser.FirstName.Contains(search) || e.ApplicationUser.LastName.Contains(search),
+                            (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).Contains(search),
                             nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
     }
     public async Task<IEnumerable<Doctor>> GetAllWithPagenation(int page, int pageSize)
@@ -32,8 +32,8 @@ public class DoctorService : IDoctorService
     public async Task<IEnumerable<Doctor>> GetAllWithPagenationAndSearch(int page, int pageSize, string search)
     {
         int skip = (page - 1) * pageSize;
-        return await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e => 
-                            (e.ApplicationUser.FirstName.Contains(search) || e.ApplicationUser.LastName.Contains(search)), skip, pageSize, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
+        return await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e =>
+                            (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).Contains(search), skip, pageSize, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
     }
 
     public async Task<Doctor?> GetById(int id)

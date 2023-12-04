@@ -148,7 +148,9 @@ public class DoctorsController : ControllerBase
         Doctor? doctor = await _doctorService.GetById(id);
         if (doctor == null)
             return NotFound("Doctor is not exist");
+        var user = doctor.ApplicationUser;
         await _doctorService.Delete(doctor);
+        await _userManager.DeleteAsync(user);
         return NoContent();
     }
 }
