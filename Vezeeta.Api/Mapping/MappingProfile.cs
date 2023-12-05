@@ -5,6 +5,7 @@ using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Contracts.DoctorDtos;
 using Vezeeta.Core.Contracts.PatientDtos;
 using Vezeeta.Core.Contracts.CouponDtos;
+using Vezeeta.Core.Contracts.AppointmentDtos;
 
 namespace Vezeeta.Api.Mapping;
 
@@ -45,5 +46,12 @@ public class MappingProfile : Profile
         /******************* Coupon DTOS **********************************/
 
         CreateMap<CouponDto, Coupon>().ReverseMap();
+
+        /******************* Appointment DTOS **********************************/
+
+        CreateMap<string, AppointmentTime>().ForMember(e => e.Time, act => act.MapFrom(src => TimeOnly.Parse(src)));
+        CreateMap<DayDto, Appointment>().ForMember(e => e.AppointmentTimes, act => act.MapFrom(src => src.Times));
+        CreateMap<UpdateTimeDto, AppointmentTime>().ForMember(e => e.Time, act => act.MapFrom(src => TimeOnly.Parse(src.Time)));
+
     }
 }

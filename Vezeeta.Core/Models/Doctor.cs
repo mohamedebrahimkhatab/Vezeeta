@@ -1,4 +1,5 @@
-﻿using Vezeeta.Core.Models.Identity;
+﻿using System.Reflection.Metadata.Ecma335;
+using Vezeeta.Core.Models.Identity;
 
 namespace Vezeeta.Core.Models;
 
@@ -11,4 +12,6 @@ public class Doctor : BaseEntity
 
     public int SpecializationId { get; set; }
     public Specialization? Specialization { get; set; }
+
+    public List<Appointment>? Appointments { get; set; }
 }
