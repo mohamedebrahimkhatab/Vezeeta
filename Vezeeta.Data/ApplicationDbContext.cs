@@ -12,6 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser,Applicatio
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfiguration(new CouponConfiguration());
         modelBuilder.ApplyConfiguration(new DoctorConfiguration());
         modelBuilder.ApplyConfiguration(new SpecializationConfiguration());
         modelBuilder.ApplyConfiguration(new ApplicationRoleConfiguration());
@@ -22,4 +23,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser,Applicatio
 
     public DbSet<Doctor> Doctors { get; set; }
     public DbSet<Specialization> Specializations { get; set; }
+    public DbSet<Coupon> Coupons { get; set; }
 }

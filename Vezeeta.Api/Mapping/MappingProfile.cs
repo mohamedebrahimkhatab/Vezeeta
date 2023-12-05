@@ -4,6 +4,7 @@ using Vezeeta.Core.Models;
 using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Contracts.DoctorDtos;
 using Vezeeta.Core.Contracts.PatientDtos;
+using Vezeeta.Core.Contracts.CouponDtos;
 
 namespace Vezeeta.Api.Mapping;
 
@@ -39,7 +40,10 @@ public class MappingProfile : Profile
                                                         .ForMember(e => e.PhoneNumber, act => act.MapFrom(src => src.Phone));
 
         CreateMap<ApplicationUser, GetPatientDto>().ForMember(e => e.FullName, act => act.MapFrom(src => src.FirstName + ' ' + src.LastName))
-                                         .ForMember(e => e.Phone, act => act.MapFrom(src => src.PhoneNumber));
+                                                   .ForMember(e => e.Phone, act => act.MapFrom(src => src.PhoneNumber));
 
+        /******************* Coupon DTOS **********************************/
+
+        CreateMap<CouponDto, Coupon>().ReverseMap();
     }
 }

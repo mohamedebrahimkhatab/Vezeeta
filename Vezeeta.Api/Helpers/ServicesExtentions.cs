@@ -10,6 +10,7 @@ public static class ServicesExtentions
     public static void AddLocalServices(this IServiceCollection services)
     {
         services.AddTransient<IUnitOfWork, UnitOfWork>();
+        services.AddTransient<ICouponService, CouponService>();
         services.AddTransient<IDoctorService, DoctorService>();
         services.AddTransient<IPatientService, PatientService>();
         services.AddTransient<ISpecializationService, SpecializationService>();

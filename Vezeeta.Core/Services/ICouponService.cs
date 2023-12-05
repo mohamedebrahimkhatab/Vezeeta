@@ -1,0 +1,13 @@
+﻿using Vezeeta.Core.Models;
+
+namespace Vezeeta.Core.Services;
+
+public interface ICouponService
+{
+    Task<Coupon?> GetById(int id);
+    Task<Coupon?> GetByDiscountCode(string discountCode);
+    Task<Coupon> Create(Coupon coupon);
+    Task Update(Coupon coupon);
+    Task Delete(Coupon coupon);
+    Task Deactivate(Coupon coupon);
+}
