@@ -19,6 +19,11 @@ public class MappingProfile : Profile
                                                      .ForMember(e => e.PhoneNumber, act => act.MapFrom(src => src.Phone));
         CreateMap<CreateDoctorDto, Doctor>().ForMember(e => e.ApplicationUser, act => act.MapFrom(src => src));
 
+        CreateMap<UpdateDoctorDto, ApplicationUser>().ForMember(e => e.UserName, act => act.MapFrom(src => src.Email))
+                                                     .ForMember(e => e.UserType, act => act.MapFrom(src => UserType.Doctor))
+                                                     .ForMember(e => e.PhoneNumber, act => act.MapFrom(src => src.Phone));
+        CreateMap<UpdateDoctorDto, Doctor>().ForMember(e => e.Id, act => act.MapFrom(src => src.DoctorId)).ForMember(e => e.ApplicationUser, act => act.MapFrom(src => src));
+
         CreateMap<Doctor, GetDoctorDto>().ForMember(e => e.FullName, act => act.MapFrom(src => src.ApplicationUser.FirstName + ' ' + src.ApplicationUser.LastName))
                                          .ForMember(e => e.Specialize, act => act.MapFrom(src => src.Specialization.Name))
                                          .ForMember(e => e.Email, act => act.MapFrom(src => src.ApplicationUser.Email))
@@ -46,6 +51,7 @@ public class MappingProfile : Profile
         /******************* Coupon DTOS **********************************/
 
         CreateMap<CouponDto, Coupon>().ReverseMap();
+        CreateMap<UpdateCouponDto, Coupon>();
 
         /******************* Appointment DTOS **********************************/
 

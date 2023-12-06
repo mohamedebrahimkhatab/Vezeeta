@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using Vezeeta.Core.Models;
 
 namespace Vezeeta.Core.Repositories;
 

@@ -66,10 +66,7 @@ public class CouponsController : ControllerBase
             {
                 return NotFound();
             }
-            coupon.DiscountCode = couponDto.DiscountCode;
-            coupon.NumOfRequests = couponDto.NumOfRequests;
-            coupon.DiscountType = couponDto.DiscountType;
-            coupon.Value = couponDto.Value;
+            _mapper.Map(couponDto, coupon);
             await _couponService.Update(coupon);
             return NoContent();
         }

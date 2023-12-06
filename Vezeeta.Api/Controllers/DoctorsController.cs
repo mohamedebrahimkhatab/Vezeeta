@@ -80,7 +80,7 @@ public class DoctorsController : ControllerBase
                 return StatusCode(StatusCodes.Status500InternalServerError, "this email is already taken");
             }
 
-            Specialization specialization = await _specializationService.GetByName(doctorDto.Specialize);
+            Specialization specialization = await _specializationService.GetById(doctorDto.SpecializationId);
 
             if (specialization == null)
             {
@@ -113,24 +113,13 @@ public class DoctorsController : ControllerBase
     {
         try
         {
-            Doctor? doctor = await _doctorService.GetById(doctorDto.Id);
+            Doctor? doctor = await _doctorService.GetById(doctorDto.DoctorId);
             if (doctor == null)
             {
                 throw new Exception("Doctor is Not exist");
             }
-            Specialization specialization = await _specializationService.GetByName(doctorDto.Specialize);
-            if (specialization == null)
-            {
-                throw new Exception("Specialize is Not exist");
-            }
-            doctor.ApplicationUser.FirstName = doctorDto.FirstName;
-            doctor.ApplicationUser.LastName = doctorDto.LastName;
-            doctor.ApplicationUser.Email = doctorDto.Email;
-            doctor.ApplicationUser.PhoneNumber = doctorDto.Phone;
-            doctor.ApplicationUser.PhotoPath = doctorDto.PhotoPath;
-            doctor.ApplicationUser.Gender = doctorDto.Gender;
-            doctor.ApplicationUser.DateOfBirth = doctorDto.DateOfBirth;
-            doctor.SpecializationId = specialization.Id;
+
+            _mapper.Map(doctorDto, doctor);
 
             await _doctorService.Update(doctor);
 
