@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Vezeeta.Core.Contracts.Authentication;
+using Vezeeta.Core.Consts;
+using Vezeeta.Core.Models;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -31,14 +33,11 @@ public class AuthenticationController : ControllerBase
             IList<string> userRoles = await _userManager.GetRolesAsync(user);
             List<Claim> authClaims = new List<Claim>
             {
+                new Claim("Id", user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, userRoles.First())
             };
-
-            foreach (var userRole in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
 
             SymmetricSecurityKey authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
 
