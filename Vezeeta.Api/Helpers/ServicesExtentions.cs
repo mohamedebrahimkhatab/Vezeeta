@@ -12,6 +12,7 @@ public static class ServicesExtentions
         services.AddTransient<IUnitOfWork, UnitOfWork>();
         services.AddTransient<ICouponService, CouponService>();
         services.AddTransient<IDoctorService, DoctorService>();
+        services.AddTransient<IBookingService, BookingService>();
         services.AddTransient<IPatientService, PatientService>();
         services.AddTransient<IAppointmentService, AppointmentService>();
         services.AddTransient<ISpecializationService, SpecializationService>();

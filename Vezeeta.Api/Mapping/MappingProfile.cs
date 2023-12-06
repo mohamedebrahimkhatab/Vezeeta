@@ -6,6 +6,7 @@ using Vezeeta.Core.Contracts.DoctorDtos;
 using Vezeeta.Core.Contracts.PatientDtos;
 using Vezeeta.Core.Contracts.CouponDtos;
 using Vezeeta.Core.Contracts.AppointmentDtos;
+using Vezeeta.Core.Contracts.BookingDtos;
 
 namespace Vezeeta.Api.Mapping;
 
@@ -59,5 +60,8 @@ public class MappingProfile : Profile
         CreateMap<DayDto, Appointment>().ForMember(e => e.AppointmentTimes, act => act.MapFrom(src => src.Times));
         CreateMap<UpdateTimeDto, AppointmentTime>().ForMember(e => e.Time, act => act.MapFrom(src => TimeOnly.Parse(src.Time)));
 
+        /******************* Booking DTOS **********************************/
+
+        CreateMap<BookBookingDto, Booking>();
     }
 }

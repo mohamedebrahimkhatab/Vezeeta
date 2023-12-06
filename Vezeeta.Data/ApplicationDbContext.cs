@@ -14,6 +14,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser,Applicatio
     {
         modelBuilder.ApplyConfiguration(new CouponConfiguration());
         modelBuilder.ApplyConfiguration(new DoctorConfiguration());
+        modelBuilder.ApplyConfiguration(new BookingsConfiguration());
         modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
         modelBuilder.ApplyConfiguration(new SpecializationConfiguration());
         modelBuilder.ApplyConfiguration(new AppointmentTimeConfiguration());
@@ -25,6 +26,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser,Applicatio
 
     public DbSet<Coupon> Coupons { get; set; }
     public DbSet<Doctor> Doctors { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
     public DbSet<Specialization> Specializations { get; set; }
     public DbSet<AppointmentTime> AppointmentTimes { get; set; }
