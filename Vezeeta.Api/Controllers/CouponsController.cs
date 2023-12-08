@@ -66,6 +66,7 @@ public class CouponsController : ControllerBase
             {
                 return NotFound();
             }
+            await _couponService.CheckIfCouponApplied(coupon.DiscountCode);
             _mapper.Map(couponDto, coupon);
             await _couponService.Update(coupon);
             return NoContent();

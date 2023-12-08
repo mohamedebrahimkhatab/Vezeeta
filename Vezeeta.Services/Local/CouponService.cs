@@ -1,6 +1,7 @@
 ﻿using Vezeeta.Core;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Services;
+using static Azure.Core.HttpHeader;
 
 namespace Vezeeta.Services.Local;
 
@@ -26,6 +27,7 @@ public class CouponService : ICouponService
     }
     public async Task Update(Coupon coupon)
     {
+        
         _unitOfWork.Coupons.Update(coupon);
         await _unitOfWork.CommitAsync();
     }
@@ -41,4 +43,12 @@ public class CouponService : ICouponService
         await _unitOfWork.CommitAsync();
     }
 
+    public async Task CheckIfCouponApplied(string? discountCode)
+    {
+        Booking? booking = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e => e.DiscountCode == discountCode);
+        if (booking != null)
+        {
+            throw new InvalidOperationException("this Coupon is applied to booking/s");
+        }
+    }
 }

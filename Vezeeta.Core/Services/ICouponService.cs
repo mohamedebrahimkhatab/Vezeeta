@@ -10,4 +10,5 @@ public interface ICouponService
     Task Update(Coupon coupon);
     Task Delete(Coupon coupon);
     Task Deactivate(Coupon coupon);
+    Task CheckIfCouponApplied(string? discountCode);
 }
