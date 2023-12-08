@@ -14,6 +14,7 @@ public static class ServicesExtentions
         services.AddTransient<IDoctorService, DoctorService>();
         services.AddTransient<IBookingService, BookingService>();
         services.AddTransient<IPatientService, PatientService>();
+        services.AddTransient<IDashboardService, DashboardService>();
         services.AddTransient<IAppointmentService, AppointmentService>();
         services.AddTransient<ISpecializationService, SpecializationService>();
     }
