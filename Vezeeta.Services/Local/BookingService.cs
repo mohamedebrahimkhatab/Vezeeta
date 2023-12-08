@@ -90,4 +90,10 @@ public class BookingService : IBookingService
         await _unitOfWork.CommitAsync();
     }
 
+    public async Task<IEnumerable<Booking>> GetPatientBookings(int patientId)
+    {
+        return await _unitOfWork.Bookings.FindAllWithCriteriaAndIncludesAsync(e => e.PatientId == patientId,
+                                                "Doctor", "Doctor.Specialization", "Doctor.ApplicationUser",
+                                                "AppointmentTime", "AppointmentTime.Appointment");
+    }
 }

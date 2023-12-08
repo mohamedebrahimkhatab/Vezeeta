@@ -63,5 +63,11 @@ public class MappingProfile : Profile
         /******************* Booking DTOS **********************************/
 
         CreateMap<BookBookingDto, Booking>();
+        CreateMap<Booking, PatientBookingDto>().ForMember(e => e.PhotoPath, act => act.MapFrom(e => e.Doctor.ApplicationUser.PhotoPath))
+                                               .ForMember(e => e.Price, act => act.MapFrom(e => e.Doctor.Price))
+                                               .ForMember(e => e.Specialize, act => act.MapFrom(e => e.Doctor.Specialization.Name))
+                                               .ForMember(e => e.Day, act => act.MapFrom(e => e.AppointmentTime.Appointment.Day))
+                                               .ForMember(e => e.Time, act => act.MapFrom(e => e.AppointmentTime.Time))
+                                               .ForMember(e => e.DoctorName, act => act.MapFrom(e => $"{e.Doctor.ApplicationUser.FirstName} {e.Doctor.ApplicationUser.LastName}"));
     }
 }

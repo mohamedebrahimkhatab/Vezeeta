@@ -10,30 +10,15 @@ namespace Vezeeta.Services.Local;
 public class PatientService : IPatientService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IBookingService _bookingService;
 
-    public PatientService(IUnitOfWork unitOfWork)
+    public PatientService(IUnitOfWork unitOfWork, IBookingService bookingService)
     {
         _unitOfWork = unitOfWork;
+        _bookingService = bookingService;
     }
 
-    public async Task<IEnumerable<ApplicationUser>> GetAll()
-    {
-        return await _unitOfWork.ApplicationUsers.FindAllWithCriteriaAndIncludesAsync(e => e.UserType.Equals(UserType.Patient));
-    }
-
-    public async Task<IEnumerable<ApplicationUser>> GetAllWithSearch(string search)
-    {
-        return await _unitOfWork.ApplicationUsers.FindAllWithCriteriaAndIncludesAsync(e => 
-                                                   e.UserType.Equals(UserType.Patient) && (e.FirstName + " " + e.LastName).Contains(search));
-    }
-
-    public async Task<IEnumerable<ApplicationUser>> GetAllWithPagenation(int page, int pageSize)
-    {
-        int skip = (page - 1) * pageSize;
-        return await _unitOfWork.ApplicationUsers.FindAllWithCriteriaPagenationAndIncludesAsync(e => e.UserType.Equals(UserType.Patient), skip, pageSize);
-    }
-
-    public async Task<IEnumerable<ApplicationUser>> GetAllWithPagenationAndSearch(int page, int pageSize, string search)
+    public async Task<IEnumerable<ApplicationUser>> GetAll(int page, int pageSize, string search)
     {
         int skip = (page - 1) * pageSize;
         return await _unitOfWork.ApplicationUsers.FindAllWithCriteriaPagenationAndIncludesAsync(e => 
@@ -43,6 +28,11 @@ public class PatientService : IPatientService
     public async Task<ApplicationUser?> GetById(int id)
     {
         return await _unitOfWork.ApplicationUsers.GetByIdAsync(id);
+    }
+
+    public async Task<IEnumerable<Booking>> GetPatientBookings(int patientId)
+    {
+        return await _bookingService.GetPatientBookings(patientId);
     }
 
 }

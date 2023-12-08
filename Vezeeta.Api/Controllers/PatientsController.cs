@@ -5,6 +5,9 @@ using Vezeeta.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Vezeeta.Core.Contracts.PatientDtos;
 using Vezeeta.Core.Services;
+using System.Collections.Generic;
+using Vezeeta.Core.Models;
+using Vezeeta.Core.Contracts.BookingDtos;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -54,31 +57,25 @@ public class PatientsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetPatientDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<GetPatientDto>>> GetAll(int? page, int? pageSize, string? search)
     {
-        IEnumerable<ApplicationUser> result = await _patientService.GetAll();
-
+        IEnumerable<ApplicationUser> result = await _patientService.GetAll(page ?? 1, pageSize ?? 10, search ?? "");
         return Ok(_mapper.Map<IEnumerable<GetPatientDto>>(result));
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetPatientDto>>> GetAllWithSearch(string search)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
     {
-        IEnumerable<ApplicationUser> result = await _patientService.GetAllWithSearch(search);
-        return Ok(_mapper.Map<IEnumerable<GetPatientDto>>(result));
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetPatientDto>>> GetAllWithPagenation(int page, int pageSize)
-    {
-        IEnumerable<ApplicationUser> result = await _patientService.GetAllWithPagenation(page, pageSize);
-        return Ok(_mapper.Map<IEnumerable<GetPatientDto>>(result));
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetPatientDto>>> GetAllWithPagenationAndSearch(int page, int pageSize, string search)
-    {
-        IEnumerable<ApplicationUser> result = await _patientService.GetAllWithPagenationAndSearch(page, pageSize, search);
-        return Ok(_mapper.Map<IEnumerable<GetPatientDto>>(result));
+        ApplicationUser? patient = await _patientService.GetById(id);
+        if(patient == null)
+        {
+            return NotFound("Patient not found");
+        }
+        GetPatientDto patientDto = _mapper.Map<GetPatientDto>(patient);
+        IEnumerable<Booking> bookings = await _patientService.GetPatientBookings(id);
+        return Ok(new GetByIdPatientDto { 
+            Details = _mapper.Map<GetPatientDto>(patient),
+            Bookings = _mapper.Map<List<PatientBookingDto>>(bookings)
+        });
     }
 }

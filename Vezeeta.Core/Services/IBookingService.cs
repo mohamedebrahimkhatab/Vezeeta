@@ -11,4 +11,5 @@ public interface IBookingService
     Task<Coupon?> GetCoupon(string discountCode);
     Task ConfirmCheckUp(Booking booking);
     Task Cancel(Booking booking);
+    Task<IEnumerable<Booking>> GetPatientBookings(int patientId);
 }

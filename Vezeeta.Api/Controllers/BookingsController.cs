@@ -21,6 +21,14 @@ public class BookingsController : ControllerBase
         _bookingService = bookingService;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> PatientGetAll()
+    {
+        int patientId = 4;
+        IEnumerable<Booking> bookings = await _bookingService.GetPatientBookings(patientId);
+        return Ok(_mapper.Map<List<PatientBookingDto>>(bookings));
+    }
+
     [HttpPost]
     public async Task<IActionResult> Book(BookBookingDto bookingDto)
     {
@@ -51,7 +59,7 @@ public class BookingsController : ControllerBase
         }
     }
 
-    [HttpPut("{id}")]
+    [HttpPut]
     public async Task<IActionResult> ConfirmCheckUp(int id)
     {
         Booking? booking = await _bookingService.GetById(id);
@@ -63,7 +71,7 @@ public class BookingsController : ControllerBase
         return NoContent();
     }
 
-    [HttpPut("{id}")]
+    [HttpPut]
     public async Task<IActionResult> Cancel(int id)
     {
         Booking? booking = await _bookingService.GetById(id);
