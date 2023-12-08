@@ -30,31 +30,10 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetDoctorDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<GetDoctorDto>>> GetAll(int? page, int? pageSize, string? search)
     {
-        IEnumerable<Doctor> result = await _doctorService.GetAll();
 
-        return Ok(_mapper.Map<IEnumerable<GetDoctorDto>>(result));
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetDoctorDto>>> GetAllWithSearch(string search)
-    {
-        IEnumerable<Doctor> result = await _doctorService.GetAllWithSearch(search);
-        return Ok(_mapper.Map<IEnumerable<GetDoctorDto>>(result));
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetDoctorDto>>> GetAllWithPagenation(int page, int pageSize)
-    {
-        IEnumerable<Doctor> result = await _doctorService.GetAllWithPagenation(page, pageSize);
-        return Ok(_mapper.Map<IEnumerable<GetDoctorDto>>(result));
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetDoctorDto>>> GetAllWithPagenationAndSearch(int page, int pageSize, string search)
-    {
-        IEnumerable<Doctor> result = await _doctorService.GetAllWithPagenationAndSearch(page, pageSize, search);
+        IEnumerable<Doctor> result = await _doctorService.GetAll(page ?? 1, pageSize ?? 10, search ?? "");
         return Ok(_mapper.Map<IEnumerable<GetDoctorDto>>(result));
     }
 
@@ -134,12 +113,19 @@ public class DoctorsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        Doctor? doctor = await _doctorService.GetById(id);
-        if (doctor == null)
-            return NotFound("Doctor is not exist");
-        var user = doctor.ApplicationUser;
-        await _doctorService.Delete(doctor);
-        await _userManager.DeleteAsync(user);
-        return NoContent();
+        try
+        {
+            Doctor? doctor = await _doctorService.GetById(id);
+            if (doctor == null)
+                return NotFound("Doctor is not exist");
+            var user = doctor.ApplicationUser;
+            await _doctorService.Delete(doctor);
+            await _userManager.DeleteAsync(user);
+            return NoContent();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
 }

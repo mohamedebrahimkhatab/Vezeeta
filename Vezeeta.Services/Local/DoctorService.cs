@@ -13,25 +13,9 @@ public class DoctorService : IDoctorService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IEnumerable<Doctor>> GetAll()
+    public async Task<IEnumerable<Doctor>> GetAll(int page, int pageSize, string search)
     {
-        return await _unitOfWork.Doctors.FindAllWithCriteriaAndIncludesAsync(e => true, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
-    }
-    public async Task<IEnumerable<Doctor>> GetAllWithSearch(string search)
-    {
-        return await _unitOfWork.Doctors.FindAllWithCriteriaAndIncludesAsync(e =>
-                            (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).Contains(search),
-                            nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
-    }
-    public async Task<IEnumerable<Doctor>> GetAllWithPagenation(int page, int pageSize)
-    {
-        int skip = (page - 1) * pageSize;
-        return await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e => true, skip, pageSize, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
-    }
-
-    public async Task<IEnumerable<Doctor>> GetAllWithPagenationAndSearch(int page, int pageSize, string search)
-    {
-        int skip = (page - 1) * pageSize;
+        var skip = (page - 1) * pageSize;
         return await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e =>
                             (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).Contains(search), skip, pageSize, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
     }
@@ -56,6 +40,11 @@ public class DoctorService : IDoctorService
 
     public async Task Delete(Doctor doctor)
     {
+        Booking? bookings = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e => e.DoctorId == doctor.Id);
+        if(bookings != null)
+        {
+            throw new InvalidOperationException("Can not delete this doctor, doctor has bookings");
+        }
         _unitOfWork.Doctors.Delete(doctor);
         await _unitOfWork.CommitAsync();
     }
