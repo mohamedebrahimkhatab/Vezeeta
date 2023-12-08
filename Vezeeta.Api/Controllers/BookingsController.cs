@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Vezeeta.Core.Contracts.BookingDtos;
 using Vezeeta.Core.Models;
+using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Services;
 
 namespace Vezeeta.Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 [ApiController]
 public class BookingsController : ControllerBase
 {
@@ -23,23 +24,55 @@ public class BookingsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Book(BookBookingDto bookingDto)
     {
-        AppointmentTime? appointmentTime = await _bookingService.GetAppointmentTime(bookingDto.AppointmentTimeId);
-        if(appointmentTime == null)
+        try
         {
-            return NotFound("this time doesn't exist");
-        }
-        Coupon? coupon = null;
-        if (!string.IsNullOrEmpty(bookingDto.DiscountCode))
-        {
-            coupon = await _bookingService.GetCoupon(bookingDto.DiscountCode);
-            if (coupon == null)
+            AppointmentTime? appointmentTime = await _bookingService.GetAppointmentTime(bookingDto.AppointmentTimeId);
+            if (appointmentTime == null)
             {
-                return NotFound("this Discount code coupon doesn't exist");
+                return NotFound("this time doesn't exist");
             }
+            Coupon? coupon = null;
+            if (!string.IsNullOrEmpty(bookingDto.DiscountCode))
+            {
+                coupon = await _bookingService.GetCoupon(bookingDto.DiscountCode);
+                if (coupon == null)
+                {
+                    return NotFound("this Discount code coupon doesn't exist");
+                }
+            }
+            Booking booking = _mapper.Map<Booking>(bookingDto);
+            booking.AppointmentTime = appointmentTime;
+            await _bookingService.Book(booking, coupon);
+            return Created();
         }
-        Booking booking = _mapper.Map<Booking>(bookingDto);
-        booking.AppointmentTime = appointmentTime;
-        await _bookingService.Book(booking, coupon);
-        return Created();
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> ConfirmCheckUp(int id)
+    {
+        Booking? booking = await _bookingService.GetById(id);
+        if(booking == null)
+        {
+            return NotFound();
+        }
+        await _bookingService.ConfirmCheckUp(booking);
+        return NoContent();
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Cancel(int id)
+    {
+        Booking? booking = await _bookingService.GetById(id);
+        if (booking == null)
+        {
+            return NotFound();
+        }
+        await _bookingService.Cancel(booking);
+        return NoContent();
+    }
+
 }

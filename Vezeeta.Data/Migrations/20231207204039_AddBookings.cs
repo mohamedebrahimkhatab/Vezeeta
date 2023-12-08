@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -18,7 +17,6 @@ namespace Vezeeta.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BookingStatus = table.Column<int>(type: "int", nullable: false),
-                    ActualDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DiscountCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FinalPrice = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
                     DoctorId = table.Column<int>(type: "int", nullable: false),
@@ -53,7 +51,7 @@ namespace Vezeeta.Data.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 columns: new[] { "ConcurrencyStamp", "PasswordHash" },
-                values: new object[] { "2c6c59ad-1e53-40c4-a882-4b304d007271", "AQAAAAIAAYagAAAAEAJhA+KaPpx2nBP6S0zxoq773ufMyzxv3NyFfu85gfPBfYcxwYuSh7YWjsU6byxwpA==" });
+                values: new object[] { "ec8dd1c1-97fe-4601-946b-880d45cf400f", "AQAAAAIAAYagAAAAEAfqJ84wnPZMhz/A8hYePm5Dyo2rYTACvsEFVuEMT+rMV+TRKj1+9MOy98vJcSwF8Q==" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_AppointmentTimeId",

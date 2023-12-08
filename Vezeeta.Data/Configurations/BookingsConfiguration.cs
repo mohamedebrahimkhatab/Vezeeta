@@ -10,7 +10,6 @@ internal class BookingsConfiguration :BaseEntityConfiguration<Booking>
     {
         base.Configure(builder);
         builder.Property(e => e.BookingStatus).IsRequired();
-        builder.Property(e => e.ActualDateTime).IsRequired();
         builder.Property(e => e.FinalPrice).IsRequired().HasPrecision(5,2);
         
         builder.Property(e => e.DoctorId).IsRequired();

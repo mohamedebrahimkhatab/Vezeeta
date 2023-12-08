@@ -21,6 +21,6 @@ public class SpecializationService : ISpecializationService
     public async Task<IEnumerable<Specialization>> FindBySearch(string search) 
         => await _unitOfWork.Specializations.FindAllWithCriteriaAndIncludesAsync(e => e.Name.Contains(search));
 
-    public async Task<Specialization> GetByName(string name)
+    public async Task<Specialization?> GetByName(string name)
         => await _unitOfWork.Specializations.FindWithCriteriaAndIncludesAsync(e => e.Name == name);
 }

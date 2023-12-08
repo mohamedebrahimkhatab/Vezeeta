@@ -6,7 +6,6 @@ namespace Vezeeta.Core.Models;
 public class Booking : BaseEntity
 {
     public BookingStatus BookingStatus { get; set; }
-    public DateTime ActualDateTime { get; set; }
     public string? DiscountCode { get; set; }
     public decimal FinalPrice { get; set; }
 

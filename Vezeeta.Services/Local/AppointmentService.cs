@@ -9,7 +9,7 @@ public class AppointmentService : IAppointmentService
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    public AppointmentService(IUnitOfWork unitOfWork, IDoctorService doctorService)
+    public AppointmentService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }

@@ -182,9 +182,6 @@ namespace Vezeeta.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("ActualDateTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("AppointmentTimeId")
                         .HasColumnType("int");
 
@@ -419,7 +416,7 @@ namespace Vezeeta.Data.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2c6c59ad-1e53-40c4-a882-4b304d007271",
+                            ConcurrencyStamp = "ec8dd1c1-97fe-4601-946b-880d45cf400f",
                             DateOfBirth = new DateTime(1980, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@vezeeta.com",
                             EmailConfirmed = false,
@@ -429,7 +426,7 @@ namespace Vezeeta.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@VEZEETA.COM",
                             NormalizedUserName = "ADMIN@VEZEETA.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAJhA+KaPpx2nBP6S0zxoq773ufMyzxv3NyFfu85gfPBfYcxwYuSh7YWjsU6byxwpA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAfqJ84wnPZMhz/A8hYePm5Dyo2rYTACvsEFVuEMT+rMV+TRKj1+9MOy98vJcSwF8Q==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
