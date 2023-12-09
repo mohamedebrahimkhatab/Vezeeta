@@ -1,4 +1,5 @@
-﻿using Vezeeta.Core;
+﻿using System.ComponentModel.DataAnnotations;
+using Vezeeta.Core;
 using Vezeeta.Core.Contracts.AppointmentDtos;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Services;
@@ -18,9 +19,43 @@ public class AppointmentService : IAppointmentService
     {
         Doctor? doctor = await _unitOfWork.Doctors.FindWithCriteriaAndIncludesAsync(e => e.Id == doctorId);
         doctor.Price = price;
-        doctor.Appointments = appointments;
+        await _unitOfWork.CommitAsync();
+        foreach (Appointment appointment in appointments)
+        {
+            var existed = await _unitOfWork.Appointments.FindWithCriteriaAndIncludesAsync(e =>
+                                                            e.DoctorId == doctorId && e.Day == appointment.Day, nameof(Appointment.AppointmentTimes));
+            if (existed != null)
+            {
+                IEnumerable<TimeOnly> addTimes = appointment.AppointmentTimes.Select(e => e.Time);
+                foreach (var time in addTimes)
+                {
+                    if (!existed.AppointmentTimes.Any(e => e.Time == time))
+                    {
+                        existed.AppointmentTimes.Add(new AppointmentTime { Time = time });
+                    }
+                }
+                await UpdateAppointment(existed);
+            }
+            else
+            {
+                appointment.DoctorId = doctorId;
+                await AddAppointment(appointment);
+            }
+        }
+    }
+
+    private async Task AddAppointment(Appointment appointment)
+    {
+        await _unitOfWork.Appointments.AddAsync(appointment);
         await _unitOfWork.CommitAsync();
     }
+
+    private async Task UpdateAppointment(Appointment appointment)
+    {
+        _unitOfWork.Appointments.Update(appointment);
+        await _unitOfWork.CommitAsync();
+    }
+
 
     public async Task<AppointmentTime?> GetAppointmentTime(int id) => await _unitOfWork.AppointmentTimes.GetByIdAsync(id);
 
