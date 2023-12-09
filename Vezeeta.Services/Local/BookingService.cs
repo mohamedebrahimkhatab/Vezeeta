@@ -97,8 +97,10 @@ public class BookingService : IBookingService
                                                 "AppointmentTime", "AppointmentTime.Appointment");
     }
 
-    public async Task<IEnumerable<Booking>> GetDoctorBookings(int doctorId)
+    public async Task<IEnumerable<Booking>> GetDoctorBookings(int doctorId, Days day, int pageSize, int pageNumber)
     {
-        return await _unitOfWork.Bookings.FindAllWithCriteriaAndIncludesAsync(e => e.DoctorId == doctorId, nameof(Booking.Patient));
+        int skip = (pageNumber - 1) * pageSize;
+        return await _unitOfWork.Bookings.FindAllWithCriteriaPagenationAndIncludesAsync(e => e.DoctorId == doctorId && e.AppointmentTime.Appointment.Day == day, skip, pageSize, nameof(Booking.Patient),
+                                                                    nameof(Booking.AppointmentTime), $"{nameof(Booking.AppointmentTime)}.Appointment");
     }
 }

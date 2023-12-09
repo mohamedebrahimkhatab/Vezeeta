@@ -1,4 +1,5 @@
-﻿using Vezeeta.Core.Models;
+﻿using Vezeeta.Core.Enums;
+using Vezeeta.Core.Models;
 using Vezeeta.Core.Models.Identity;
 
 namespace Vezeeta.Core.Services;
@@ -12,5 +13,5 @@ public interface IBookingService
     Task ConfirmCheckUp(Booking booking);
     Task Cancel(Booking booking);
     Task<IEnumerable<Booking>> GetPatientBookings(int patientId);
-    Task<IEnumerable<Booking>> GetDoctorBookings(int doctorId);
+    Task<IEnumerable<Booking>> GetDoctorBookings(int doctorId,Days day, int pageSize, int pageNumber);
 }

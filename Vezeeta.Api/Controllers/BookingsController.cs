@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Vezeeta.Core.Contracts.BookingDtos;
 using Vezeeta.Core.Contracts.PatientDtos;
+using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Services;
@@ -31,11 +32,11 @@ public class BookingsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> DoctorGetAll()
+    public async Task<IActionResult> DoctorGetAll(Days day, int? pageSize, int? pageNumber)
     {
         int DoctorId = 3;
-        IEnumerable<Booking> bookings = await _bookingService.GetDoctorBookings(DoctorId);
-        return Ok(_mapper.Map<List<DoctorGetPatientDto>>(bookings.Select(e => e.Patient)));
+        IEnumerable<Booking> bookings = await _bookingService.GetDoctorBookings(DoctorId, day, pageSize ?? 10, pageNumber ?? 1);
+        return Ok(_mapper.Map<List<DoctorGetPatientDto>>(bookings));
     }
 
     [HttpPost]
@@ -72,7 +73,7 @@ public class BookingsController : ControllerBase
     public async Task<IActionResult> ConfirmCheckUp(int id)
     {
         Booking? booking = await _bookingService.GetById(id);
-        if(booking == null)
+        if (booking == null)
         {
             return NotFound();
         }
