@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Vezeeta.Core;
 using Vezeeta.Core.Contracts.AppointmentDtos;
+using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Services;
 
@@ -59,12 +60,17 @@ public class AppointmentService : IAppointmentService
 
     public async Task<AppointmentTime?> GetAppointmentTime(int id) => await _unitOfWork.AppointmentTimes.GetByIdAsync(id);
 
-    public async Task UpdateTime(AppointmentTime appointmentTime)
+    public async Task UpdateAppointmentTime(AppointmentTime appointmentTime)
     {
         var check = await _unitOfWork.AppointmentTimes.CountAsync(e => e.AppointmentId == appointmentTime.AppointmentId && e.Time == appointmentTime.Time);
         if (check != 0)
         {
             throw new InvalidOperationException("there is another appointment in this time");
+        }
+        check = await _unitOfWork.Bookings.CountAsync(e => e.AppointmentTimeId == appointmentTime.Id &&(e.BookingStatus.Equals(BookingStatus.Completed) || e.BookingStatus.Equals(BookingStatus.Pending)));
+        if (check != 0)
+        {
+            throw new InvalidOperationException("there is Comleted or Pending Booking/s in this time");
         }
         _unitOfWork.AppointmentTimes.Update(appointmentTime);
         await _unitOfWork.CommitAsync();
@@ -72,6 +78,11 @@ public class AppointmentService : IAppointmentService
 
     public async Task DeleteAppointmentTime(AppointmentTime appointmentTime)
     {
+        var check = await _unitOfWork.Bookings.CountAsync(e => e.AppointmentTimeId == appointmentTime.Id && (e.BookingStatus.Equals(BookingStatus.Completed) || e.BookingStatus.Equals(BookingStatus.Pending)));
+        if (check != 0)
+        {
+            throw new InvalidOperationException("there is Comleted or Pending Booking/s in this time");
+        }
         _unitOfWork.AppointmentTimes.Delete(appointmentTime);
         await _unitOfWork.CommitAsync();
     }

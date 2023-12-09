@@ -38,7 +38,7 @@ public class AppointmentsController : ControllerBase
                 return NotFound("Time not Found");
             }
             time = _mapper.Map(timeDto, time);
-            await _appointmentService.UpdateTime(time);
+            await _appointmentService.UpdateAppointmentTime(time);
             return NoContent();
         }
         catch (Exception e)

@@ -20,5 +20,15 @@ namespace Vezeeta.Api.Controllers
 
         [HttpGet]
         public async Task<ActionResult<int>> NumOfPatients() => Ok(await _dashboardService.GetNumOfPatients());
+
+        [HttpGet]
+        public async Task<IActionResult> NumOfRequests() => Ok(await _dashboardService.GetNumOfRequests());
+
+        [HttpGet]
+        public async Task<IActionResult> Top5Specializations() => Ok(await _dashboardService.GetTop5Speializations());
+        
+        [HttpGet]
+        public async Task<IActionResult> Top10Doctors() => Ok(await _dashboardService.GetTop10Doctors());
+
     }
 }

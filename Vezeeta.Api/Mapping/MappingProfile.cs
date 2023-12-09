@@ -49,7 +49,7 @@ public class MappingProfile : Profile
         CreateMap<ApplicationUser, GetPatientDto>().ForMember(e => e.FullName, act => act.MapFrom(e => e.FirstName + ' ' + e.LastName))
                                                    .ForMember(e => e.Phone, act => act.MapFrom(e => e.PhoneNumber));
 
-        CreateMap<ApplicationUser, DoctorGetPatientDto>().ForMember(e => e.FullName, act => act.MapFrom(e => e.FirstName + ' ' + e.LastName))
+        CreateMap<ApplicationUser, DoctorGetPatientDto>().ForMember(e => e.PatientName, act => act.MapFrom(e => e.FirstName + ' ' + e.LastName))
                                                          .ForMember(e => e.Phone, act => act.MapFrom(e => e.PhoneNumber))
                                                          .ForMember(e => e.Age, act => act.MapFrom(e 
                                                          => e.DateOfBirth.AddYears(DateTime.Now.Year - e.DateOfBirth.Year) > DateTime.Now ?
