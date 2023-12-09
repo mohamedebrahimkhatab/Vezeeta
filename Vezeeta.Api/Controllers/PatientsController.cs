@@ -75,7 +75,7 @@ public class PatientsController : ControllerBase
         IEnumerable<Booking> bookings = await _patientService.GetPatientBookings(id);
         return Ok(new GetByIdPatientDto { 
             Details = _mapper.Map<GetPatientDto>(patient),
-            Bookings = _mapper.Map<List<PatientBookingDto>>(bookings)
+            Bookings = _mapper.Map<List<PatientGetBookingDto>>(bookings)
         });
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Vezeeta.Core.Contracts.BookingDtos;
 
-public class PatientBookingDto
+public class PatientGetBookingDto
 {
     public string? PhotoPath { get; set; }
     public string? DoctorName { get; set; }

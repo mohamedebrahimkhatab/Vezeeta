@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Vezeeta.Core.Contracts.BookingDtos;
+using Vezeeta.Core.Contracts.PatientDtos;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Services;
@@ -26,7 +27,15 @@ public class BookingsController : ControllerBase
     {
         int patientId = 4;
         IEnumerable<Booking> bookings = await _bookingService.GetPatientBookings(patientId);
-        return Ok(_mapper.Map<List<PatientBookingDto>>(bookings));
+        return Ok(_mapper.Map<List<PatientGetBookingDto>>(bookings));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DoctorGetAll()
+    {
+        int DoctorId = 3;
+        IEnumerable<Booking> bookings = await _bookingService.GetDoctorBookings(DoctorId);
+        return Ok(_mapper.Map<List<DoctorGetPatientDto>>(bookings.Select(e => e.Patient)));
     }
 
     [HttpPost]

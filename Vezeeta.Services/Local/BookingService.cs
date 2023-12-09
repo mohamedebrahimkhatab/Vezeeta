@@ -96,4 +96,9 @@ public class BookingService : IBookingService
                                                 "Doctor", "Doctor.Specialization", "Doctor.ApplicationUser",
                                                 "AppointmentTime", "AppointmentTime.Appointment");
     }
+
+    public async Task<IEnumerable<Booking>> GetDoctorBookings(int doctorId)
+    {
+        return await _unitOfWork.Bookings.FindAllWithCriteriaAndIncludesAsync(e => e.DoctorId == doctorId, nameof(Booking.Patient));
+    }
 }

@@ -12,4 +12,5 @@ public interface IBookingService
     Task ConfirmCheckUp(Booking booking);
     Task Cancel(Booking booking);
     Task<IEnumerable<Booking>> GetPatientBookings(int patientId);
+    Task<IEnumerable<Booking>> GetDoctorBookings(int doctorId);
 }

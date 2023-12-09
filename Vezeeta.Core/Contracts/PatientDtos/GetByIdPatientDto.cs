@@ -5,5 +5,5 @@ namespace Vezeeta.Core.Contracts.PatientDtos;
 public class GetByIdPatientDto
 {
     public GetPatientDto? Details { get; set; }
-    public List<PatientBookingDto>? Bookings { get; set; }
+    public List<PatientGetBookingDto>? Bookings { get; set; }
 }
