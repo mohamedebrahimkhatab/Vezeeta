@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Vezeeta.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initiate : Migration
+    public partial class CreateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -61,12 +61,31 @@ namespace Vezeeta.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Coupons",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DiscountCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NumOfRequests = table.Column<int>(type: "int", nullable: false),
+                    DiscountType = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Coupons", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Specializations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
                 },
                 constraints: table =>
                 {
@@ -187,7 +206,8 @@ namespace Vezeeta.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Price = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: true),
                     ApplicationUserId = table.Column<int>(type: "int", nullable: false),
-                    SpecializationId = table.Column<int>(type: "int", nullable: false)
+                    SpecializationId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
                 },
                 constraints: table =>
                 {
@@ -206,6 +226,85 @@ namespace Vezeeta.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Appointments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Day = table.Column<int>(type: "int", nullable: false),
+                    DoctorId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Appointments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Appointments_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppointmentTimes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Time = table.Column<TimeOnly>(type: "time", nullable: false),
+                    AppointmentId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppointmentTimes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppointmentTimes_Appointments_AppointmentId",
+                        column: x => x.AppointmentId,
+                        principalTable: "Appointments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Bookings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookingStatus = table.Column<int>(type: "int", nullable: false),
+                    DiscountCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FinalPrice = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
+                    DoctorId = table.Column<int>(type: "int", nullable: false),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    AppointmentTimeId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bookings_AppointmentTimes_AppointmentTimeId",
+                        column: x => x.AppointmentTimeId,
+                        principalTable: "AppointmentTimes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Bookings_AspNetUsers_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -219,7 +318,7 @@ namespace Vezeeta.Data.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "FirstName", "Gender", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "PhotoPath", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType" },
-                values: new object[] { 1, 0, "ba40c8d2-5bff-4711-9559-ee5a4e3f0ba8", new DateTime(1980, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "admin@vezeeta.com", false, "Admin", 1, "Admin", false, null, "ADMIN@VEZEETA.COM", "ADMIN@VEZEETA.COM", "AQAAAAIAAYagAAAAEOjroekVwwqWUY5R0JggUWcCORYXrTfI+FXd0BorWyPKrER3GLeE4KYcMyrH4YuYCw==", "1234567890", false, null, null, false, "admin@vezeeta.com", 0 });
+                values: new object[] { 1, 0, "9873649e-2dbf-45d5-9509-67d402a2cb62", new DateTime(1980, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "admin@vezeeta.com", false, "Admin", 1, "Admin", false, null, "ADMIN@VEZEETA.COM", "ADMIN@VEZEETA.COM", "AQAAAAIAAYagAAAAEAyC1iCT+waTVWK7xT5gTnthQjj95VtgkABHfl4wkEt42Gx6aQp6LhC7X1bee0MKew==", "1234567890", false, null, null, false, "admin@vezeeta.com", 0 });
 
             migrationBuilder.InsertData(
                 table: "Specializations",
@@ -290,6 +389,16 @@ namespace Vezeeta.Data.Migrations
                 values: new object[] { 1, 1 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Appointments_DoctorId",
+                table: "Appointments",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppointmentTimes_AppointmentId",
+                table: "AppointmentTimes",
+                column: "AppointmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
@@ -329,6 +438,21 @@ namespace Vezeeta.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bookings_AppointmentTimeId",
+                table: "Bookings",
+                column: "AppointmentTimeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_DoctorId",
+                table: "Bookings",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_PatientId",
+                table: "Bookings",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Doctors_ApplicationUserId",
                 table: "Doctors",
                 column: "ApplicationUserId",
@@ -359,10 +483,22 @@ namespace Vezeeta.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Doctors");
+                name: "Bookings");
+
+            migrationBuilder.DropTable(
+                name: "Coupons");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "AppointmentTimes");
+
+            migrationBuilder.DropTable(
+                name: "Appointments");
+
+            migrationBuilder.DropTable(
+                name: "Doctors");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

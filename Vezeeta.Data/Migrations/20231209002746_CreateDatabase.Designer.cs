@@ -12,8 +12,8 @@ using Vezeeta.Data;
 namespace Vezeeta.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231204051036_Initiate")]
-    partial class Initiate
+    [Migration("20231209002746_CreateDatabase")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,6 +135,138 @@ namespace Vezeeta.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Vezeeta.Core.Models.Appointment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("Vezeeta.Core.Models.AppointmentTime", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<TimeOnly>("Time")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.ToTable("AppointmentTimes");
+                });
+
+            modelBuilder.Entity("Vezeeta.Core.Models.Booking", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppointmentTimeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BookingStatus")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<string>("DiscountCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("FinalPrice")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentTimeId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("Vezeeta.Core.Models.Coupon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<string>("DiscountCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DiscountType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumOfRequests")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Value")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Coupons");
+                });
+
             modelBuilder.Entity("Vezeeta.Core.Models.Doctor", b =>
                 {
                     b.Property<int>("Id")
@@ -145,6 +277,11 @@ namespace Vezeeta.Data.Migrations
 
                     b.Property<int>("ApplicationUserId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<decimal?>("Price")
                         .HasPrecision(5, 2)
@@ -307,7 +444,7 @@ namespace Vezeeta.Data.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ba40c8d2-5bff-4711-9559-ee5a4e3f0ba8",
+                            ConcurrencyStamp = "9873649e-2dbf-45d5-9509-67d402a2cb62",
                             DateOfBirth = new DateTime(1980, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@vezeeta.com",
                             EmailConfirmed = false,
@@ -317,7 +454,7 @@ namespace Vezeeta.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@VEZEETA.COM",
                             NormalizedUserName = "ADMIN@VEZEETA.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOjroekVwwqWUY5R0JggUWcCORYXrTfI+FXd0BorWyPKrER3GLeE4KYcMyrH4YuYCw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAyC1iCT+waTVWK7xT5gTnthQjj95VtgkABHfl4wkEt42Gx6aQp6LhC7X1bee0MKew==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
@@ -334,6 +471,11 @@ namespace Vezeeta.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -346,281 +488,337 @@ namespace Vezeeta.Data.Migrations
                         new
                         {
                             Id = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Allergy and Immunology"
                         },
                         new
                         {
                             Id = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Anesthesiology"
                         },
                         new
                         {
                             Id = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Audiology"
                         },
                         new
                         {
                             Id = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Cardiology"
                         },
                         new
                         {
                             Id = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Cardiothoracic Surgery"
                         },
                         new
                         {
                             Id = 6,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Cardiology and Vascular Disease"
                         },
                         new
                         {
                             Id = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Chest and Respiratory"
                         },
                         new
                         {
                             Id = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Colon and Rectal Surgery"
                         },
                         new
                         {
                             Id = 9,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Dentistry"
                         },
                         new
                         {
                             Id = 10,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Dermatology"
                         },
                         new
                         {
                             Id = 11,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Diabetes and Endocrinology"
                         },
                         new
                         {
                             Id = 12,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Dietitian and Nutrition"
                         },
                         new
                         {
                             Id = 13,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Emergency Medicine"
                         },
                         new
                         {
                             Id = 14,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Ear, Nose and Throat"
                         },
                         new
                         {
                             Id = 15,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Family Medicine"
                         },
                         new
                         {
                             Id = 16,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Forensic Pathology"
                         },
                         new
                         {
                             Id = 17,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Gastroenterology and Endoscopy"
                         },
                         new
                         {
                             Id = 18,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Genetics and Genomics"
                         },
                         new
                         {
                             Id = 19,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "General Practice"
                         },
                         new
                         {
                             Id = 20,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "General Surgery"
                         },
                         new
                         {
                             Id = 21,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Geriatrics"
                         },
                         new
                         {
                             Id = 22,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Hematology"
                         },
                         new
                         {
                             Id = 23,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Hepatology"
                         },
                         new
                         {
                             Id = 24,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Hospital Medicine"
                         },
                         new
                         {
                             Id = 25,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Hospice and Palliative Medicine"
                         },
                         new
                         {
                             Id = 26,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "IVF and Infertility"
                         },
                         new
                         {
                             Id = 27,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Internal Medicine"
                         },
                         new
                         {
                             Id = 28,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Interventional Radiology"
                         },
                         new
                         {
                             Id = 29,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Laboratories"
                         },
                         new
                         {
                             Id = 30,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Neurology"
                         },
                         new
                         {
                             Id = 31,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Neurosurgery"
                         },
                         new
                         {
                             Id = 32,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Obesity and Laparoscopic Surgery"
                         },
                         new
                         {
                             Id = 33,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Oncologic Surgery"
                         },
                         new
                         {
                             Id = 34,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Oncology"
                         },
                         new
                         {
                             Id = 35,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Ophthalmic Surgery"
                         },
                         new
                         {
                             Id = 36,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Ophthalmology"
                         },
                         new
                         {
                             Id = 37,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Orthopedic Surgery"
                         },
                         new
                         {
                             Id = 38,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Osteopathy"
                         },
                         new
                         {
                             Id = 39,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Otolaryngology"
                         },
                         new
                         {
                             Id = 40,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Pain Management"
                         },
                         new
                         {
                             Id = 41,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Pathology"
                         },
                         new
                         {
                             Id = 42,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Pediatric Surgery"
                         },
                         new
                         {
                             Id = 43,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Pediatrics"
                         },
                         new
                         {
                             Id = 44,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Phoniatrics"
                         },
                         new
                         {
                             Id = 45,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Physical Medicine and Rehabilitation"
                         },
                         new
                         {
                             Id = 46,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Physiotherapy and Sports Injuries"
                         },
                         new
                         {
                             Id = 47,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Plastic Surgery"
                         },
                         new
                         {
                             Id = 48,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Preventive Medicine"
                         },
                         new
                         {
                             Id = 49,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Psychiatry"
                         },
                         new
                         {
                             Id = 50,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Radiology"
                         },
                         new
                         {
                             Id = 51,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Rheumatology"
                         },
                         new
                         {
                             Id = 52,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Sleep Medicine"
                         },
                         new
                         {
                             Id = 53,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Spinal Surgery"
                         },
                         new
                         {
                             Id = 54,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Thoracic Surgery"
                         },
                         new
                         {
                             Id = 55,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Urology"
                         },
                         new
                         {
                             Id = 56,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Vascular Surgery"
                         });
                 });
@@ -676,6 +874,55 @@ namespace Vezeeta.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Vezeeta.Core.Models.Appointment", b =>
+                {
+                    b.HasOne("Vezeeta.Core.Models.Doctor", "Doctor")
+                        .WithMany("Appointments")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+                });
+
+            modelBuilder.Entity("Vezeeta.Core.Models.AppointmentTime", b =>
+                {
+                    b.HasOne("Vezeeta.Core.Models.Appointment", "Appointment")
+                        .WithMany("AppointmentTimes")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+                });
+
+            modelBuilder.Entity("Vezeeta.Core.Models.Booking", b =>
+                {
+                    b.HasOne("Vezeeta.Core.Models.AppointmentTime", "AppointmentTime")
+                        .WithMany()
+                        .HasForeignKey("AppointmentTimeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Vezeeta.Core.Models.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Vezeeta.Core.Models.Identity.ApplicationUser", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AppointmentTime");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+                });
+
             modelBuilder.Entity("Vezeeta.Core.Models.Doctor", b =>
                 {
                     b.HasOne("Vezeeta.Core.Models.Identity.ApplicationUser", "ApplicationUser")
@@ -693,6 +940,16 @@ namespace Vezeeta.Data.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Specialization");
+                });
+
+            modelBuilder.Entity("Vezeeta.Core.Models.Appointment", b =>
+                {
+                    b.Navigation("AppointmentTimes");
+                });
+
+            modelBuilder.Entity("Vezeeta.Core.Models.Doctor", b =>
+                {
+                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }
