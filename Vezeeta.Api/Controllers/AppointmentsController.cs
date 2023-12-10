@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Vezeeta.Api.Validators;
 using Vezeeta.Core.Consts;
 using Vezeeta.Core.Contracts.AppointmentDtos;
 using Vezeeta.Core.Models;
@@ -28,6 +29,12 @@ public class AppointmentsController : ControllerBase
     {
         try
         {
+            var validator = new DoctorAppointmentDtoValidator();
+            var validate = await validator.ValidateAsync(dto);
+            if (!validate.IsValid)
+            {
+                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+            }
             int userId = int.Parse(User.FindFirstValue("Id"));
             int doctorId = await _appointmentService.GetDoctorId(userId);
             var appointments = _mapper.Map<List<Appointment>>(dto.Days);
@@ -46,6 +53,12 @@ public class AppointmentsController : ControllerBase
     {
         try
         {
+            var validator = new UpdateTimeDtoValidator();
+            var validate = await validator.ValidateAsync(timeDto);
+            if (!validate.IsValid)
+            {
+                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+            }
             AppointmentTime? time = await _appointmentService.GetAppointmentTime(timeDto.Id);
             if (time == null)
             {

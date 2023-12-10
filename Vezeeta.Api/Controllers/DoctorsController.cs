@@ -7,6 +7,9 @@ using Vezeeta.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Vezeeta.Core.Contracts.DoctorDtos;
 using Microsoft.AspNetCore.Authorization;
+using Vezeeta.Api.Validators;
+using Vezeeta.Core.Contracts.CouponDtos;
+using FluentValidation;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -66,6 +69,12 @@ public class DoctorsController : ControllerBase
     {
         try
         {
+            var validator = new CreateDoctorDtoValidator();
+            var validate = await validator.ValidateAsync(doctorDto);
+            if (!validate.IsValid)
+            {
+                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+            }
             ApplicationUser? user = await _userManager.FindByEmailAsync(doctorDto.Email);
             if (user != null)
             {
@@ -106,6 +115,12 @@ public class DoctorsController : ControllerBase
     {
         try
         {
+            var validator = new UpdateDoctorDtoValidator();
+            var validate = await validator.ValidateAsync(doctorDto);
+            if (!validate.IsValid)
+            {
+                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+            }
             Doctor? doctor = await _doctorService.GetById(doctorDto.DoctorId);
             if (doctor == null)
             {

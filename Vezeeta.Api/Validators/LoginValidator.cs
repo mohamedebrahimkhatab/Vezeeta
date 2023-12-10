@@ -8,5 +8,6 @@ public class LoginValidator : AbstractValidator<Login>
     public LoginValidator()
     {
         RuleFor(e => e.Email).EmailAddress();
+        RuleFor(e => e.Password).MinimumLength(8);
     }
 }

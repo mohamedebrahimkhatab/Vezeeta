@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Api.Validators;
 using Vezeeta.Core.Consts;
 using Vezeeta.Core.Contracts.CouponDtos;
 using Vezeeta.Core.Models;
@@ -27,6 +29,12 @@ public class CouponsController : ControllerBase
     {
         try
         {
+            var validator = new CouponDtoValidator();
+            var validate = await validator.ValidateAsync(couponDto);
+            if (!validate.IsValid)
+            {
+                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+            }
             Coupon coupon = _mapper.Map<Coupon>(couponDto);
             await _couponService.Create(coupon);
             return Created();
@@ -42,6 +50,12 @@ public class CouponsController : ControllerBase
     {
         try
         {
+            var validator = new UpdateCouponDtoValidator();
+            var validate = await validator.ValidateAsync(couponDto);
+            if (!validate.IsValid)
+            {
+                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+            }
             Coupon? coupon = await _couponService.GetById(couponDto.Id);
             if (coupon == null)
             {

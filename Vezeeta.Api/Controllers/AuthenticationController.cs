@@ -9,6 +9,7 @@ using Vezeeta.Core.Contracts.Authentication;
 using Vezeeta.Core.Consts;
 using Vezeeta.Core.Models;
 using Microsoft.AspNetCore.Authorization;
+using Vezeeta.Api.Validators;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -29,6 +30,12 @@ public class AuthenticationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Login(Login login)
     {
+        var loginValidate = new LoginValidator();
+        var validate = await loginValidate.ValidateAsync(login);
+        if(!validate.IsValid)
+        {
+            return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+        }
         ApplicationUser? user = await _userManager.FindByEmailAsync(login.Email);
         if(user == null)
             return NotFound("This email is not registered");

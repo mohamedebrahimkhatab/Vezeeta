@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Contracts.BookingDtos;
 using Microsoft.AspNetCore.Authorization;
+using Vezeeta.Api.Validators;
+using Vezeeta.Core.Contracts.CouponDtos;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -33,6 +35,12 @@ public class PatientsController : ControllerBase
     {
         try
         {
+            var validator = new RegisterPatientDtoValidator();
+            var validate = await validator.ValidateAsync(patientDto);
+            if (!validate.IsValid)
+            {
+                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+            }
             ApplicationUser? user = await _userManager.FindByEmailAsync(patientDto.Email);
             if (user != null)
             {
@@ -45,7 +53,7 @@ public class PatientsController : ControllerBase
 
             if (!result.Succeeded)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, result.ToString());
+                return StatusCode(StatusCodes.Status500InternalServerError, result.Errors.ToString());
             }
 
             await _userManager.AddToRoleAsync(patient, UserRoles.Patient);
