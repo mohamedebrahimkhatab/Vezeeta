@@ -30,11 +30,19 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetDoctorDto>>> GetAll(int? page, int? pageSize, string? search)
+    public async Task<ActionResult<IEnumerable<AdminGetDoctorDto>>> AdminGetAll(int? page, int? pageSize, string? search)
     {
 
-        IEnumerable<Doctor> result = await _doctorService.GetAll(page ?? 1, pageSize ?? 10, search ?? "");
-        return Ok(_mapper.Map<IEnumerable<GetDoctorDto>>(result));
+        IEnumerable<Doctor> result = await _doctorService.AdminGetAll(page ?? 1, pageSize ?? 10, search ?? "");
+        return Ok(_mapper.Map<IEnumerable<AdminGetDoctorDto>>(result));
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<AdminGetDoctorDto>>> PatientGetAll(int? page, int? pageSize, string? search)
+    {
+
+        IEnumerable<Doctor> result = await _doctorService.PatientGetAll(page ?? 1, pageSize ?? 10, search ?? "");
+        return Ok(_mapper.Map<IEnumerable<PatientGetDoctorDto>>(result));
     }
 
     [HttpGet("{id}")]

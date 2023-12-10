@@ -26,7 +26,14 @@ public class MappingProfile : Profile
                                                      .ForMember(e => e.PhoneNumber, act => act.MapFrom(e => e.Phone));
         CreateMap<UpdateDoctorDto, Doctor>().ForMember(e => e.Id, act => act.MapFrom(e => e.DoctorId)).ForMember(e => e.ApplicationUser, act => act.MapFrom(e => e));
 
-        CreateMap<Doctor, GetDoctorDto>().ForMember(e => e.FullName, act => act.MapFrom(e => e.ApplicationUser.FirstName + ' ' + e.ApplicationUser.LastName))
+        CreateMap<Doctor, AdminGetDoctorDto>().ForMember(e => e.FullName, act => act.MapFrom(e => e.ApplicationUser.FirstName + ' ' + e.ApplicationUser.LastName))
+                                         .ForMember(e => e.Specialize, act => act.MapFrom(e => e.Specialization.Name))
+                                         .ForMember(e => e.Email, act => act.MapFrom(e => e.ApplicationUser.Email))
+                                         .ForMember(e => e.PhotoPath, act => act.MapFrom(e => e.ApplicationUser.PhotoPath))
+                                         .ForMember(e => e.Phone, act => act.MapFrom(e => e.ApplicationUser.PhoneNumber))
+                                         .ForMember(e => e.Gender, act => act.MapFrom(e => e.ApplicationUser.Gender));
+
+        CreateMap<Doctor, PatientGetDoctorDto>().ForMember(e => e.FullName, act => act.MapFrom(e => e.ApplicationUser.FirstName + ' ' + e.ApplicationUser.LastName))
                                          .ForMember(e => e.Specialize, act => act.MapFrom(e => e.Specialization.Name))
                                          .ForMember(e => e.Email, act => act.MapFrom(e => e.ApplicationUser.Email))
                                          .ForMember(e => e.PhotoPath, act => act.MapFrom(e => e.ApplicationUser.PhotoPath))
@@ -60,6 +67,8 @@ public class MappingProfile : Profile
         CreateMap<string, AppointmentTime>().ForMember(e => e.Time, act => act.MapFrom(e => TimeOnly.Parse(e)));
         CreateMap<DayDto, Appointment>().ForMember(e => e.AppointmentTimes, act => act.MapFrom(e => e.Times));
         CreateMap<UpdateTimeDto, AppointmentTime>().ForMember(e => e.Time, act => act.MapFrom(e => TimeOnly.Parse(e.Time)));
+        CreateMap<AppointmentTime, TimeDto>();
+        CreateMap<Appointment, AppointmentDto>().ForMember(e => e.Times, act => act.MapFrom(e => e.AppointmentTimes));
 
         /******************* Booking DTOS **********************************/
 

@@ -13,11 +13,19 @@ public class DoctorService : IDoctorService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IEnumerable<Doctor>> GetAll(int page, int pageSize, string search)
+    public async Task<IEnumerable<Doctor>> AdminGetAll(int page, int pageSize, string search)
     {
         var skip = (page - 1) * pageSize;
         return await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e =>
                             (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).Contains(search), skip, pageSize, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
+    }
+
+    public async Task<IEnumerable<Doctor>> PatientGetAll(int page, int pageSize, string search)
+    {
+        var skip = (page - 1) * pageSize;
+        return await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e =>
+                            (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).Contains(search), skip, pageSize, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser), nameof(Doctor.Appointments),
+                                        $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
     }
 
     public async Task<Doctor?> GetById(int id)
