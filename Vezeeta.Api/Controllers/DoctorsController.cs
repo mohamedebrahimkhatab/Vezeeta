@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Vezeeta.Api.Validators;
 using Vezeeta.Core.Contracts.CouponDtos;
 using FluentValidation;
+using Vezeeta.Services.EmailService;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -22,18 +23,21 @@ public class DoctorsController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ISpecializationService _specializationService;
     private readonly IWebHostEnvironment _hostingEnvironment;
+    private readonly IEmailSender _emailSender;
 
     public DoctorsController(IDoctorService doctorService,
                             IMapper mapper,
                             UserManager<ApplicationUser> userManager,
                             ISpecializationService specializationService,
-                            IWebHostEnvironment hostingEnvironment)
+                            IWebHostEnvironment hostingEnvironment,
+                            IEmailSender emailSender)
     {
         _doctorService = doctorService;
         _mapper = mapper;
         _userManager = userManager;
         _specializationService = specializationService;
         _hostingEnvironment = hostingEnvironment;
+        _emailSender = emailSender;
     }
 
     [HttpGet]
@@ -104,6 +108,8 @@ public class DoctorsController : ControllerBase
             await _userManager.AddToRoleAsync(doctor.ApplicationUser, UserRoles.Doctor);
 
             await _doctorService.Create(doctor);
+            var message = new Message(new string[] { doctorDto.Email }, "Your Pass", "Doc*1234");
+            await _emailSender.SendEmailAsync(message);
             return Created();
         }
         catch (Exception e)
