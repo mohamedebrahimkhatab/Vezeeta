@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Vezeeta.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDatabase : Migration
+    public partial class InitiateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -40,6 +40,7 @@ namespace Vezeeta.Data.Migrations
                     Gender = table.Column<int>(type: "int", nullable: false),
                     UserType = table.Column<int>(type: "int", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -318,7 +319,7 @@ namespace Vezeeta.Data.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "FirstName", "Gender", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "PhotoPath", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType" },
-                values: new object[] { 1, 0, "9873649e-2dbf-45d5-9509-67d402a2cb62", new DateTime(1980, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "admin@vezeeta.com", false, "Admin", 1, "Admin", false, null, "ADMIN@VEZEETA.COM", "ADMIN@VEZEETA.COM", "AQAAAAIAAYagAAAAEAyC1iCT+waTVWK7xT5gTnthQjj95VtgkABHfl4wkEt42Gx6aQp6LhC7X1bee0MKew==", "1234567890", false, null, null, false, "admin@vezeeta.com", 0 });
+                values: new object[] { 1, 0, "4ca847d4-2578-4c3e-9a3e-763cd7b58962", new DateTime(1980, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "admin@vezeeta.com", false, "Admin", 1, "Admin", false, null, "ADMIN@VEZEETA.COM", "ADMIN@VEZEETA.COM", "AQAAAAIAAYagAAAAEODdEloDoLq94IAIxLYLrdr/BP1mvzwMiNyUZfsd+jmq0TMkUJ4TNVC040IKdP68mA==", "1234567890", false, null, null, false, "admin@vezeeta.com", 0 });
 
             migrationBuilder.InsertData(
                 table: "Specializations",

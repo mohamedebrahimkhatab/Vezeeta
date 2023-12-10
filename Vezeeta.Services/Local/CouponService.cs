@@ -24,6 +24,11 @@ public class CouponService : ICouponService
     }
     public async Task<Coupon> Create(Coupon coupon)
     {
+        var checkCoupon = await GetByDiscountCode(coupon.DiscountCode);
+        if (checkCoupon != null)
+        {
+            throw new InvalidOperationException("this code already exist");
+        }
         coupon.Active = true;
         await _unitOfWork.Coupons.AddAsync(coupon);
         await _unitOfWork.CommitAsync();

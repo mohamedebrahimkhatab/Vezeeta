@@ -21,16 +21,19 @@ public class DoctorsController : ControllerBase
     private readonly IMapper _mapper;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ISpecializationService _specializationService;
+    private readonly IWebHostEnvironment _hostingEnvironment;
 
     public DoctorsController(IDoctorService doctorService,
                             IMapper mapper,
                             UserManager<ApplicationUser> userManager,
-                            ISpecializationService specializationService)
+                            ISpecializationService specializationService,
+                            IWebHostEnvironment hostingEnvironment)
     {
         _doctorService = doctorService;
         _mapper = mapper;
         _userManager = userManager;
         _specializationService = specializationService;
+        _hostingEnvironment = hostingEnvironment;
     }
 
     [HttpGet]
@@ -90,7 +93,7 @@ public class DoctorsController : ControllerBase
 
             Doctor doctor = _mapper.Map<Doctor>(doctorDto);
             doctor.SpecializationId = specialization.Id;
-
+            doctor.ApplicationUser.PhotoPath = ProcessUploadedFile(doctorDto.Image);
             IdentityResult result = await _userManager.CreateAsync(doctor.ApplicationUser, "Doc*1234");
 
             if (!result.Succeeded)
@@ -109,6 +112,24 @@ public class DoctorsController : ControllerBase
         }
     }
 
+    private string ProcessUploadedFile(IFormFile photo)
+    {
+        string uniqueFileName = null;
+        if (photo != null)
+        {
+
+            string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
+            uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                photo.CopyTo(fileStream);
+            }
+        }
+
+        return uniqueFileName;
+    }
+
     [HttpPut]
     [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Edit(UpdateDoctorDto doctorDto)
@@ -125,6 +146,16 @@ public class DoctorsController : ControllerBase
             if (doctor == null)
             {
                 return NotFound("this doctor is not found");
+            }
+
+            if (doctorDto.Image != null)
+            {
+                if (doctorDto.PhotoPath != null)
+                {
+                    string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "images", doctorDto.PhotoPath);
+                    System.IO.File.Delete(filePath);
+                }
+                doctorDto.PhotoPath = ProcessUploadedFile(doctorDto.Image);
             }
 
             _mapper.Map(doctorDto, doctor);

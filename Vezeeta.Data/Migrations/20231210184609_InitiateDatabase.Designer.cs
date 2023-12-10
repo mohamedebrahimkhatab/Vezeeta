@@ -12,8 +12,8 @@ using Vezeeta.Data;
 namespace Vezeeta.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231210152941_AddCreatedAtToApplicationUser")]
-    partial class AddCreatedAtToApplicationUser
+    [Migration("20231210184609_InitiateDatabase")]
+    partial class InitiateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -449,7 +449,7 @@ namespace Vezeeta.Data.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2bd6cc11-459f-4424-9e1b-7dea6e692ead",
+                            ConcurrencyStamp = "4ca847d4-2578-4c3e-9a3e-763cd7b58962",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1980, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@vezeeta.com",
@@ -460,7 +460,7 @@ namespace Vezeeta.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@VEZEETA.COM",
                             NormalizedUserName = "ADMIN@VEZEETA.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFT0myorcbYAmb9irBMNpHMTmoRR0PvlfjbarkFl2NXjz49MZiySZU4Xz0S8TDFSjg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEODdEloDoLq94IAIxLYLrdr/BP1mvzwMiNyUZfsd+jmq0TMkUJ4TNVC040IKdP68mA==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,

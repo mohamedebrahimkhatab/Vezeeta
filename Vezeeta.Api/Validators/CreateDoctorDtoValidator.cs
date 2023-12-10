@@ -7,7 +7,7 @@ public class CreateDoctorDtoValidator : AbstractValidator<CreateDoctorDto>
 {
     public CreateDoctorDtoValidator()
     {
-        RuleFor(e => e.PhotoPath).NotEmpty();
+        RuleFor(e => e.Image).NotNull();
         RuleFor(e => e.FirstName).NotEmpty();
         RuleFor(e => e.LastName).NotEmpty();
         RuleFor(e => e.Email).EmailAddress();

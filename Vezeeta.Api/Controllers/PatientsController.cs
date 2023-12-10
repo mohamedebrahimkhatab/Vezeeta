@@ -21,12 +21,14 @@ public class PatientsController : ControllerBase
     private readonly IMapper _mapper;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IPatientService _patientService;
+    private readonly IWebHostEnvironment _hostingEnvironment;
 
-    public PatientsController(IMapper mapper, UserManager<ApplicationUser> userManager, IPatientService patientService)
+    public PatientsController(IMapper mapper, UserManager<ApplicationUser> userManager, IPatientService patientService, IWebHostEnvironment hostingEnvironment)
     {
         _mapper = mapper;
         _userManager = userManager;
         _patientService = patientService;
+        _hostingEnvironment = hostingEnvironment;
     }
 
     [HttpPost]
@@ -48,7 +50,7 @@ public class PatientsController : ControllerBase
             }
 
             ApplicationUser patient = _mapper.Map<ApplicationUser>(patientDto);
-
+            patient.PhotoPath = ProcessUploadedFile(patientDto.Image);
             IdentityResult result = await _userManager.CreateAsync(patient, patientDto.Password);
 
             if (!result.Succeeded)
@@ -64,6 +66,24 @@ public class PatientsController : ControllerBase
         {
             return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
+    }
+
+    private string ProcessUploadedFile(IFormFile photo)
+    {
+        string uniqueFileName = null;
+        if (photo != null)
+        {
+
+            string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
+            uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                photo.CopyTo(fileStream);
+            }
+        }
+
+        return uniqueFileName;
     }
 
     [HttpGet]

@@ -7,7 +7,6 @@ public class UpdateDoctorDtoValidator : AbstractValidator<UpdateDoctorDto>
 {
     public UpdateDoctorDtoValidator()
     {
-        RuleFor(e => e.PhotoPath).NotEmpty();
         RuleFor(e => e.FirstName).NotEmpty();
         RuleFor(e => e.LastName).NotEmpty();
         RuleFor(e => e.Email).EmailAddress();
