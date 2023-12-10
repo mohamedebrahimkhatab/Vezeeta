@@ -8,11 +8,13 @@ using System.IdentityModel.Tokens.Jwt;
 using Vezeeta.Core.Contracts.Authentication;
 using Vezeeta.Core.Consts;
 using Vezeeta.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Vezeeta.Api.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
+[AllowAnonymous]
 public class AuthenticationController : ControllerBase
 {
     private readonly IConfiguration _configuration;

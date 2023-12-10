@@ -10,10 +10,12 @@ namespace Vezeeta.Services.Local;
 public class AppointmentService : IAppointmentService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IDoctorService _doctorService;
 
-    public AppointmentService(IUnitOfWork unitOfWork)
+    public AppointmentService(IUnitOfWork unitOfWork, IDoctorService doctorService)
     {
         _unitOfWork = unitOfWork;
+        _doctorService = doctorService;
     }
 
     public async Task AddAppointmentsAndPrice(int doctorId, decimal price, List<Appointment> appointments)
@@ -67,7 +69,7 @@ public class AppointmentService : IAppointmentService
         {
             throw new InvalidOperationException("there is another appointment in this time");
         }
-        check = await _unitOfWork.Bookings.CountAsync(e => e.AppointmentTimeId == appointmentTime.Id &&(e.BookingStatus.Equals(BookingStatus.Completed) || e.BookingStatus.Equals(BookingStatus.Pending)));
+        check = await _unitOfWork.Bookings.CountAsync(e => e.AppointmentTimeId == appointmentTime.Id && (e.BookingStatus.Equals(BookingStatus.Completed) || e.BookingStatus.Equals(BookingStatus.Pending)));
         if (check != 0)
         {
             throw new InvalidOperationException("there is Comleted or Pending Booking/s in this time");
@@ -85,5 +87,10 @@ public class AppointmentService : IAppointmentService
         }
         _unitOfWork.AppointmentTimes.Delete(appointmentTime);
         await _unitOfWork.CommitAsync();
+    }
+
+    public async Task<int> GetDoctorId(int userId)
+    {
+        return await _doctorService.GetDoctorId(userId);
     }
 }

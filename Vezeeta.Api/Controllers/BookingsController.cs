@@ -1,17 +1,19 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Vezeeta.Core.Consts;
 using Vezeeta.Core.Contracts.BookingDtos;
 using Vezeeta.Core.Contracts.PatientDtos;
 using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Services;
 
 namespace Vezeeta.Api.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
+[Authorize]
 public class BookingsController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -24,22 +26,26 @@ public class BookingsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = UserRoles.Patient)]
     public async Task<IActionResult> PatientGetAll()
     {
-        int patientId = 4;
+        int patientId = int.Parse(User.FindFirstValue("Id"));
         IEnumerable<Booking> bookings = await _bookingService.GetPatientBookings(patientId);
         return Ok(_mapper.Map<List<PatientGetBookingDto>>(bookings));
     }
 
     [HttpGet]
+    [Authorize(Roles = UserRoles.Doctor)]
     public async Task<IActionResult> DoctorGetAll(Days day, int? pageSize, int? pageNumber)
     {
-        int DoctorId = 3;
-        IEnumerable<Booking> bookings = await _bookingService.GetDoctorBookings(DoctorId, day, pageSize ?? 10, pageNumber ?? 1);
+        int userId = int.Parse(User.FindFirstValue("Id"));
+        int doctorId = await _bookingService.GetDoctorId(userId);
+        IEnumerable<Booking> bookings = await _bookingService.GetDoctorBookings(doctorId, day, pageSize ?? 10, pageNumber ?? 1);
         return Ok(_mapper.Map<List<DoctorGetPatientDto>>(bookings));
     }
 
     [HttpPost]
+    [Authorize(Roles = UserRoles.Patient)]
     public async Task<IActionResult> Book(BookBookingDto bookingDto)
     {
         try
@@ -60,6 +66,7 @@ public class BookingsController : ControllerBase
             }
             Booking booking = _mapper.Map<Booking>(bookingDto);
             booking.AppointmentTime = appointmentTime;
+            booking.PatientId = int.Parse(User.FindFirstValue(MyClaims.Id));
             await _bookingService.Book(booking, coupon);
             return Created();
         }
@@ -70,27 +77,43 @@ public class BookingsController : ControllerBase
     }
 
     [HttpPut]
+    [Authorize(Roles = UserRoles.Doctor)]
     public async Task<IActionResult> ConfirmCheckUp(int id)
     {
-        Booking? booking = await _bookingService.GetById(id);
-        if (booking == null)
+        try
         {
-            return NotFound();
+            Booking? booking = await _bookingService.GetById(id);
+            if (booking == null)
+            {
+                return NotFound();
+            }
+            await _bookingService.ConfirmCheckUp(booking);
+            return NoContent();
         }
-        await _bookingService.ConfirmCheckUp(booking);
-        return NoContent();
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
 
     [HttpPut]
+    [Authorize(Roles = UserRoles.Patient)]
     public async Task<IActionResult> Cancel(int id)
     {
-        Booking? booking = await _bookingService.GetById(id);
-        if (booking == null)
+        try
         {
-            return NotFound();
+            Booking? booking = await _bookingService.GetById(id);
+            if (booking == null)
+            {
+                return NotFound();
+            }
+            await _bookingService.Cancel(booking);
+            return NoContent();
         }
-        await _bookingService.Cancel(booking);
-        return NoContent();
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
 
 }

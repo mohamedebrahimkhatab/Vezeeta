@@ -10,4 +10,5 @@ public interface IDoctorService
     Task<Doctor> Create(Doctor doctor);
     Task Update(Doctor doctor);
     Task Delete(Doctor doctor);
+    Task<int> GetDoctorId(int userId);
 }

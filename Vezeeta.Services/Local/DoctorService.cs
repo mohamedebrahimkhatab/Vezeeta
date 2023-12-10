@@ -56,4 +56,10 @@ public class DoctorService : IDoctorService
         _unitOfWork.Doctors.Delete(doctor);
         await _unitOfWork.CommitAsync();
     }
+
+    public async Task<int> GetDoctorId(int userId)
+    {
+        var doctor = await _unitOfWork.Doctors.FindWithCriteriaAndIncludesAsync(e => e.ApplicationUserId == userId);
+        return doctor.Id;
+    }
 }

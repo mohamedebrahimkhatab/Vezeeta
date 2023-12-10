@@ -8,6 +8,7 @@ using Vezeeta.Core.Services;
 using System.Collections.Generic;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Contracts.BookingDtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -27,6 +28,7 @@ public class PatientsController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> Register(RegisterPatientDto patientDto)
     {
         try
@@ -57,6 +59,7 @@ public class PatientsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<ActionResult<IEnumerable<GetPatientDto>>> GetAll(int? page, int? pageSize, string? search)
     {
         IEnumerable<ApplicationUser> result = await _patientService.GetAll(page ?? 1, pageSize ?? 10, search ?? "");
@@ -64,6 +67,7 @@ public class PatientsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> GetById(int id)
     {
         ApplicationUser? patient = await _patientService.GetById(id);

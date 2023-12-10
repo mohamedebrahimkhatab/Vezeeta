@@ -13,7 +13,11 @@ public class CouponService : ICouponService
     {
         _unitOfWork = unitOfWork;
     }
-    public async Task<Coupon?> GetById(int id) => await _unitOfWork.Coupons.GetByIdAsync(id);
+    public async Task<Coupon?> GetById(int id)
+    {
+        return await _unitOfWork.Coupons.FindWithCriteriaAndIncludesAsync(e => e.Id == id && e.Active);
+    }
+
     public async Task<Coupon?> GetByDiscountCode(string discountCode)
     {
         return await _unitOfWork.Coupons.FindWithCriteriaAndIncludesAsync(e => e.DiscountCode == discountCode);

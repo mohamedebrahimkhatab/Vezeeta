@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Core.Consts;
 using Vezeeta.Core.Contracts.CouponDtos;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Services;
@@ -8,6 +10,7 @@ namespace Vezeeta.Api.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
+[Authorize(Roles = UserRoles.Admin)]
 public class CouponsController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -17,28 +20,6 @@ public class CouponsController : ControllerBase
     {
         _mapper = mapper;
         _couponService = couponService;
-    }
-
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<Coupon>> GetById(int id)
-    {
-        Coupon? coupon = await _couponService.GetById(id);
-        if (coupon == null)
-        {
-            return NotFound();
-        }
-        return Ok(coupon);
-    }
-
-    [HttpGet("{discountCode}")]
-    public async Task<ActionResult<CouponDto>> GetByDiscountCode(string discountCode)
-    {
-        Coupon? coupon = await _couponService.GetByDiscountCode(discountCode);
-        if (coupon == null)
-        {
-            return NotFound();
-        }
-        return Ok(_mapper.Map<CouponDto>(coupon));
     }
 
     [HttpPost]
@@ -83,7 +64,7 @@ public class CouponsController : ControllerBase
         Coupon? coupon = await _couponService.GetById(id);
         if (coupon == null)
         {
-            return NotFound();
+            return NotFound($"there is no activated coupon with id: {id}");
         }
         await _couponService.Deactivate(coupon);
         return NoContent();

@@ -4,7 +4,6 @@ namespace Vezeeta.Core.Contracts.BookingDtos;
 
 public class BookBookingDto
 {
-    public string? DiscountCode { get; set; }
-    public int PatientId { get; set; }
     public int AppointmentTimeId { get; set; }
+    public string? DiscountCode { get; set; }
 }

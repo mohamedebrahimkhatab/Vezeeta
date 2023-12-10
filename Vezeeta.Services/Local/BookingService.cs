@@ -9,16 +9,19 @@ namespace Vezeeta.Services.Local;
 public class BookingService : IBookingService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IDoctorService _doctorService;
 
-    public BookingService(IUnitOfWork unitOfWork)
+    public BookingService(IUnitOfWork unitOfWork, IDoctorService doctorService)
     {
         _unitOfWork = unitOfWork;
+        _doctorService = doctorService;
     }
 
     public async Task Book(Booking booking, Coupon? coupon)
     {
         Booking? checkBooking = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e => 
-                                e.AppointmentTimeId == booking.AppointmentTimeId && e.BookingStatus.Equals(BookingStatus.Pending));
+                                e.AppointmentTimeId == booking.AppointmentTimeId && 
+                                (e.BookingStatus.Equals(BookingStatus.Pending) || e.BookingStatus.Equals(BookingStatus.Completed)));
         if (checkBooking != null)
         {
             throw new InvalidOperationException("appointment time is already booked by another Patient");
@@ -47,7 +50,7 @@ public class BookingService : IBookingService
         }
         int patientReqs = await _unitOfWork.Bookings.CountAsync(e => 
                         e.PatientId == patientId && e.BookingStatus.Equals(BookingStatus.Completed));
-        if(patientReqs >= coupon.NumOfRequests)
+        if(patientReqs < coupon.NumOfRequests)
         {
             throw new InvalidOperationException($"you must have {coupon.NumOfRequests} completed requests to apply this discount code");
         }
@@ -75,11 +78,27 @@ public class BookingService : IBookingService
 
     public async Task ConfirmCheckUp(Booking booking)
     {
+        if (booking.BookingStatus.Equals(BookingStatus.Cancelled))
+        {
+            throw new InvalidOperationException("can not confirm check up for cancelled bookings");
+        }
+        if (booking.BookingStatus.Equals(BookingStatus.Completed))
+        {
+            throw new InvalidOperationException("this booking is already checked app");
+        }
         booking.BookingStatus = BookingStatus.Completed;
         await UpdateBooking(booking);
     }
     public async Task Cancel(Booking booking)
     {
+        if (booking.BookingStatus.Equals(BookingStatus.Cancelled))
+        {
+            throw new InvalidOperationException("this booking is already Cancelled");
+        }
+        if (booking.BookingStatus.Equals(BookingStatus.Completed))
+        {
+            throw new InvalidOperationException("can not Cancel for completed bookings");
+        }
         booking.BookingStatus = BookingStatus.Cancelled;
         await UpdateBooking(booking);
     }
@@ -102,5 +121,9 @@ public class BookingService : IBookingService
         int skip = (pageNumber - 1) * pageSize;
         return await _unitOfWork.Bookings.FindAllWithCriteriaPagenationAndIncludesAsync(e => e.DoctorId == doctorId && e.AppointmentTime.Appointment.Day == day, skip, pageSize, nameof(Booking.Patient),
                                                                     nameof(Booking.AppointmentTime), $"{nameof(Booking.AppointmentTime)}.Appointment");
+    }
+    public async Task<int> GetDoctorId(int userId)
+    {
+        return await _doctorService.GetDoctorId(userId);
     }
 }

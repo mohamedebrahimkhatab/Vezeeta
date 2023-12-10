@@ -10,4 +10,6 @@ public interface IAppointmentService
     Task<AppointmentTime?> GetAppointmentTime(int id);
     Task UpdateAppointmentTime(AppointmentTime appointmentTime);
     Task DeleteAppointmentTime(AppointmentTime appointmentTime);
+    Task<int> GetDoctorId(int userId);
+
 }

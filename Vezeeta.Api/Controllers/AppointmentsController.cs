@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Vezeeta.Core.Consts;
 using Vezeeta.Core.Contracts.AppointmentDtos;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Services;
@@ -8,6 +11,7 @@ namespace Vezeeta.Api.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
+[Authorize(Roles = UserRoles.Doctor)]
 public class AppointmentsController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -22,8 +26,10 @@ public class AppointmentsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add(DoctorAppointmentDto dto)
     {
+        int userId = int.Parse(User.FindFirstValue("Id"));
+        int doctorId = await _appointmentService.GetDoctorId(userId);
         var appointments = _mapper.Map<List<Appointment>>(dto.Days);
-        await _appointmentService.AddAppointmentsAndPrice(dto.DoctorId, dto.Price, appointments);
+        await _appointmentService.AddAppointmentsAndPrice(doctorId, dto.Price, appointments);
         return Created();
     }
 

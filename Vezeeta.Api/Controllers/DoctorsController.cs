@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Vezeeta.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Vezeeta.Core.Contracts.DoctorDtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -30,6 +31,7 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<ActionResult<IEnumerable<AdminGetDoctorDto>>> AdminGetAll(int? page, int? pageSize, string? search)
     {
 
@@ -38,6 +40,7 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = UserRoles.Patient)]
     public async Task<ActionResult<IEnumerable<AdminGetDoctorDto>>> PatientGetAll(int? page, int? pageSize, string? search)
     {
 
@@ -46,6 +49,7 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<ActionResult<GetIdDoctorDto>> GetById(int id)
     {
         Doctor? result = await _doctorService.GetById(id);
@@ -57,6 +61,7 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Add(CreateDoctorDto doctorDto)
     {
         try
@@ -81,7 +86,7 @@ public class DoctorsController : ControllerBase
 
             if (!result.Succeeded)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "this email is already taken");
+                return StatusCode(StatusCodes.Status500InternalServerError, result.Errors.ToString());
             }
 
             await _userManager.AddToRoleAsync(doctor.ApplicationUser, UserRoles.Doctor);
@@ -96,7 +101,8 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update(UpdateDoctorDto doctorDto)
+    [Authorize(Roles = UserRoles.Admin)]
+    public async Task<IActionResult> Edit(UpdateDoctorDto doctorDto)
     {
         try
         {
@@ -119,6 +125,7 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Delete(int id)
     {
         try
