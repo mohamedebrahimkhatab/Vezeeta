@@ -16,4 +16,5 @@ public class ApplicationUser : IdentityUser<int>
     public UserType? UserType { get; set; }
 
     public DateTime DateOfBirth { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

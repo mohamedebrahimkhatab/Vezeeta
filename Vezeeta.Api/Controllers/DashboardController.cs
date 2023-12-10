@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Vezeeta.Core.Consts;
+using Vezeeta.Core.Enums;
 using Vezeeta.Core.Services;
 
 namespace Vezeeta.Api.Controllers;
@@ -19,13 +20,13 @@ public class DashboardController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<int>> NumOfDoctors() => Ok(await _dashboardService.GetNumOfDoctors());
+    public async Task<ActionResult<int>> NumOfDoctors(SearchBy? search) => Ok(await _dashboardService.GetNumOfDoctors(search));
 
     [HttpGet]
-    public async Task<ActionResult<int>> NumOfPatients() => Ok(await _dashboardService.GetNumOfPatients());
+    public async Task<ActionResult<int>> NumOfPatients(SearchBy? search) => Ok(await _dashboardService.GetNumOfPatients(search));
 
     [HttpGet]
-    public async Task<IActionResult> NumOfRequests() => Ok(await _dashboardService.GetNumOfRequests());
+    public async Task<IActionResult> NumOfRequests(SearchBy? search) => Ok(await _dashboardService.GetNumOfRequests(search));
 
     [HttpGet]
     public async Task<IActionResult> Top5Specializations() => Ok(await _dashboardService.GetTop5Speializations());

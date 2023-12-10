@@ -17,30 +17,47 @@ public class DashboardService : IDashboardService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<int> GetNumOfDoctors()
+    public async Task<int> GetNumOfDoctors(SearchBy? search)
     {
-        return await _unitOfWork.Doctors.CountAsync();
+        if (search == null)
+            return await _unitOfWork.Doctors.CountAsync();
+        return await _unitOfWork.Doctors.CountAsync(e => e.CreatedAt >= GetSearchDate(search));
     }
 
-    public async Task<int> GetNumOfPatients()
+    public async Task<int> GetNumOfPatients(SearchBy? search)
     {
-        return await _unitOfWork.ApplicationUsers.CountAsync(e => e.UserType.Equals(UserType.Patient));
+        if (search == null)
+            return await _unitOfWork.ApplicationUsers.CountAsync(e => e.UserType.Equals(UserType.Patient));
+        return await _unitOfWork.ApplicationUsers.CountAsync(e => e.UserType.Equals(UserType.Patient) && e.CreatedAt >= GetSearchDate(search));
     }
 
-    public async Task<object> GetNumOfRequests()
+    public async Task<object> GetNumOfRequests(SearchBy? search)
     {
-        var NumOfRequests = await _unitOfWork.Bookings.CountAsync();
-        var NumOfPendingRequests = await _unitOfWork.Bookings.CountAsync(e => e.BookingStatus.Equals(BookingStatus.Pending));
-        var NumOfCompletedRequests = await _unitOfWork.Bookings.CountAsync(e => e.BookingStatus.Equals(BookingStatus.Completed));
-        var NumOfCancelledRequests = await _unitOfWork.Bookings.CountAsync(e => e.BookingStatus.Equals(BookingStatus.Cancelled));
-        return new {NumOfRequests, NumOfPendingRequests, NumOfCompletedRequests, NumOfCancelledRequests};
+        int NumOfRequests, NumOfPendingRequests, NumOfCompletedRequests, NumOfCancelledRequests;
+
+        if (search == null)
+        {
+            NumOfRequests = await _unitOfWork.Bookings.CountAsync();
+            NumOfPendingRequests = await _unitOfWork.Bookings.CountAsync(e => e.BookingStatus.Equals(BookingStatus.Pending));
+            NumOfCompletedRequests = await _unitOfWork.Bookings.CountAsync(e => e.BookingStatus.Equals(BookingStatus.Completed));
+            NumOfCancelledRequests = await _unitOfWork.Bookings.CountAsync(e => e.BookingStatus.Equals(BookingStatus.Cancelled));
+        }
+        else
+        {
+            NumOfRequests = await _unitOfWork.Bookings.CountAsync(e => e.CreatedAt >= GetSearchDate(search));
+            NumOfPendingRequests = await _unitOfWork.Bookings.CountAsync(e => e.BookingStatus.Equals(BookingStatus.Pending) && e.CreatedAt >= GetSearchDate(search));
+            NumOfCompletedRequests = await _unitOfWork.Bookings.CountAsync(e => e.BookingStatus.Equals(BookingStatus.Completed) && e.CreatedAt >= GetSearchDate(search));
+            NumOfCancelledRequests = await _unitOfWork.Bookings.CountAsync(e => e.BookingStatus.Equals(BookingStatus.Cancelled) && e.CreatedAt >= GetSearchDate(search));
+
+        }
+        return new { NumOfRequests, NumOfPendingRequests, NumOfCompletedRequests, NumOfCancelledRequests };
     }
 
     public async Task<IEnumerable<SpecializtionCountDto>?> GetTop5Speializations()
     {
-        var bookings = await _unitOfWork.Bookings.FindAllWithCriteriaAndIncludesAsync(e => true, nameof(Booking.Doctor), 
+        var bookings = await _unitOfWork.Bookings.FindAllWithCriteriaAndIncludesAsync(e => true, nameof(Booking.Doctor),
                                                                 $"{nameof(Booking.Doctor)}.Specialization");
-        var result = bookings.GroupBy(e => e.Doctor.Specialization.Name).Select(e => new SpecializtionCountDto{ FullName = e.Key, Num = e.Count() });
+        var result = bookings.GroupBy(e => e.Doctor.Specialization.Name).Select(e => new SpecializtionCountDto { FullName = e.Key, Num = e.Count() });
         result = result.OrderByDescending(e => e.Num).Take(5);
         return result;
     }
@@ -49,10 +66,21 @@ public class DashboardService : IDashboardService
         var bookings = await _unitOfWork.Bookings.FindAllWithCriteriaAndIncludesAsync(e => true, nameof(Booking.Doctor),
                                                                 $"{nameof(Booking.Doctor)}.ApplicationUser",
                                                                 $"{nameof(Booking.Doctor)}.Specialization");
-        var result = bookings.GroupBy(e => e.Doctor).Select(e => new SimpleDoctorDto { FullName = e.Key.ApplicationUser.FirstName + " " + e.Key.ApplicationUser.LastName,
-                                                                PhotoPath = e.Key.ApplicationUser.PhotoPath,
-                                                                Specialize = e.Key.Specialization.Name,Num = e.Count() });
+        var result = bookings.GroupBy(e => e.Doctor).Select(e => new SimpleDoctorDto
+        {
+            FullName = e.Key.ApplicationUser.FirstName + " " + e.Key.ApplicationUser.LastName,
+            PhotoPath = e.Key.ApplicationUser.PhotoPath,
+            Specialize = e.Key.Specialization.Name,
+            Num = e.Count()
+        });
         result = result.OrderByDescending(e => e.Num).Take(10);
         return result;
+    }
+    private DateTime GetSearchDate(SearchBy? search)
+    {
+        if (search.Equals(SearchBy.Last24Hours)) return DateTime.Now.AddDays(-1);
+        if (search.Equals(SearchBy.LastWeek)) return DateTime.Now.AddDays(-7);
+        if (search.Equals(SearchBy.LastMonth)) return DateTime.Now.AddMonths(-1);
+        return DateTime.Now.AddYears(-1);
     }
 }

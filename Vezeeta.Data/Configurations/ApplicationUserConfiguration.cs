@@ -14,6 +14,7 @@ internal class ApplicationUserConfiguration : IEntityTypeConfiguration<Applicati
         builder.Property(e => e.DateOfBirth).IsRequired();
         builder.Property(e => e.LastName).IsRequired().HasMaxLength(50);
         builder.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
+        builder.Property(e => e.CreatedAt).HasDefaultValueSql("getdate()");
 
         ApplicationUser user = new()
         {
