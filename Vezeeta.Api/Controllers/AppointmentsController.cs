@@ -26,11 +26,19 @@ public class AppointmentsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add(DoctorAppointmentDto dto)
     {
-        int userId = int.Parse(User.FindFirstValue("Id"));
-        int doctorId = await _appointmentService.GetDoctorId(userId);
-        var appointments = _mapper.Map<List<Appointment>>(dto.Days);
-        await _appointmentService.AddAppointmentsAndPrice(doctorId, dto.Price, appointments);
-        return Created();
+        try
+        {
+            int userId = int.Parse(User.FindFirstValue("Id"));
+            int doctorId = await _appointmentService.GetDoctorId(userId);
+            var appointments = _mapper.Map<List<Appointment>>(dto.Days);
+            await _appointmentService.AddAppointmentsAndPrice(doctorId, dto.Price, appointments);
+            return Created();
+
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
 
     [HttpPut]
@@ -49,19 +57,26 @@ public class AppointmentsController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
     }
 
     [HttpDelete]
     public async Task<IActionResult> DeleteTime(int id)
     {
-        AppointmentTime? time = await _appointmentService.GetAppointmentTime(id);
-        if (time == null)
+        try
         {
-            return NotFound("Time not Found");
+            AppointmentTime? time = await _appointmentService.GetAppointmentTime(id);
+            if (time == null)
+            {
+                return NotFound("Time not Found");
+            }
+            await _appointmentService.DeleteAppointmentTime(time);
+            return NoContent();
         }
-        await _appointmentService.DeleteAppointmentTime(time);
-        return NoContent();
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
 }

@@ -33,7 +33,7 @@ public class CouponsController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
     }
 
@@ -43,7 +43,7 @@ public class CouponsController : ControllerBase
         try
         {
             Coupon? coupon = await _couponService.GetById(couponDto.Id);
-            if(coupon == null)
+            if (coupon == null)
             {
                 return NotFound();
             }
@@ -54,31 +54,45 @@ public class CouponsController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Deactivate(int id)
     {
-        Coupon? coupon = await _couponService.GetById(id);
-        if (coupon == null)
+        try
         {
-            return NotFound($"there is no activated coupon with id: {id}");
+            Coupon? coupon = await _couponService.GetById(id);
+            if (coupon == null)
+            {
+                return NotFound($"there is no activated coupon with id: {id}");
+            }
+            await _couponService.Deactivate(coupon);
+            return NoContent();
         }
-        await _couponService.Deactivate(coupon);
-        return NoContent();
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        Coupon? coupon = await _couponService.GetById(id);
-        if (coupon == null)
+        try
         {
-            return NotFound();
+            Coupon? coupon = await _couponService.GetById(id);
+            if (coupon == null)
+            {
+                return NotFound();
+            }
+            await _couponService.Delete(coupon);
+            return NoContent();
         }
-        await _couponService.Delete(coupon);
-        return NoContent();
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
 }

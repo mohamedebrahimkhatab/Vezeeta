@@ -69,7 +69,7 @@ public class DoctorsController : ControllerBase
             ApplicationUser? user = await _userManager.FindByEmailAsync(doctorDto.Email);
             if (user != null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "this email is already taken");
+                return BadRequest("this email is already taken");
             }
 
             Specialization specialization = await _specializationService.GetById(doctorDto.SpecializationId);
@@ -96,7 +96,7 @@ public class DoctorsController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
     }
 
@@ -109,7 +109,7 @@ public class DoctorsController : ControllerBase
             Doctor? doctor = await _doctorService.GetById(doctorDto.DoctorId);
             if (doctor == null)
             {
-                throw new Exception("Doctor is Not exist");
+                return NotFound("this doctor is not found");
             }
 
             _mapper.Map(doctorDto, doctor);
@@ -120,7 +120,7 @@ public class DoctorsController : ControllerBase
         }
         catch (Exception e)
         {
-            return NotFound(e.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
     }
 

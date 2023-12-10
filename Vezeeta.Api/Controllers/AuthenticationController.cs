@@ -30,7 +30,9 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> Login(Login login)
     {
         ApplicationUser? user = await _userManager.FindByEmailAsync(login.Email);
-        if (user != null && await _userManager.CheckPasswordAsync(user, login.Password))
+        if(user == null)
+            return NotFound("This email is not registered");
+        if (await _userManager.CheckPasswordAsync(user, login.Password))
         {
             IList<string> userRoles = await _userManager.GetRolesAsync(user);
             List<Claim> authClaims = new List<Claim>
@@ -53,6 +55,6 @@ public class AuthenticationController : ControllerBase
 
             return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token), expiaration = token.ValidTo });
         }
-        return Unauthorized();
+        return BadRequest("Wrong password");
     }
 }

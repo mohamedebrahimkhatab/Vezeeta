@@ -43,6 +43,8 @@ public class CouponService : ICouponService
 
     public async Task Deactivate(Coupon coupon)
     {
+        if (!coupon.Active)
+            throw new InvalidOperationException("this coupon is already deactivated");
         coupon.Active = false;
         await _unitOfWork.CommitAsync();
     }

@@ -36,7 +36,7 @@ public class PatientsController : ControllerBase
             ApplicationUser? user = await _userManager.FindByEmailAsync(patientDto.Email);
             if (user != null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "this email is already taken");
+                return BadRequest("this email is already taken");
             }
 
             ApplicationUser patient = _mapper.Map<ApplicationUser>(patientDto);
@@ -54,7 +54,7 @@ public class PatientsController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
     }
 
