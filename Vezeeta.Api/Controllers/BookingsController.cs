@@ -12,7 +12,7 @@ using Vezeeta.Core.Services;
 namespace Vezeeta.Api.Controllers;
 
 [Route("api/[controller]/[action]")]
-[ApiController]
+[ApiController] 
 [Authorize]
 public class BookingsController : ControllerBase
 {
