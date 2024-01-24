@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.Runtime.CompilerServices;
-using Vezeeta.Core.Enums;
+﻿using Vezeeta.Core.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace Vezeeta.Core.Models.Identity;
 

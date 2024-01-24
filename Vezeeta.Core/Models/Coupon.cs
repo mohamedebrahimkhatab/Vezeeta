@@ -10,3 +10,4 @@ public class Coupon : BaseEntity
     public decimal Value { get; set; }
     public bool Active { get; set; }
 }
+ 

@@ -1,4 +1,4 @@
-﻿namespace Vezeeta.Core.Models;
+﻿ namespace Vezeeta.Core.Models;
 
 public class Specialization : BaseEntity
 {

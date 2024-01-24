@@ -18,3 +18,4 @@ public class Booking : BaseEntity
     public int AppointmentTimeId { get; set; }
     public AppointmentTime? AppointmentTime { get; set; }
 }
+      
