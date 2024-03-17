@@ -13,8 +13,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
 
-builder.Services.AddSingleton(emailConfig);
-builder.Services.AddScoped<IEmailSender, EmailSender>();
+//builder.Services.AddSingleton(emailConfig);
+//builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 builder.Services.AddControllers();
 
@@ -83,9 +83,9 @@ WebApplication app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

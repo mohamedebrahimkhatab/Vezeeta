@@ -23,21 +23,20 @@ public class DoctorsController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ISpecializationService _specializationService;
     private readonly IWebHostEnvironment _hostingEnvironment;
-    private readonly IEmailSender _emailSender;
+    //private readonly IEmailSender _emailSender;
 
     public DoctorsController(IDoctorService doctorService,
                             IMapper mapper,
                             UserManager<ApplicationUser> userManager,
                             ISpecializationService specializationService,
-                            IWebHostEnvironment hostingEnvironment,
-                            IEmailSender emailSender)
+                            IWebHostEnvironment hostingEnvironment)
     {
         _doctorService = doctorService;
         _mapper = mapper;
         _userManager = userManager;
         _specializationService = specializationService;
         _hostingEnvironment = hostingEnvironment;
-        _emailSender = emailSender;
+        //_emailSender = emailSender;
     }
 
     [HttpGet]
@@ -108,8 +107,8 @@ public class DoctorsController : ControllerBase
             await _userManager.AddToRoleAsync(doctor.ApplicationUser, UserRoles.Doctor);
 
             await _doctorService.Create(doctor);
-            var message = new Message(new string[] { doctorDto.Email }, "Your Pass", "Doc*1234");
-            await _emailSender.SendEmailAsync(message);
+            //var message = new Message(new string[] { doctorDto.Email }, "Your Pass", "Doc*1234");
+            //await _emailSender.SendEmailAsync(message);
             return Created();
         }
         catch (Exception e)
