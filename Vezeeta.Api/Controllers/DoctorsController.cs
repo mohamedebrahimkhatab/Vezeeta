@@ -40,7 +40,7 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = UserRoles.Admin)]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<AdminGetDoctorDto>>> AdminGetAll(int? page, int? pageSize, string? search)
     {
 
@@ -49,8 +49,8 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = UserRoles.Patient)]
-    public async Task<ActionResult<IEnumerable<AdminGetDoctorDto>>> PatientGetAll(int? page, int? pageSize, string? search)
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<PatientGetDoctorDto>>> PatientGetAll(int? page, int? pageSize, string? search)
     {
 
         IEnumerable<Doctor> result = await _doctorService.PatientGetAll(page ?? 1, pageSize ?? 10, search ?? "");
@@ -58,7 +58,7 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = UserRoles.Admin)]
+    [AllowAnonymous]
     public async Task<ActionResult<GetIdDoctorDto>> GetById(int id)
     {
         Doctor? result = await _doctorService.GetById(id);

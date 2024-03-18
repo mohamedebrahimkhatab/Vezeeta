@@ -9,7 +9,7 @@ namespace Vezeeta.Api.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-[Authorize(Roles = UserRoles.Admin)]
+[AllowAnonymous]
 public class DashboardController : ControllerBase
 {
     private readonly IDashboardService _dashboardService;

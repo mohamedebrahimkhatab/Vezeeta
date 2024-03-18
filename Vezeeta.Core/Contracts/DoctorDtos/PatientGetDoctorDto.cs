@@ -1,9 +1,11 @@
 ﻿using Vezeeta.Core.Contracts.AppointmentDtos;
+using Vezeeta.Core.Models;
 
 namespace Vezeeta.Core.Contracts.DoctorDtos;
 
-public class PatientGetDoctorDto
+public class PatientGetDoctorDto 
 {
+    public int Id { get; set; }
     public string? PhotoPath { get; set; }
     public string? FullName { get; set; }
     public string? Email { get; set; }
