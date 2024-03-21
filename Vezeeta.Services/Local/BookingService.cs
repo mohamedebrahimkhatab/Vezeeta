@@ -1,8 +1,13 @@
-﻿using Vezeeta.Core;
+﻿using AutoMapper;
+using Azure;
+using Vezeeta.Core;
+using Vezeeta.Core.Contracts.DoctorDtos;
+using Vezeeta.Core.Contracts;
 using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Services;
+using Vezeeta.Core.Contracts.PatientDtos;
 
 namespace Vezeeta.Services.Local;
 
@@ -10,11 +15,13 @@ public class BookingService : IBookingService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDoctorService _doctorService;
+    private readonly IMapper _mapper;
 
-    public BookingService(IUnitOfWork unitOfWork, IDoctorService doctorService)
+    public BookingService(IUnitOfWork unitOfWork, IDoctorService doctorService, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _doctorService = doctorService;
+        _mapper = mapper;
     }
 
     public async Task Book(Booking booking, Coupon? coupon)
@@ -116,11 +123,30 @@ public class BookingService : IBookingService
                                                 "AppointmentTime", "AppointmentTime.Appointment");
     }
 
-    public async Task<IEnumerable<Booking>> GetDoctorBookings(int doctorId, Days day, int pageSize, int pageNumber)
+    public async Task<PaginationResult<DoctorGetPatientDto>> GetDoctorBookings(int doctorId, Days day, int pageSize, int pageNumber)
     {
+        var totalCount = await _unitOfWork.Bookings.CountAsync(e => e.DoctorId == doctorId);
+        var totalPages = totalCount / pageSize;
+        if (totalCount % pageSize != 0)
+        {
+            totalPages++;
+        }
+        if (pageNumber > totalPages)
+        {
+            pageNumber = totalPages;
+        }
         int skip = (pageNumber - 1) * pageSize;
-        return await _unitOfWork.Bookings.FindAllWithCriteriaPagenationAndIncludesAsync(e => e.DoctorId == doctorId && e.AppointmentTime.Appointment.Day == day, skip, pageSize, nameof(Booking.Patient),
+        var query = await _unitOfWork.Bookings.FindAllWithCriteriaPagenationAndIncludesAsync(e => e.DoctorId == doctorId && e.AppointmentTime.Appointment.Day == day, skip, pageSize, nameof(Booking.Patient),
                                                                     nameof(Booking.AppointmentTime), $"{nameof(Booking.AppointmentTime)}.Appointment");
+        return new PaginationResult<DoctorGetPatientDto>
+        {
+            TotalCount = totalCount,
+            TotalPages = totalPages,
+            CurrentPage = pageNumber,
+            PageSize = pageSize,
+            Data = _mapper.Map<IEnumerable<DoctorGetPatientDto>>(query)
+        };
+
     }
     public async Task<int> GetDoctorId(int userId)
     {

@@ -11,6 +11,7 @@ using Vezeeta.Api.Validators;
 using Vezeeta.Core.Contracts.CouponDtos;
 using FluentValidation;
 using Vezeeta.Services.EmailService;
+using Vezeeta.Core.Contracts;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -41,22 +42,14 @@ public class DoctorsController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<AdminGetDoctorDto>>> AdminGetAll(int? page, int? pageSize, string? search)
-    {
-
-        IEnumerable<Doctor> result = await _doctorService.AdminGetAll(page ?? 1, pageSize ?? 10, search ?? "");
-        return Ok(_mapper.Map<IEnumerable<AdminGetDoctorDto>>(result));
-    }
+    public async Task<ActionResult<PaginationResult<AdminGetDoctorDto>>> AdminGetAll(int? page, int? pageSize, string? search) 
+        => Ok(await _doctorService.AdminGetAll(page ?? 1, pageSize ?? 10, search ?? ""));
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<PatientGetDoctorDto>>> PatientGetAll(int? page, int? pageSize, string? search)
-    {
-
-        IEnumerable<Doctor> result = await _doctorService.PatientGetAll(page ?? 1, pageSize ?? 10, search ?? "");
-        return Ok(_mapper.Map<IEnumerable<PatientGetDoctorDto>>(result));
-    }
-
+    public async Task<ActionResult<PaginationResult<PatientGetDoctorDto>>> PatientGetAll(int? page, int? pageSize, string? search) 
+        => Ok(await _doctorService.PatientGetAll(page ?? 1, pageSize ?? 10, search ?? ""));
+ 
     [HttpGet("{id}")]
     [AllowAnonymous]
     public async Task<ActionResult<GetIdDoctorDto>> GetById(int id)

@@ -11,6 +11,7 @@ using Vezeeta.Core.Contracts.BookingDtos;
 using Microsoft.AspNetCore.Authorization;
 using Vezeeta.Api.Validators;
 using Vezeeta.Core.Contracts.CouponDtos;
+using Vezeeta.Core.Contracts;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -87,15 +88,12 @@ public class PatientsController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = UserRoles.Admin)]
-    public async Task<ActionResult<IEnumerable<GetPatientDto>>> GetAll(int? page, int? pageSize, string? search)
-    {
-        IEnumerable<ApplicationUser> result = await _patientService.GetAll(page ?? 1, pageSize ?? 10, search ?? "");
-        return Ok(_mapper.Map<IEnumerable<GetPatientDto>>(result));
-    }
+    [AllowAnonymous]
+    public async Task<ActionResult<PaginationResult<GetPatientDto>>> GetAll(int? page, int? pageSize, string? search) 
+        => Ok(await _patientService.GetAll(page ?? 1, pageSize ?? 10, search ?? ""));
 
     [HttpGet("{id}")]
-    [Authorize(Roles = UserRoles.Admin)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(int id)
     {
         ApplicationUser? patient = await _patientService.GetById(id);

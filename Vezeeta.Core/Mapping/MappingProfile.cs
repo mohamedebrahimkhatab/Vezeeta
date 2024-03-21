@@ -9,7 +9,7 @@ using Vezeeta.Core.Contracts.AppointmentDtos;
 using Vezeeta.Core.Contracts.BookingDtos;
 using System.Globalization;
 
-namespace Vezeeta.Api.Mapping;
+namespace Vezeeta.Core.Mapping;
 
 public class MappingProfile : Profile
 {

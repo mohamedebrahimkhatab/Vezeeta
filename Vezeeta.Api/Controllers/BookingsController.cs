@@ -40,8 +40,7 @@ public class BookingsController : ControllerBase
     {
         int userId = int.Parse(User.FindFirstValue("Id"));
         int doctorId = await _bookingService.GetDoctorId(userId);
-        IEnumerable<Booking> bookings = await _bookingService.GetDoctorBookings(doctorId, day, pageSize ?? 10, pageNumber ?? 1);
-        return Ok(_mapper.Map<List<DoctorGetPatientDto>>(bookings));
+        return Ok(await _bookingService.GetDoctorBookings(doctorId, day, pageSize ?? 10, pageNumber ?? 1));
     }
 
     [HttpPost]

@@ -1,7 +1,7 @@
 using System.Text;
 using Vezeeta.Data;
 using Vezeeta.Api.Helpers;
-using Vezeeta.Api.Mapping;
+using Vezeeta.Core.Mapping;
 using Vezeeta.Core.Models.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

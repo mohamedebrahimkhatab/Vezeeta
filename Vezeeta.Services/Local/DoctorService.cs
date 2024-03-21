@@ -1,4 +1,7 @@
-﻿using Vezeeta.Core;
+﻿using AutoMapper;
+using Vezeeta.Core;
+using Vezeeta.Core.Contracts;
+using Vezeeta.Core.Contracts.DoctorDtos;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Services;
 
@@ -7,25 +10,63 @@ namespace Vezeeta.Services.Local;
 public class DoctorService : IDoctorService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public DoctorService(IUnitOfWork unitOfWork)
+    public DoctorService(IUnitOfWork unitOfWork,
+                         IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Doctor>> AdminGetAll(int page, int pageSize, string search)
+    public async Task<PaginationResult<AdminGetDoctorDto>> AdminGetAll(int page, int pageSize, string search)
     {
+        var totalCount = await _unitOfWork.Doctors.CountAsync();
+        var totalPages = totalCount / pageSize;
+        if (totalCount % pageSize != 0)
+        {
+            totalPages++;
+        }
+        if (page > totalPages)
+        {
+            page = totalPages;
+        }
         var skip = (page - 1) * pageSize;
-        return await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e =>
+        var query = await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e =>
                             (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).Contains(search), skip, pageSize, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
+        return new PaginationResult<AdminGetDoctorDto>
+        {
+            TotalCount = totalCount,
+            TotalPages = totalPages,
+            CurrentPage = page,
+            PageSize = pageSize,
+            Data = _mapper.Map<IEnumerable<AdminGetDoctorDto>>(query)
+        };
     }
 
-    public async Task<IEnumerable<Doctor>> PatientGetAll(int page, int pageSize, string search)
+    public async Task<PaginationResult<PatientGetDoctorDto>> PatientGetAll(int page, int pageSize, string search)
     {
+        var totalCount = await _unitOfWork.Doctors.CountAsync();
+        var totalPages = totalCount / pageSize;
+        if (totalCount % pageSize != 0)
+        {
+            totalPages++;
+        }
+        if (page > totalPages)
+        {
+            page = totalPages;
+        }
         var skip = (page - 1) * pageSize;
-        return await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e =>
+        var query = await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e =>
                             (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).Contains(search), skip, pageSize, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser), nameof(Doctor.Appointments),
                                         $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
+        return new PaginationResult<PatientGetDoctorDto> { 
+            TotalCount = totalCount, 
+            TotalPages = totalPages, 
+            CurrentPage = page, 
+            PageSize = pageSize, 
+            Data = _mapper.Map<IEnumerable<PatientGetDoctorDto>>(query)
+        };
     }
 
     public async Task<Doctor?> GetById(int id)
@@ -49,7 +90,7 @@ public class DoctorService : IDoctorService
     public async Task Delete(Doctor doctor)
     {
         Booking? bookings = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e => e.DoctorId == doctor.Id);
-        if(bookings != null)
+        if (bookings != null)
         {
             throw new InvalidOperationException("Can not delete this doctor, doctor has bookings");
         }

@@ -1,11 +1,13 @@
-﻿using Vezeeta.Core.Models;
+﻿using Vezeeta.Core.Contracts.DoctorDtos;
+using Vezeeta.Core.Contracts;
+using Vezeeta.Core.Models;
 
 namespace Vezeeta.Core.Services;
 
 public interface IDoctorService
 {
-    Task<IEnumerable<Doctor>> AdminGetAll(int page, int pageSize, string search);
-    Task<IEnumerable<Doctor>> PatientGetAll(int page, int pageSize, string search);
+    Task<PaginationResult<AdminGetDoctorDto>> AdminGetAll(int page, int pageSize, string search);
+    Task<PaginationResult<PatientGetDoctorDto>> PatientGetAll(int page, int pageSize, string search);
     Task<Doctor?> GetById(int id);
     Task<Doctor> Create(Doctor doctor);
     Task Update(Doctor doctor);

@@ -45,6 +45,7 @@ public class AuthenticationController : ControllerBase
             List<Claim> authClaims = new List<Claim>
             {
                 new Claim("Id", user.Id.ToString()),
+                new Claim("Role", userRoles.First()),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Role, userRoles.First())
