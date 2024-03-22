@@ -64,7 +64,7 @@ public class DoctorsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = UserRoles.Admin)]
-    public async Task<IActionResult> Add(CreateDoctorDto doctorDto)
+    public async Task<IActionResult> Add([FromForm]CreateDoctorDto doctorDto)
     {
         try
         {
@@ -130,7 +130,7 @@ public class DoctorsController : ControllerBase
 
     [HttpPut]
     [Authorize(Roles = UserRoles.Admin)]
-    public async Task<IActionResult> Edit(UpdateDoctorDto doctorDto)
+    public async Task<IActionResult> Edit([FromForm] UpdateDoctorDto doctorDto)
     {
         try
         {

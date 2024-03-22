@@ -34,7 +34,7 @@ public class PatientsController : ControllerBase
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task<IActionResult> Register(RegisterPatientDto patientDto)
+    public async Task<IActionResult> Register([FromForm]RegisterPatientDto patientDto)
     {
         try
         {
@@ -51,7 +51,10 @@ public class PatientsController : ControllerBase
             }
 
             ApplicationUser patient = _mapper.Map<ApplicationUser>(patientDto);
-            patient.PhotoPath = ProcessUploadedFile(patientDto.Image);
+            if(patientDto.Image is not null )
+            {
+                patient.PhotoPath = ProcessUploadedFile(patientDto.Image);
+            }
             IdentityResult result = await _userManager.CreateAsync(patient, patientDto.Password);
 
             if (!result.Succeeded)
