@@ -60,7 +60,8 @@ public class AppointmentService : IAppointmentService
     }
 
 
-    public async Task<AppointmentTime?> GetAppointmentTime(int id) => await _unitOfWork.AppointmentTimes.GetByIdAsync(id);
+    public async Task<AppointmentTime?> GetAppointmentTime(int id) 
+        => await _unitOfWork.AppointmentTimes.FindWithCriteriaAndIncludesAsync(e => e.Id == id, nameof(AppointmentTime.Appointment));
 
     public async Task UpdateAppointmentTime(AppointmentTime appointmentTime)
     {

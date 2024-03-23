@@ -64,6 +64,12 @@ public class AppointmentsController : ControllerBase
             {
                 return NotFound("Time not Found");
             }
+            int userId = int.Parse(User.FindFirstValue("Id"));
+            int doctorId = await _appointmentService.GetDoctorId(userId);
+            if (time.Appointment.DoctorId != doctorId)
+            {
+                return Unauthorized("You are unauthorized to change other doctors' appointments");
+            }
             time = _mapper.Map(timeDto, time);
             await _appointmentService.UpdateAppointmentTime(time);
             return NoContent();
@@ -83,6 +89,12 @@ public class AppointmentsController : ControllerBase
             if (time == null)
             {
                 return NotFound("Time not Found");
+            }
+            int userId = int.Parse(User.FindFirstValue("Id"));
+            int doctorId = await _appointmentService.GetDoctorId(userId);
+            if (time.Appointment.DoctorId != doctorId)
+            {
+                return Unauthorized("You are unauthorized to delete other doctors' appointments");
             }
             await _appointmentService.DeleteAppointmentTime(time);
             return NoContent();
