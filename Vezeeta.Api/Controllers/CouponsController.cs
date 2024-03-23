@@ -24,6 +24,13 @@ public class CouponsController : ControllerBase
         _couponService = couponService;
     }
 
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAll()
+    {
+        return Ok(await _couponService.GetAll());
+    }
+
     [HttpPost]
     public async Task<IActionResult> Add(CouponDto couponDto)
     {

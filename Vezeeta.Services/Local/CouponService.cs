@@ -1,4 +1,5 @@
-﻿using Vezeeta.Core;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Vezeeta.Core;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Services;
 using static Azure.Core.HttpHeader;
@@ -13,6 +14,12 @@ public class CouponService : ICouponService
     {
         _unitOfWork = unitOfWork;
     }
+
+    public async Task<IEnumerable<Coupon>> GetAll()
+    {
+        return await _unitOfWork.Coupons.GetAllAsync();
+    }
+
     public async Task<Coupon?> GetById(int id)
     {
         return await _unitOfWork.Coupons.FindWithCriteriaAndIncludesAsync(e => e.Id == id && e.Active);
