@@ -11,6 +11,7 @@ internal class BookingsConfiguration :BaseEntityConfiguration<Booking>
         base.Configure(builder);
         builder.Property(e => e.BookingStatus).IsRequired();
         builder.Property(e => e.FinalPrice).IsRequired().HasPrecision(5,2);
+        builder.Property(e => e.AppointmentRealTime).IsRequired();
         
         builder.Property(e => e.DoctorId).IsRequired();
         builder.HasOne(e => e.Doctor).WithMany().HasForeignKey(e => e.DoctorId).OnDelete(DeleteBehavior.Restrict);

@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
-using Azure;
 using Vezeeta.Core;
-using Vezeeta.Core.Contracts.DoctorDtos;
 using Vezeeta.Core.Contracts;
 using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Services;
 using Vezeeta.Core.Contracts.PatientDtos;
 
@@ -26,9 +23,18 @@ public class BookingService : IBookingService
 
     public async Task Book(Booking booking, Coupon? coupon)
     {
+        if(booking.AppointmentTime?.Appointment?.Day.ToString() != booking.AppointmentRealTime.DayOfWeek.ToString())
+        {
+            throw new InvalidOperationException("There is a mismatch between doctor's appointment day and the day you requested");
+        }
+        if(booking.AppointmentTime.Time.ToString() != booking.AppointmentRealTime.ToShortTimeString())
+        {
+            throw new InvalidOperationException("There is a mismatch between doctor's appointment time and the time you requested");
+        }
         Booking? checkBooking = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e => 
                                 e.AppointmentTimeId == booking.AppointmentTimeId && 
-                                (e.BookingStatus.Equals(BookingStatus.Pending) || e.BookingStatus.Equals(BookingStatus.Completed)));
+                                e.AppointmentRealTime == booking.AppointmentRealTime &&
+                                e.BookingStatus.Equals(BookingStatus.Pending));
         if (checkBooking != null)
         {
             throw new InvalidOperationException("appointment time is already booked by another Patient");

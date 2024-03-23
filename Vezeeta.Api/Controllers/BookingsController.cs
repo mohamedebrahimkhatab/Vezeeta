@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Vezeeta.Api.Validators;
 using Vezeeta.Core.Consts;
 using Vezeeta.Core.Contracts.BookingDtos;
 using Vezeeta.Core.Contracts.PatientDtos;
@@ -49,6 +50,12 @@ public class BookingsController : ControllerBase
     {
         try
         {
+            var validator = new BookBookingDtoValidator();
+            var validate = await validator.ValidateAsync(bookingDto);
+            if(!validate.IsValid)
+            {
+                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+            }
             AppointmentTime? appointmentTime = await _bookingService.GetAppointmentTime(bookingDto.AppointmentTimeId);
             if (appointmentTime == null)
             {

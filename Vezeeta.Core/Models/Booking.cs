@@ -17,5 +17,6 @@ public class Booking : BaseEntity
 
     public int AppointmentTimeId { get; set; }
     public AppointmentTime? AppointmentTime { get; set; }
+    public DateTime AppointmentRealTime { get; set; }
 }
       
