@@ -8,6 +8,7 @@ using Vezeeta.Core.Contracts.CouponDtos;
 using Vezeeta.Core.Contracts.AppointmentDtos;
 using Vezeeta.Core.Contracts.BookingDtos;
 using System.Globalization;
+using Vezeeta.Core.Contracts;
 
 namespace Vezeeta.Core.Mapping;
 
@@ -90,5 +91,9 @@ public class MappingProfile : Profile
                                                  .ForMember(e => e.Age, act => act.MapFrom(e
                                                  => e.Patient.DateOfBirth.AddYears(DateTime.Now.Year - e.Patient.DateOfBirth.Year) > DateTime.Now ?
                                                         DateTime.Now.Year - e.Patient.DateOfBirth.Year - 1 : DateTime.Now.Year - e.Patient.DateOfBirth.Year));
+
+        /******************* Booking DTOS **********************************/
+
+        CreateMap<Specialization, SpecializationDto>();
     }
 }
