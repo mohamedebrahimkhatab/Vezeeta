@@ -62,6 +62,10 @@ public class DoctorsController : ControllerBase
         return Ok(_mapper.Map<GetIdDoctorDto>(result));
     }
 
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAllGroupBySpecialize() => Ok(await _doctorService.GetAllGroupBySpecialize());
+
     [HttpPost]
     [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Add([FromForm]CreateDoctorDto doctorDto)
@@ -80,7 +84,7 @@ public class DoctorsController : ControllerBase
                 return BadRequest("this email is already taken");
             }
 
-            Specialization specialization = await _specializationService.GetById(doctorDto.SpecializationId);
+            var specialization = await _specializationService.GetById(doctorDto.SpecializationId);
 
             if (specialization == null)
             {

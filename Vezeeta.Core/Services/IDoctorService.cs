@@ -8,6 +8,7 @@ public interface IDoctorService
 {
     Task<PaginationResult<AdminGetDoctorDto>> AdminGetAll(int page, int pageSize, string search);
     Task<PaginationResult<PatientGetDoctorDto>> PatientGetAll(int page, int pageSize, string search);
+    Task<Dictionary<string, IGrouping<string, PatientGetDoctorDto>>> GetAllGroupBySpecialize();
     Task<Doctor?> GetById(int id);
     Task<Doctor> Create(Doctor doctor);
     Task Update(Doctor doctor);
