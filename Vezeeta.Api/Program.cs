@@ -78,7 +78,8 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 WebApplication app = builder.Build();
 
