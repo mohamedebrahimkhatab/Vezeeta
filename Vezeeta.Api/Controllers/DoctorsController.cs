@@ -62,9 +62,9 @@ public class DoctorsController : ControllerBase
         return Ok(_mapper.Map<GetIdDoctorDto>(result));
     }
 
-    [HttpGet]
+    [HttpGet("{specializeId}")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetAllGroupBySpecialize() => Ok(await _doctorService.GetAllGroupBySpecialize());
+    public async Task<IActionResult> GetBySpecializeId(int specializeId) => Ok(await _doctorService.GetBySpecializeId(specializeId));
 
     [HttpPost]
     [Authorize(Roles = UserRoles.Admin)]

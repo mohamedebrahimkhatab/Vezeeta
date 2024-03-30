@@ -69,14 +69,11 @@ public class DoctorService : IDoctorService
         };
     }
 
-    public async Task<Dictionary<string, IGrouping<string, PatientGetDoctorDto>>> GetAllGroupBySpecialize()
+    public async Task<IEnumerable<PatientGetDoctorDto>> GetBySpecializeId(int specializeId)
     {
-        IEnumerable<Doctor> allDoctors = await _unitOfWork.Doctors.FindAllWithCriteriaAndIncludesAsync(e => true, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser), nameof(Doctor.Appointments),
+        IEnumerable<Doctor> allDoctors = await _unitOfWork.Doctors.FindAllWithCriteriaAndIncludesAsync(e => e.SpecializationId == specializeId, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser), nameof(Doctor.Appointments),
                                         $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
-        IEnumerable<PatientGetDoctorDto> doctorDto = _mapper.Map<IEnumerable<PatientGetDoctorDto>>(allDoctors);
-        IEnumerable<IGrouping<string, PatientGetDoctorDto>> groupBy = doctorDto.GroupBy(e => e.Specialize??"");
-        Dictionary<string, IGrouping<string, PatientGetDoctorDto>> dict = groupBy.ToDictionary(e => e.Key);
-        return dict;
+        return _mapper.Map<IEnumerable<PatientGetDoctorDto>>(allDoctors);
     }
 
     public async Task<Doctor?> GetById(int id)
