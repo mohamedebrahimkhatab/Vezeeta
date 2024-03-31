@@ -1,27 +1,25 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Vezeeta.Core;
-using Vezeeta.Core.Contracts.DoctorDtos;
-using Vezeeta.Core.Contracts;
+﻿using AutoMapper;
+using Vezeeta.Data;
 using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
+using Vezeeta.Core.Contracts;
+using Vezeeta.Services.Interfaces;
 using Vezeeta.Core.Models.Identity;
-using Vezeeta.Core.Services;
-using AutoMapper;
 using Vezeeta.Core.Contracts.PatientDtos;
 
-namespace Vezeeta.Services.Local;
+namespace Vezeeta.Services.ModelServices;
 
 public class PatientService : IPatientService
 {
+    private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IBookingService _bookingService;
-    private readonly IMapper _mapper;
 
     public PatientService(IUnitOfWork unitOfWork, IBookingService bookingService, IMapper mapper)
     {
+        _mapper = mapper;
         _unitOfWork = unitOfWork;
         _bookingService = bookingService;
-        _mapper = mapper;
     }
 
     public async Task<PaginationResult<GetPatientDto>> GetAll(int page, int pageSize, string search)

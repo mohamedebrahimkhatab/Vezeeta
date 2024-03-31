@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using Vezeeta.Core;
-using Vezeeta.Core.Contracts;
+using Vezeeta.Data;
 using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Services;
+using Vezeeta.Core.Contracts;
+using Vezeeta.Services.Interfaces;
 using Vezeeta.Core.Contracts.PatientDtos;
 
-namespace Vezeeta.Services.Local;
+namespace Vezeeta.Services.ModelServices;
 
 public class BookingService : IBookingService
 {

@@ -1,4 +1,6 @@
-﻿namespace Vezeeta.Services.EmailService;
+﻿using Vezeeta.Services.EmailService;
+
+namespace Vezeeta.Services.Interfaces;
 
 public interface IEmailSender
 {

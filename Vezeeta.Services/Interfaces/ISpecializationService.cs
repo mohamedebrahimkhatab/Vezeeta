@@ -1,7 +1,6 @@
 ﻿using Vezeeta.Core.Contracts;
-using Vezeeta.Core.Models;
 
-namespace Vezeeta.Core.Services;
+namespace Vezeeta.Services.Interfaces;
 
 public interface ISpecializationService
 {

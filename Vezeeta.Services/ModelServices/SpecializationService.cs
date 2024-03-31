@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using Vezeeta.Core;
+using Vezeeta.Data;
 using Vezeeta.Core.Contracts;
-using Vezeeta.Core.Contracts.DoctorDtos;
-using Vezeeta.Core.Models;
-using Vezeeta.Core.Services;
+using Vezeeta.Services.Interfaces;
 
-namespace Vezeeta.Services.Local;
+namespace Vezeeta.Services.ModelServices;
 
 public class SpecializationService : ISpecializationService
 {

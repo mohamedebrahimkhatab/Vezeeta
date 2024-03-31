@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
-using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Vezeeta.Api.Validators;
 using Vezeeta.Core.Consts;
-using Vezeeta.Core.Contracts.CouponDtos;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Services;
+using Vezeeta.Api.Validators;
+using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Vezeeta.Core.Contracts.CouponDtos;
 
 namespace Vezeeta.Api.Controllers;
 

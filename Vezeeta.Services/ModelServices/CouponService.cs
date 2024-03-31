@@ -1,10 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
-using Vezeeta.Core;
+﻿using Vezeeta.Data;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Services;
-using static Azure.Core.HttpHeader;
+using Vezeeta.Services.Interfaces;
 
-namespace Vezeeta.Services.Local;
+namespace Vezeeta.Services.ModelServices;
 
 public class CouponService : ICouponService
 {

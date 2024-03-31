@@ -1,15 +1,13 @@
 ﻿using System.Text;
 using System.Security.Claims;
+using Vezeeta.Api.Validators;
 using Microsoft.AspNetCore.Mvc;
 using Vezeeta.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using Vezeeta.Core.Contracts.Authentication;
-using Vezeeta.Core.Consts;
-using Vezeeta.Core.Models;
 using Microsoft.AspNetCore.Authorization;
-using Vezeeta.Api.Validators;
+using Vezeeta.Core.Contracts.Authentication;
 
 namespace Vezeeta.Api.Controllers;
 

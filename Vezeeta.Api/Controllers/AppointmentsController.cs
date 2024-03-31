@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Core.Models;
+using Vezeeta.Core.Consts;
 using System.Security.Claims;
 using Vezeeta.Api.Validators;
-using Vezeeta.Core.Consts;
+using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Vezeeta.Core.Contracts.AppointmentDtos;
-using Vezeeta.Core.Models;
-using Vezeeta.Core.Services;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -35,7 +35,7 @@ public class AppointmentsController : ControllerBase
             {
                 return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
             }
-            int userId = int.Parse(User.FindFirstValue("Id"));
+            int userId = int.Parse(User.FindFirstValue("Id") ?? "");
             int doctorId = await _appointmentService.GetDoctorId(userId);
             var appointments = _mapper.Map<List<Appointment>>(dto.Days);
             await _appointmentService.AddAppointmentsAndPrice(doctorId, dto.Price, appointments);
@@ -64,9 +64,9 @@ public class AppointmentsController : ControllerBase
             {
                 return NotFound("Time not Found");
             }
-            int userId = int.Parse(User.FindFirstValue("Id"));
+            int userId = int.Parse(User.FindFirstValue("Id") ?? "");
             int doctorId = await _appointmentService.GetDoctorId(userId);
-            if (time.Appointment.DoctorId != doctorId)
+            if (time?.Appointment?.DoctorId != doctorId)
             {
                 return Unauthorized("You are unauthorized to change other doctors' appointments");
             }
@@ -90,9 +90,9 @@ public class AppointmentsController : ControllerBase
             {
                 return NotFound("Time not Found");
             }
-            int userId = int.Parse(User.FindFirstValue("Id"));
+            int userId = int.Parse(User.FindFirstValue("Id") ?? "");
             int doctorId = await _appointmentService.GetDoctorId(userId);
-            if (time.Appointment.DoctorId != doctorId)
+            if (time?.Appointment?.DoctorId != doctorId)
             {
                 return Unauthorized("You are unauthorized to delete other doctors' appointments");
             }

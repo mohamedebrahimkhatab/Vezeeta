@@ -1,25 +1,28 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Vezeeta.Core;
-using Vezeeta.Core.Contracts.AppointmentDtos;
+﻿using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Services;
+using Vezeeta.Services.Interfaces;
+using Vezeeta.Data;
 
-namespace Vezeeta.Services.Local;
+namespace Vezeeta.Services.ModelServices;
 
 public class AppointmentService : IAppointmentService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDoctorService _doctorService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AppointmentService(IUnitOfWork unitOfWork, IDoctorService doctorService)
+    public AppointmentService(IUnitOfWork unitOfWork, IDoctorService doctorService, IHttpContextAccessor httpContextAccessor)
     {
         _unitOfWork = unitOfWork;
         _doctorService = doctorService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task AddAppointmentsAndPrice(int doctorId, decimal price, List<Appointment> appointments)
     {
+        var userId = _httpContextAccessor.HttpContext.User.FindFirstValue("userId");
         Doctor? doctor = await _unitOfWork.Doctors.FindWithCriteriaAndIncludesAsync(e => e.Id == doctorId);
         doctor.Price = price;
         await _unitOfWork.CommitAsync();

@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
-using System.Runtime.CompilerServices;
-using Vezeeta.Core.Models;
-using Vezeeta.Core.Services;
+﻿using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Services.Interfaces;
 
 namespace Vezeeta.Api.Controllers;
 

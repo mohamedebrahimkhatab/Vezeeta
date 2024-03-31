@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Vezeeta.Api.Validators;
-using Vezeeta.Core.Consts;
-using Vezeeta.Core.Contracts.BookingDtos;
-using Vezeeta.Core.Contracts.PatientDtos;
 using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Services;
+using Vezeeta.Core.Consts;
+using Vezeeta.Api.Validators;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Vezeeta.Core.Contracts.BookingDtos;
 
 namespace Vezeeta.Api.Controllers;
 

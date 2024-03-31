@@ -1,17 +1,15 @@
 ﻿using AutoMapper;
 using Vezeeta.Core.Consts;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Services;
+using Vezeeta.Api.Validators;
+using Vezeeta.Core.Contracts;
+using Vezeeta.Core.Parameters;
 using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Services.Interfaces;
 using Vezeeta.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Vezeeta.Core.Contracts.DoctorDtos;
 using Microsoft.AspNetCore.Authorization;
-using Vezeeta.Api.Validators;
-using Vezeeta.Core.Contracts.CouponDtos;
-using FluentValidation;
-using Vezeeta.Services.EmailService;
-using Vezeeta.Core.Contracts;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -38,6 +36,13 @@ public class DoctorsController : ControllerBase
         _specializationService = specializationService;
         _hostingEnvironment = hostingEnvironment;
         //_emailSender = emailSender;
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IEnumerable<Doctor>> TestGetAll([FromQuery]DoctorParameters doctorParameters)
+    {
+        return await _doctorService.TestGetAll(doctorParameters);
     }
 
     [HttpGet]
@@ -116,7 +121,7 @@ public class DoctorsController : ControllerBase
 
     private string ProcessUploadedFile(IFormFile photo)
     {
-        string uniqueFileName = null;
+        string uniqueFileName = "";
         if (photo != null)
         {
 

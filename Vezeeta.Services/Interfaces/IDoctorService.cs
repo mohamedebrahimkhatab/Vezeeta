@@ -1,8 +1,9 @@
 ﻿using Vezeeta.Core.Contracts.DoctorDtos;
 using Vezeeta.Core.Contracts;
 using Vezeeta.Core.Models;
+using Vezeeta.Core.Parameters;
 
-namespace Vezeeta.Core.Services;
+namespace Vezeeta.Services.Interfaces;
 
 public interface IDoctorService
 {
@@ -14,4 +15,6 @@ public interface IDoctorService
     Task Update(Doctor doctor);
     Task Delete(Doctor doctor);
     Task<int> GetDoctorId(int userId);
+
+    Task<IEnumerable<Doctor>> TestGetAll(DoctorParameters doctorParameters);
 }

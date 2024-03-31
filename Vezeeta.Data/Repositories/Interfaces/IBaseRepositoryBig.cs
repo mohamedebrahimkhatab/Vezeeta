@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 
-namespace Vezeeta.Core.Repositories;
+namespace Vezeeta.Data.Repositories.Interfaces;
 
-public interface IBaseRepository<T> where T : class
+public interface IBaseRepositoryBig<T> where T : class
 {
     T? GetById(int id);
     Task<T?> GetByIdAsync(int id);

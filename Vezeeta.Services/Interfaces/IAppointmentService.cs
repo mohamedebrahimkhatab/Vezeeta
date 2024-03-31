@@ -1,7 +1,6 @@
-﻿using Vezeeta.Core.Contracts.AppointmentDtos;
-using Vezeeta.Core.Models;
+﻿using Vezeeta.Core.Models;
 
-namespace Vezeeta.Core.Services;
+namespace Vezeeta.Services.Interfaces;
 
 public interface IAppointmentService
 {

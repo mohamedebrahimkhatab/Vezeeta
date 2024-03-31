@@ -1,12 +1,11 @@
-﻿using System.Linq;
-using Vezeeta.Core;
-using Vezeeta.Core.Contracts.DashboardDtos;
-using Vezeeta.Core.Contracts.DoctorDtos;
+﻿using Vezeeta.Data;
 using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Services;
+using Vezeeta.Services.Interfaces;
+using Vezeeta.Core.Contracts.DoctorDtos;
+using Vezeeta.Core.Contracts.DashboardDtos;
 
-namespace Vezeeta.Services.Local;
+namespace Vezeeta.Services.ModelServices;
 
 public class DashboardService : IDashboardService
 {

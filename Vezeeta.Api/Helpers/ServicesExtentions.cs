@@ -1,7 +1,6 @@
-﻿using Vezeeta.Core;
-using Vezeeta.Data;
-using Vezeeta.Core.Services;
-using Vezeeta.Services.Local;
+﻿using Vezeeta.Data;
+using Vezeeta.Services.Interfaces;
+using Vezeeta.Services.ModelServices;
 
 namespace Vezeeta.Api.Helpers;
 

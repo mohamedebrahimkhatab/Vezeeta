@@ -3,7 +3,7 @@ using Vezeeta.Core.Contracts.DoctorDtos;
 using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
 
-namespace Vezeeta.Core.Services;
+namespace Vezeeta.Services.Interfaces;
 
 public interface IDashboardService
 {

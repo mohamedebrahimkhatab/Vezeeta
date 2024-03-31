@@ -1,14 +1,13 @@
 using System.Text;
 using Vezeeta.Data;
 using Vezeeta.Api.Helpers;
-using Vezeeta.Core.Mapping;
+using Microsoft.OpenApi.Models;
 using Vezeeta.Core.Models.Identity;
+using Vezeeta.Services.EmailService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.OpenApi.Models;
-using Vezeeta.Services.EmailService;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +15,8 @@ var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<Ema
 
 //builder.Services.AddSingleton(emailConfig);
 //builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
  options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));

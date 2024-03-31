@@ -1,5 +1,6 @@
 ﻿using MimeKit;
 using MailKit.Net.Smtp;
+using Vezeeta.Services.Interfaces;
 
 
 namespace Vezeeta.Services.EmailService;

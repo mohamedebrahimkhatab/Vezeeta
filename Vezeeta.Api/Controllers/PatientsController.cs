@@ -1,17 +1,15 @@
 ﻿using AutoMapper;
 using Vezeeta.Core.Consts;
+using Vezeeta.Core.Models;
+using Vezeeta.Api.Validators;
+using Vezeeta.Core.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Vezeeta.Services.Interfaces;
 using Vezeeta.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Vezeeta.Core.Contracts.PatientDtos;
-using Vezeeta.Core.Services;
-using System.Collections.Generic;
-using Vezeeta.Core.Models;
 using Vezeeta.Core.Contracts.BookingDtos;
 using Microsoft.AspNetCore.Authorization;
-using Vezeeta.Api.Validators;
-using Vezeeta.Core.Contracts.CouponDtos;
-using Vezeeta.Core.Contracts;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -74,7 +72,7 @@ public class PatientsController : ControllerBase
 
     private string ProcessUploadedFile(IFormFile photo)
     {
-        string uniqueFileName = null;
+        string uniqueFileName = "";
         if (photo != null)
         {
 

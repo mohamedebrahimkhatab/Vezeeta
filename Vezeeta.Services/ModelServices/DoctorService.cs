@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
-using Vezeeta.Core;
-using Vezeeta.Core.Contracts;
-using Vezeeta.Core.Contracts.DoctorDtos;
+using Vezeeta.Data;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Services;
+using Vezeeta.Core.Contracts;
+using Vezeeta.Core.Parameters;
+using Vezeeta.Services.Interfaces;
+using Vezeeta.Core.Contracts.DoctorDtos;
 
-namespace Vezeeta.Services.Local;
+namespace Vezeeta.Services.ModelServices;
 
 public class DoctorService : IDoctorService
 {
@@ -17,6 +18,11 @@ public class DoctorService : IDoctorService
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+    }
+
+    public async Task<IEnumerable<Doctor>> TestGetAll(DoctorParameters doctorParameters)
+    {
+        return await _unitOfWork.Test.GetAllDoctorWithPagination(doctorParameters);
     }
 
     public async Task<PaginationResult<AdminGetDoctorDto>> AdminGetAll(int page, int pageSize, string search)

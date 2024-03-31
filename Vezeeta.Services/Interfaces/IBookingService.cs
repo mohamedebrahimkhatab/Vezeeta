@@ -4,7 +4,7 @@ using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Models.Identity;
 
-namespace Vezeeta.Core.Services;
+namespace Vezeeta.Services.Interfaces;
 
 public interface IBookingService
 {

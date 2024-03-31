@@ -4,7 +4,7 @@ using Vezeeta.Core.Models;
 using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Contracts.PatientDtos;
 
-namespace Vezeeta.Core.Services;
+namespace Vezeeta.Services.Interfaces;
 
 public interface IPatientService
 {
