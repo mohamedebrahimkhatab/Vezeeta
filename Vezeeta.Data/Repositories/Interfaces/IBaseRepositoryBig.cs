@@ -35,4 +35,6 @@ public interface IBaseRepositoryBig<T> where T : class
     int Count(Expression<Func<T, bool>> criteria);
     Task<int> CountAsync();
     Task<int> CountAsync(Expression<Func<T, bool>> criteria);
+
+    Task SaveChanges();
 }

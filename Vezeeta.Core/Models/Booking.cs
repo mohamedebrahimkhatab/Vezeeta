@@ -10,13 +10,13 @@ public class Booking : BaseEntity
     public decimal FinalPrice { get; set; }
 
     public int DoctorId { get; set; }
-    public Doctor? Doctor { get; set; }
+    public Doctor Doctor { get; set; } = null!;
 
     public int PatientId { get; set; }
-    public ApplicationUser? Patient { get; set; }
+    public ApplicationUser Patient { get; set; } = null!;
 
     public int AppointmentTimeId { get; set; }
-    public AppointmentTime? AppointmentTime { get; set; }
+    public AppointmentTime AppointmentTime { get; set; } = null!;
     public DateTime AppointmentRealTime { get; set; }
 }
       

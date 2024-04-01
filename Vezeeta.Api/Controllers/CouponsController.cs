@@ -3,9 +3,9 @@ using Vezeeta.Core.Consts;
 using Vezeeta.Core.Models;
 using Vezeeta.Api.Validators;
 using Microsoft.AspNetCore.Mvc;
-using Vezeeta.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Vezeeta.Core.Contracts.CouponDtos;
+using Vezeeta.Services.DomainServices.Interfaces;
 
 namespace Vezeeta.Api.Controllers;
 

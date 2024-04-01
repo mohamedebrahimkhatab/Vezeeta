@@ -4,12 +4,12 @@ using Vezeeta.Core.Models;
 using Vezeeta.Api.Validators;
 using Vezeeta.Core.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Vezeeta.Services.Interfaces;
 using Vezeeta.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Vezeeta.Core.Contracts.PatientDtos;
 using Vezeeta.Core.Contracts.BookingDtos;
 using Microsoft.AspNetCore.Authorization;
+using Vezeeta.Services.DomainServices.Interfaces;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -42,7 +42,7 @@ public class PatientsController : ControllerBase
             {
                 return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
             }
-            ApplicationUser? user = await _userManager.FindByEmailAsync(patientDto.Email);
+            ApplicationUser? user = await _userManager.FindByEmailAsync(patientDto.Email ?? "");
             if (user != null)
             {
                 return BadRequest("this email is already taken");
@@ -53,7 +53,7 @@ public class PatientsController : ControllerBase
             {
                 patient.PhotoPath = ProcessUploadedFile(patientDto.Image);
             }
-            IdentityResult result = await _userManager.CreateAsync(patient, patientDto.Password);
+            IdentityResult result = await _userManager.CreateAsync(patient, patientDto.Password ?? "");
 
             if (!result.Succeeded)
             {

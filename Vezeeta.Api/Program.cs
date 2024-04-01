@@ -3,11 +3,11 @@ using Vezeeta.Data;
 using Vezeeta.Api.Helpers;
 using Microsoft.OpenApi.Models;
 using Vezeeta.Core.Models.Identity;
-using Vezeeta.Services.EmailService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Vezeeta.Services.Utilities.EmailService;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +44,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = builder.Configuration["JwtSettings:ValidAudience"],
         ValidIssuer = builder.Configuration["JwtSettings:ValidIssuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]??""))
     };
 });
 

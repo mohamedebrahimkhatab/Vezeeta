@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Vezeeta.Services.Interfaces;
+using Vezeeta.Services.DomainServices.Interfaces;
 
 namespace Vezeeta.Api.Controllers;
 

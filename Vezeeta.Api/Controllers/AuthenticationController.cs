@@ -34,22 +34,22 @@ public class AuthenticationController : ControllerBase
         {
             return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
         }
-        ApplicationUser? user = await _userManager.FindByEmailAsync(login.Email);
+        ApplicationUser? user = await _userManager.FindByEmailAsync(login.Email ?? "");
         if(user == null)
             return NotFound("This email is not registered");
-        if (await _userManager.CheckPasswordAsync(user, login.Password))
+        if (await _userManager.CheckPasswordAsync(user, login.Password??""))
         {
             IList<string> userRoles = await _userManager.GetRolesAsync(user);
             List<Claim> authClaims = new List<Claim>
             {
                 new Claim("Id", user.Id.ToString()),
                 new Claim("Role", userRoles.First()),
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Name, user.UserName ?? ""),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Role, userRoles.First())
             };
 
-            SymmetricSecurityKey authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
+            SymmetricSecurityKey authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]??""));
 
             JwtSecurityToken token = new JwtSecurityToken(
                 issuer: _configuration["JwtSettings:ValidIssuer"],

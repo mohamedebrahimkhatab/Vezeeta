@@ -1,5 +1,5 @@
 ﻿using Vezeeta.Core.Models;
-using Vezeeta.Core.Parameters;
+using Vezeeta.Data.Parameters;
 using Vezeeta.Data.Helpers;
 
 namespace Vezeeta.Data.Repositories.Interfaces;

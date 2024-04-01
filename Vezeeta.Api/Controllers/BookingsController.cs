@@ -5,9 +5,9 @@ using Vezeeta.Core.Consts;
 using Vezeeta.Api.Validators;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using Vezeeta.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Vezeeta.Core.Contracts.BookingDtos;
+using Vezeeta.Services.DomainServices.Interfaces;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -29,7 +29,7 @@ public class BookingsController : ControllerBase
     [Authorize(Roles = UserRoles.Patient)]
     public async Task<IActionResult> PatientGetAll()
     {
-        int patientId = int.Parse(User.FindFirstValue("Id"));
+        int patientId = int.Parse(User.FindFirstValue("Id") ?? "");
         IEnumerable<Booking> bookings = await _bookingService.GetPatientBookings(patientId);
         return Ok(_mapper.Map<List<PatientGetBookingDto>>(bookings));
     }
@@ -38,7 +38,7 @@ public class BookingsController : ControllerBase
     [Authorize(Roles = UserRoles.Doctor)]
     public async Task<IActionResult> DoctorGetAll(Days day, int? pageSize, int? pageNumber)
     {
-        int userId = int.Parse(User.FindFirstValue("Id"));
+        int userId = int.Parse(User.FindFirstValue("Id")??"");
         int doctorId = await _bookingService.GetDoctorId(userId);
         return Ok(await _bookingService.GetDoctorBookings(doctorId, day, pageSize ?? 10, pageNumber ?? 1));
     }
@@ -71,7 +71,7 @@ public class BookingsController : ControllerBase
             }
             Booking booking = _mapper.Map<Booking>(bookingDto);
             booking.AppointmentTime = appointmentTime;
-            booking.PatientId = int.Parse(User.FindFirstValue(MyClaims.Id));
+            booking.PatientId = int.Parse(User.FindFirstValue(MyClaims.Id)??"");
             await _bookingService.Book(booking, coupon);
             return Created();
         }

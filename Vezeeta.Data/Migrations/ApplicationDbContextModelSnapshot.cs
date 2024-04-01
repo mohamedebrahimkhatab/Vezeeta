@@ -155,7 +155,7 @@ namespace Vezeeta.Data.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("Vezeeta.Core.Models.AppointmentTime", b =>
@@ -181,7 +181,7 @@ namespace Vezeeta.Data.Migrations
 
                     b.HasIndex("AppointmentId");
 
-                    b.ToTable("AppointmentTimes");
+                    b.ToTable("AppointmentTimes", (string)null);
                 });
 
             modelBuilder.Entity("Vezeeta.Core.Models.Booking", b =>
@@ -227,7 +227,7 @@ namespace Vezeeta.Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Bookings", (string)null);
                 });
 
             modelBuilder.Entity("Vezeeta.Core.Models.Coupon", b =>
@@ -264,7 +264,7 @@ namespace Vezeeta.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Coupons");
+                    b.ToTable("Coupons", (string)null);
                 });
 
             modelBuilder.Entity("Vezeeta.Core.Models.Doctor", b =>
@@ -297,7 +297,7 @@ namespace Vezeeta.Data.Migrations
 
                     b.HasIndex("SpecializationId");
 
-                    b.ToTable("Doctors");
+                    b.ToTable("Doctors", (string)null);
                 });
 
             modelBuilder.Entity("Vezeeta.Core.Models.Identity.ApplicationRole", b =>
@@ -488,7 +488,7 @@ namespace Vezeeta.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Specializations");
+                    b.ToTable("Specializations", (string)null);
 
                     b.HasData(
                         new

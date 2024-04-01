@@ -3,13 +3,17 @@ using Vezeeta.Core.Consts;
 using Vezeeta.Core.Models;
 using Vezeeta.Api.Validators;
 using Vezeeta.Core.Contracts;
-using Vezeeta.Core.Parameters;
+using Vezeeta.Data.Parameters;
 using Microsoft.AspNetCore.Mvc;
-using Vezeeta.Services.Interfaces;
 using Vezeeta.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Vezeeta.Core.Contracts.DoctorDtos;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore.Storage.Json;
+using System.Text.Json.Serialization;
+using System.Net.Http.Json;
+using Newtonsoft.Json;
+using Vezeeta.Services.DomainServices.Interfaces;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -40,21 +44,36 @@ public class DoctorsController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IEnumerable<Doctor>> TestGetAll([FromQuery]DoctorParameters doctorParameters)
+    public async Task<IActionResult> TestGetAll([FromQuery] DoctorParameters doctorParameters)
     {
-        return await _doctorService.TestGetAll(doctorParameters);
+        //if (!doctorParameters.ValidYearRange)
+        //{
+        //    return BadRequest("Max year of birth cannot be less than min year of birth");
+        //}
+        var doctors = await _doctorService.TestGetAll(doctorParameters);
+        var metadata = new
+        {
+            doctors.TotalCount,
+            doctors.PageSize,
+            doctors.CurrentPage,
+            doctors.TotalPages,
+            doctors.HasNext,
+            doctors.HasPrevious
+        };
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        return Ok(doctors);
     }
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult<PaginationResult<AdminGetDoctorDto>>> AdminGetAll(int? page, int? pageSize, string? search) 
+    public async Task<ActionResult<PaginationResult<AdminGetDoctorDto>>> AdminGetAll(int? page, int? pageSize, string? search)
         => Ok(await _doctorService.AdminGetAll(page ?? 1, pageSize ?? 10, search ?? ""));
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult<PaginationResult<PatientGetDoctorDto>>> PatientGetAll(int? page, int? pageSize, string? search) 
+    public async Task<ActionResult<PaginationResult<PatientGetDoctorDto>>> PatientGetAll(int? page, int? pageSize, string? search)
         => Ok(await _doctorService.PatientGetAll(page ?? 1, pageSize ?? 10, search ?? ""));
- 
+
     [HttpGet("{id}")]
     [AllowAnonymous]
     public async Task<ActionResult<GetIdDoctorDto>> GetById(int id)
@@ -73,7 +92,7 @@ public class DoctorsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = UserRoles.Admin)]
-    public async Task<IActionResult> Add([FromForm]CreateDoctorDto doctorDto)
+    public async Task<IActionResult> Add([FromForm] CreateDoctorDto doctorDto)
     {
         try
         {
@@ -83,7 +102,7 @@ public class DoctorsController : ControllerBase
             {
                 return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
             }
-            ApplicationUser? user = await _userManager.FindByEmailAsync(doctorDto.Email);
+            ApplicationUser? user = await _userManager.FindByEmailAsync(doctorDto.Email ?? "");
             if (user != null)
             {
                 return BadRequest("this email is already taken");
@@ -98,7 +117,8 @@ public class DoctorsController : ControllerBase
 
             Doctor doctor = _mapper.Map<Doctor>(doctorDto);
             doctor.SpecializationId = specialization.Id;
-            doctor.ApplicationUser.PhotoPath = ProcessUploadedFile(doctorDto.Image);
+            if (doctorDto.Image != null)
+                doctor.ApplicationUser.PhotoPath = ProcessUploadedFile(doctorDto.Image);
             IdentityResult result = await _userManager.CreateAsync(doctor.ApplicationUser, "Doc*1234");
 
             if (!result.Succeeded)

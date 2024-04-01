@@ -1,7 +1,7 @@
 ﻿using Vezeeta.Core.Enums;
 using Microsoft.AspNetCore.Mvc;
-using Vezeeta.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Vezeeta.Services.DomainServices.Interfaces;
 
 namespace Vezeeta.Api.Controllers;
 
