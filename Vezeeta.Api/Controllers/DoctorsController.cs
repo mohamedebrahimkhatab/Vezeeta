@@ -14,6 +14,7 @@ using System.Text.Json.Serialization;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using Vezeeta.Services.DomainServices.Interfaces;
+using Vezeeta.Services.Utilities;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -44,176 +45,160 @@ public class DoctorsController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> TestGetAll([FromQuery] DoctorParameters doctorParameters)
+    public async Task<IActionResult> AdminGetAll([FromQuery] DoctorParameters doctorParameters)
     {
-        //if (!doctorParameters.ValidYearRange)
-        //{
-        //    return BadRequest("Max year of birth cannot be less than min year of birth");
-        //}
-        var doctors = await _doctorService.TestGetAll(doctorParameters);
-        var metadata = new
-        {
-            doctors.TotalCount,
-            doctors.PageSize,
-            doctors.CurrentPage,
-            doctors.TotalPages,
-            doctors.HasNext,
-            doctors.HasPrevious
-        };
-        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
-        return Ok(doctors);
+        var result = await _doctorService.AdminGetAll(doctorParameters);
+        return StatusCode(result.StatusCode, result.Body);
     }
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult<PaginationResult<AdminGetDoctorDto>>> AdminGetAll(int? page, int? pageSize, string? search)
-        => Ok(await _doctorService.AdminGetAll(page ?? 1, pageSize ?? 10, search ?? ""));
-
-    [HttpGet]
-    [AllowAnonymous]
-    public async Task<ActionResult<PaginationResult<PatientGetDoctorDto>>> PatientGetAll(int? page, int? pageSize, string? search)
-        => Ok(await _doctorService.PatientGetAll(page ?? 1, pageSize ?? 10, search ?? ""));
-
-    [HttpGet("{id}")]
-    [AllowAnonymous]
-    public async Task<ActionResult<GetIdDoctorDto>> GetById(int id)
+    public async Task<IActionResult> PatientGetAll([FromQuery]DoctorParameters doctorParameters)
     {
-        Doctor? result = await _doctorService.GetById(id);
-        if (result == null)
-        {
-            return NotFound();
-        }
-        return Ok(_mapper.Map<GetIdDoctorDto>(result));
+        var result = await _doctorService.PatientGetAll(doctorParameters);
+        return StatusCode(result.StatusCode, result.Body);
     }
 
-    [HttpGet("{specializeId}")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetBySpecializeId(int specializeId) => Ok(await _doctorService.GetBySpecializeId(specializeId));
+    //[HttpGet("{id}")]
+    //[AllowAnonymous]
+    //public async Task<ActionResult<GetIdDoctorDto>> GetById(int id)
+    //{
+    //    Doctor? result = await _doctorService.GetById(id);
+    //    if (result == null)
+    //    {
+    //        return NotFound();
+    //    }
+    //    return Ok(_mapper.Map<GetIdDoctorDto>(result));
+    //}
 
-    [HttpPost]
-    [Authorize(Roles = UserRoles.Admin)]
-    public async Task<IActionResult> Add([FromForm] CreateDoctorDto doctorDto)
-    {
-        try
-        {
-            var validator = new CreateDoctorDtoValidator();
-            var validate = await validator.ValidateAsync(doctorDto);
-            if (!validate.IsValid)
-            {
-                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
-            }
-            ApplicationUser? user = await _userManager.FindByEmailAsync(doctorDto.Email ?? "");
-            if (user != null)
-            {
-                return BadRequest("this email is already taken");
-            }
+    //[HttpGet("{specializeId}")]
+    //[AllowAnonymous]
+    //public async Task<IActionResult> GetBySpecializeId(int specializeId) => Ok(await _doctorService.GetBySpecializeId(specializeId));
 
-            var specialization = await _specializationService.GetById(doctorDto.SpecializationId);
+    //[HttpPost]
+    //[Authorize(Roles = UserRoles.Admin)]
+    //public async Task<IActionResult> Add([FromForm] CreateDoctorDto doctorDto)
+    //{
+    //    try
+    //    {
+    //        var validator = new CreateDoctorDtoValidator();
+    //        var validate = await validator.ValidateAsync(doctorDto);
+    //        if (!validate.IsValid)
+    //        {
+    //            return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+    //        }
+    //        ApplicationUser? user = await _userManager.FindByEmailAsync(doctorDto.Email ?? "");
+    //        if (user != null)
+    //        {
+    //            return BadRequest("this email is already taken");
+    //        }
 
-            if (specialization == null)
-            {
-                return NotFound("Specialization Does not exist");
-            }
+    //        var specialization = await _specializationService.GetById(doctorDto.SpecializationId);
 
-            Doctor doctor = _mapper.Map<Doctor>(doctorDto);
-            doctor.SpecializationId = specialization.Id;
-            if (doctorDto.Image != null)
-                doctor.ApplicationUser.PhotoPath = ProcessUploadedFile(doctorDto.Image);
-            IdentityResult result = await _userManager.CreateAsync(doctor.ApplicationUser, "Doc*1234");
+    //        if (specialization == null)
+    //        {
+    //            return NotFound("Specialization Does not exist");
+    //        }
 
-            if (!result.Succeeded)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, result.Errors.ToString());
-            }
+    //        Doctor doctor = _mapper.Map<Doctor>(doctorDto);
+    //        doctor.SpecializationId = specialization.Id;
+    //        if (doctorDto.Image != null)
+    //            doctor.ApplicationUser.PhotoPath = ProcessUploadedFile(doctorDto.Image);
+    //        IdentityResult result = await _userManager.CreateAsync(doctor.ApplicationUser, "Doc*1234");
 
-            await _userManager.AddToRoleAsync(doctor.ApplicationUser, UserRoles.Doctor);
+    //        if (!result.Succeeded)
+    //        {
+    //            return StatusCode(StatusCodes.Status500InternalServerError, result.Errors.ToString());
+    //        }
 
-            await _doctorService.Create(doctor);
-            //var message = new Message(new string[] { doctorDto.Email }, "Your Pass", "Doc*1234");
-            //await _emailSender.SendEmailAsync(message);
-            return Created();
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
-        }
-    }
+    //        await _userManager.AddToRoleAsync(doctor.ApplicationUser, UserRoles.Doctor);
 
-    private string ProcessUploadedFile(IFormFile photo)
-    {
-        string uniqueFileName = "";
-        if (photo != null)
-        {
+    //        await _doctorService.Create(doctor);
+    //        //var message = new Message(new string[] { doctorDto.Email }, "Your Pass", "Doc*1234");
+    //        //await _emailSender.SendEmailAsync(message);
+    //        return Created();
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+    //    }
+    //}
 
-            string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
-            uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                photo.CopyTo(fileStream);
-            }
-        }
+    //private string ProcessUploadedFile(IFormFile photo)
+    //{
+    //    string uniqueFileName = "";
+    //    if (photo != null)
+    //    {
 
-        return uniqueFileName;
-    }
+    //        string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
+    //        uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
+    //        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+    //        using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+    //        {
+    //            photo.CopyTo(fileStream);
+    //        }
+    //    }
 
-    [HttpPut]
-    [Authorize(Roles = UserRoles.Admin)]
-    public async Task<IActionResult> Edit([FromForm] UpdateDoctorDto doctorDto)
-    {
-        try
-        {
-            var validator = new UpdateDoctorDtoValidator();
-            var validate = await validator.ValidateAsync(doctorDto);
-            if (!validate.IsValid)
-            {
-                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
-            }
-            Doctor? doctor = await _doctorService.GetById(doctorDto.DoctorId);
-            if (doctor == null)
-            {
-                return NotFound("this doctor is not found");
-            }
+    //    return uniqueFileName;
+    //}
 
-            if (doctorDto.Image != null)
-            {
-                if (doctorDto.PhotoPath != null)
-                {
-                    string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "images", doctorDto.PhotoPath);
-                    System.IO.File.Delete(filePath);
-                }
-                doctorDto.PhotoPath = ProcessUploadedFile(doctorDto.Image);
-            }
+    //[HttpPut]
+    //[Authorize(Roles = UserRoles.Admin)]
+    //public async Task<IActionResult> Edit([FromForm] UpdateDoctorDto doctorDto)
+    //{
+    //    try
+    //    {
+    //        var validator = new UpdateDoctorDtoValidator();
+    //        var validate = await validator.ValidateAsync(doctorDto);
+    //        if (!validate.IsValid)
+    //        {
+    //            return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+    //        }
+    //        Doctor? doctor = await _doctorService.GetById(doctorDto.DoctorId);
+    //        if (doctor == null)
+    //        {
+    //            return NotFound("this doctor is not found");
+    //        }
 
-            _mapper.Map(doctorDto, doctor);
+    //        if (doctorDto.Image != null)
+    //        {
+    //            if (doctorDto.PhotoPath != null)
+    //            {
+    //                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "images", doctorDto.PhotoPath);
+    //                System.IO.File.Delete(filePath);
+    //            }
+    //            doctorDto.PhotoPath = ProcessUploadedFile(doctorDto.Image);
+    //        }
 
-            await _doctorService.Update(doctor);
+    //        _mapper.Map(doctorDto, doctor);
 
-            return NoContent();
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
-        }
-    }
+    //        await _doctorService.Update(doctor);
 
-    [HttpDelete("{id}")]
-    [Authorize(Roles = UserRoles.Admin)]
-    public async Task<IActionResult> Delete(int id)
-    {
-        try
-        {
-            Doctor? doctor = await _doctorService.GetById(id);
-            if (doctor == null)
-                return NotFound("Doctor is not exist");
-            var user = doctor.ApplicationUser;
-            await _doctorService.Delete(doctor);
-            await _userManager.DeleteAsync(user);
-            return NoContent();
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
-        }
-    }
+    //        return NoContent();
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+    //    }
+    //}
+
+    //[HttpDelete("{id}")]
+    //[Authorize(Roles = UserRoles.Admin)]
+    //public async Task<IActionResult> Delete(int id)
+    //{
+    //    try
+    //    {
+    //        Doctor? doctor = await _doctorService.GetById(id);
+    //        if (doctor == null)
+    //            return NotFound("Doctor is not exist");
+    //        var user = doctor.ApplicationUser;
+    //        await _doctorService.Delete(doctor);
+    //        await _userManager.DeleteAsync(user);
+    //        return NoContent();
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+    //    }
+    //}
 }

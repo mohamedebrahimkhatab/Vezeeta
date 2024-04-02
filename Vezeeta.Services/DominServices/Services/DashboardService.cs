@@ -16,12 +16,12 @@ public class DashboardService : IDashboardService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<int> GetNumOfDoctors(SearchBy? search)
-    {
-        if (search == null)
-            return await _unitOfWork.Doctors.CountAsync();
-        return await _unitOfWork.Doctors.CountAsync(e => e.CreatedAt >= GetSearchDate(search));
-    }
+    //public async Task<int> GetNumOfDoctors(SearchBy? search)
+    //{
+    //    if (search == null)
+    //        return await _unitOfWork.Doctors.CountAsync();
+    //    return await _unitOfWork.Doctors.CountAsync(e => e.CreatedAt >= GetSearchDate(search));
+    //}
 
     public async Task<int> GetNumOfPatients(SearchBy? search)
     {

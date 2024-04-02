@@ -3,119 +3,102 @@ using Vezeeta.Core.Models;
 using Vezeeta.Core.Contracts;
 using Vezeeta.Data.Parameters;
 using Vezeeta.Core.Contracts.DoctorDtos;
-using Vezeeta.Data.Helpers;
 using Vezeeta.Services.DomainServices.Interfaces;
 using Vezeeta.Data.Repositories.UnitOfWork;
+using Vezeeta.Data.Utilities;
+using Vezeeta.Services.Utilities;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Vezeeta.Data.Repositories.Interfaces;
+
 
 namespace Vezeeta.Services.DomainServices.Services;
 
 public class DoctorService : IDoctorService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IDoctorRepository _repository;
     private readonly IMapper _mapper;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public DoctorService(IUnitOfWork unitOfWork,
-                         IMapper mapper)
+    public DoctorService(IDoctorRepository repository,
+                         IMapper mapper,
+                         IHttpContextAccessor httpContextAccessor)
     {
-        _unitOfWork = unitOfWork;
+        _repository = repository;
         _mapper = mapper;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<PagedList<Doctor>> TestGetAll(DoctorParameters doctorParameters)
+    public async Task<ServiceResponse> AdminGetAll(DoctorParameters doctorParameters)
     {
-        return await _unitOfWork.Test.GetAllDoctorWithPagination(doctorParameters);
-    }
-
-    public async Task<PaginationResult<AdminGetDoctorDto>> AdminGetAll(int page, int pageSize, string search)
-    {
-        var totalCount = await _unitOfWork.Doctors.CountAsync();
-        var totalPages = totalCount / pageSize;
-        if (totalCount % pageSize != 0)
+        try
         {
-            totalPages++;
+            PaginationResponse<Doctor> result = await _repository.GetAllDoctorWithPagination(doctorParameters);
+            _httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
+
+            return new ServiceResponse(StatusCodes.Status200OK, _mapper.Map<IEnumerable<AdminGetDoctorDto>>(result.Data));
         }
-        if (page > totalPages)
+        catch (Exception e)
         {
-            page = totalPages;
+            return new(StatusCodes.Status500InternalServerError, e.Message);
         }
-        var skip = (page - 1) * pageSize;
-        var query = await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e =>
-                            (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).Contains(search), skip, pageSize, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
-        return new PaginationResult<AdminGetDoctorDto>
-        {
-            TotalCount = totalCount,
-            TotalPages = totalPages,
-            CurrentPage = page,
-            PageSize = pageSize,
-            Data = _mapper.Map<IEnumerable<AdminGetDoctorDto>>(query)
-        };
+
     }
 
-    public async Task<PaginationResult<PatientGetDoctorDto>> PatientGetAll(int page, int pageSize, string search)
+    public async Task<ServiceResponse> PatientGetAll(DoctorParameters doctorParameters)
     {
-        var totalCount = await _unitOfWork.Doctors.CountAsync();
-        var totalPages = totalCount / pageSize;
-        if (totalCount % pageSize != 0)
+        try
         {
-            totalPages++;
+            PaginationResponse<Doctor> result = await _repository.GetAllDoctorWithPagination(doctorParameters);
+            _httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
+            return new(StatusCodes.Status200OK, _mapper.Map<IEnumerable<PatientGetDoctorDto>>(result.Data));
         }
-        if (page > totalPages)
+        catch (Exception e)
         {
-            page = totalPages;
+            return new(StatusCodes.Status500InternalServerError, e.Message);
         }
-        var skip = (page - 1) * pageSize;
-        var query = await _unitOfWork.Doctors.FindAllWithCriteriaPagenationAndIncludesAsync(e =>
-                            (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).Contains(search), skip, pageSize, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser), nameof(Doctor.Appointments),
-                                        $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
-        return new PaginationResult<PatientGetDoctorDto>
-        {
-            TotalCount = totalCount,
-            TotalPages = totalPages,
-            CurrentPage = page,
-            PageSize = pageSize,
-            Data = _mapper.Map<IEnumerable<PatientGetDoctorDto>>(query)
-        };
+
     }
 
-    public async Task<IEnumerable<PatientGetDoctorDto>> GetBySpecializeId(int specializeId)
-    {
-        IEnumerable<Doctor> allDoctors = await _unitOfWork.Doctors.FindAllWithCriteriaAndIncludesAsync(e => e.SpecializationId == specializeId, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser), nameof(Doctor.Appointments),
-                                        $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
-        return _mapper.Map<IEnumerable<PatientGetDoctorDto>>(allDoctors);
-    }
+    //public async Task<IEnumerable<PatientGetDoctorDto>> GetBySpecializeId(int specializeId)
+    //{
+    //    IEnumerable<Doctor> allDoctors = await _unitOfWork.Doctors.FindAllWithCriteriaAndIncludesAsync(e => e.SpecializationId == specializeId, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser), nameof(Doctor.Appointments),
+    //                                    $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
+    //    return _mapper.Map<IEnumerable<PatientGetDoctorDto>>(allDoctors);
+    //}
 
-    public async Task<Doctor?> GetById(int id)
-    {
-        return await _unitOfWork.Doctors.FindWithCriteriaAndIncludesAsync(e => e.Id == id, nameof(Doctor.ApplicationUser), nameof(Doctor.Specialization));
-    }
+    //public async Task<Doctor?> GetById(int id)
+    //{
+    //    return await _unitOfWork.Doctors.FindWithCriteriaAndIncludesAsync(e => e.Id == id, nameof(Doctor.ApplicationUser), nameof(Doctor.Specialization));
+    //}
 
-    public async Task<Doctor> Create(Doctor doctor)
-    {
-        await _unitOfWork.Doctors.AddAsync(doctor);
-        await _unitOfWork.Doctors.SaveChanges();
-        return doctor;
-    }
+    //public async Task<Doctor> Create(Doctor doctor)
+    //{
+    //    await _unitOfWork.Doctors.AddAsync(doctor);
+    //    await _unitOfWork.Doctors.SaveChanges();
+    //    return doctor;
+    //}
 
-    public async Task Update(Doctor doctor)
-    {
-        _unitOfWork.Doctors.Update(doctor);
-        await _unitOfWork.Doctors.SaveChanges();
-    }
+    //public async Task Update(Doctor doctor)
+    //{
+    //    _unitOfWork.Doctors.Update(doctor);
+    //    await _unitOfWork.Doctors.SaveChanges();
+    //}
 
-    public async Task Delete(Doctor doctor)
-    {
-        Booking? bookings = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e => e.DoctorId == doctor.Id);
-        if (bookings != null)
-        {
-            throw new InvalidOperationException("Can not delete this doctor, doctor has bookings");
-        }
-        _unitOfWork.Doctors.Delete(doctor);
-        await _unitOfWork.Doctors.SaveChanges();
-    }
+    //public async Task Delete(Doctor doctor)
+    //{
+    //    Booking? bookings = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e => e.DoctorId == doctor.Id);
+    //    if (bookings != null)
+    //    {
+    //        throw new InvalidOperationException("Can not delete this doctor, doctor has bookings");
+    //    }
+    //    _unitOfWork.Doctors.Delete(doctor);
+    //    await _unitOfWork.Doctors.SaveChanges();
+    //}
 
-    public async Task<int> GetDoctorId(int userId)
-    {
-        var doctor = await _unitOfWork.Doctors.FindWithCriteriaAndIncludesAsync(e => e.ApplicationUserId == userId) ?? new();
-        return doctor.Id;
-    }
+    //public async Task<int> GetDoctorId(int userId)
+    //{
+    //    var doctor = await _unitOfWork.Doctors.FindWithCriteriaAndIncludesAsync(e => e.ApplicationUserId == userId) ?? new();
+    //    return doctor.Id;
+    //}
 }

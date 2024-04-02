@@ -20,35 +20,35 @@ public class AppointmentService : IAppointmentService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task AddAppointmentsAndPrice(int doctorId, decimal price, List<Appointment> appointments)
-    {
-        var userId = _httpContextAccessor.HttpContext.User.FindFirstValue("userId");
-        Doctor doctor = await _unitOfWork.Doctors.FindWithCriteriaAndIncludesAsync(e => e.Id == doctorId) ?? new();
-        doctor.Price = price;
-        await _unitOfWork.Doctors.SaveChanges();
-        foreach (Appointment appointment in appointments)
-        {
-            var existed = await _unitOfWork.Appointments.FindWithCriteriaAndIncludesAsync(e =>
-                                                            e.DoctorId == doctorId && e.Day == appointment.Day, nameof(Appointment.AppointmentTimes));
-            if (existed != null)
-            {
-                IEnumerable<TimeOnly> addTimes = appointment.AppointmentTimes.Select(e => e.Time);
-                foreach (var time in addTimes)
-                {
-                    if (!existed.AppointmentTimes.Any(e => e.Time == time))
-                    {
-                        existed.AppointmentTimes.Add(new AppointmentTime { Time = time });
-                    }
-                }
-                await UpdateAppointment(existed);
-            }
-            else
-            {
-                appointment.DoctorId = doctorId;
-                await AddAppointment(appointment);
-            }
-        }
-    }
+    //public async Task AddAppointmentsAndPrice(int doctorId, decimal price, List<Appointment> appointments)
+    //{
+    //    var userId = _httpContextAccessor.HttpContext.User.FindFirstValue("userId");
+    //    Doctor doctor = await _unitOfWork.Doctors.FindWithCriteriaAndIncludesAsync(e => e.Id == doctorId) ?? new();
+    //    doctor.Price = price;
+    //    await _unitOfWork.Doctors.SaveChanges();
+    //    foreach (Appointment appointment in appointments)
+    //    {
+    //        var existed = await _unitOfWork.Appointments.FindWithCriteriaAndIncludesAsync(e =>
+    //                                                        e.DoctorId == doctorId && e.Day == appointment.Day, nameof(Appointment.AppointmentTimes));
+    //        if (existed != null)
+    //        {
+    //            IEnumerable<TimeOnly> addTimes = appointment.AppointmentTimes.Select(e => e.Time);
+    //            foreach (var time in addTimes)
+    //            {
+    //                if (!existed.AppointmentTimes.Any(e => e.Time == time))
+    //                {
+    //                    existed.AppointmentTimes.Add(new AppointmentTime { Time = time });
+    //                }
+    //            }
+    //            await UpdateAppointment(existed);
+    //        }
+    //        else
+    //        {
+    //            appointment.DoctorId = doctorId;
+    //            await AddAppointment(appointment);
+    //        }
+    //    }
+    //}
 
     private async Task AddAppointment(Appointment appointment)
     {
@@ -93,8 +93,8 @@ public class AppointmentService : IAppointmentService
         await _unitOfWork.AppointmentTimes.SaveChanges();
     }
 
-    public async Task<int> GetDoctorId(int userId)
-    {
-        return await _doctorService.GetDoctorId(userId);
-    }
+    //public async Task<int> GetDoctorId(int userId)
+    //{
+    //    return await _doctorService.GetDoctorId(userId);
+    //}
 }

@@ -34,14 +34,14 @@ public class BookingsController : ControllerBase
         return Ok(_mapper.Map<List<PatientGetBookingDto>>(bookings));
     }
 
-    [HttpGet]
-    [Authorize(Roles = UserRoles.Doctor)]
-    public async Task<IActionResult> DoctorGetAll(Days day, int? pageSize, int? pageNumber)
-    {
-        int userId = int.Parse(User.FindFirstValue("Id")??"");
-        int doctorId = await _bookingService.GetDoctorId(userId);
-        return Ok(await _bookingService.GetDoctorBookings(doctorId, day, pageSize ?? 10, pageNumber ?? 1));
-    }
+    //[HttpGet]
+    //[Authorize(Roles = UserRoles.Doctor)]
+    //public async Task<IActionResult> DoctorGetAll(Days day, int? pageSize, int? pageNumber)
+    //{
+    //    int userId = int.Parse(User.FindFirstValue("Id")??"");
+    //    int doctorId = await _bookingService.GetDoctorId(userId);
+    //    return Ok(await _bookingService.GetDoctorBookings(doctorId, day, pageSize ?? 10, pageNumber ?? 1));
+    //}
 
     [HttpPost]
     [Authorize(Roles = UserRoles.Patient)]

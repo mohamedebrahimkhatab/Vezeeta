@@ -154,8 +154,8 @@ public class BookingService : IBookingService
         };
 
     }
-    public async Task<int> GetDoctorId(int userId)
-    {
-        return await _doctorService.GetDoctorId(userId);
-    }
+    //public async Task<int> GetDoctorId(int userId)
+    //{
+    //    return await _doctorService.GetDoctorId(userId);
+    //}
 }

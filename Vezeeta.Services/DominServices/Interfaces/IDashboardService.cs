@@ -7,7 +7,7 @@ namespace Vezeeta.Services.DomainServices.Interfaces;
 
 public interface IDashboardService
 {
-    Task<int> GetNumOfDoctors(SearchBy? search);
+    //Task<int> GetNumOfDoctors(SearchBy? search);
     Task<int> GetNumOfPatients(SearchBy? search);
     Task<object> GetNumOfRequests(SearchBy? search);
     Task<IEnumerable<SpecializtionCountDto>?> GetTop5Speializations();
