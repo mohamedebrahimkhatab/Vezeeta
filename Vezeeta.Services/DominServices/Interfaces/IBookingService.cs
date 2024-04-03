@@ -9,7 +9,7 @@ namespace Vezeeta.Services.DomainServices.Interfaces;
 public interface IBookingService
 {
     Task<Booking?> GetById(int id);
-    Task Book(Booking booking, Coupon? coupon);
+    //Task Book(Booking booking, Coupon? coupon);
     Task<AppointmentTime?> GetAppointmentTime(int appointmentTimeId);
     Task<Coupon?> GetCoupon(string discountCode);
     Task ConfirmCheckUp(Booking booking);

@@ -2,9 +2,8 @@
 
 public interface IBaseRepository<T> where T : class
 {
-    Task<T?> GetByIdAsync(int id);
-    IQueryable<T> GetAll();
+    Task<T?> GetByIdAsync(int id, params string[] includes);
     Task AddAsync(T entity);
-    void Update(T entity);
-    void Delete(T entity);
+    Task UpdateAsync(T entity);
+    Task DeleteAsync(T entity);
 }

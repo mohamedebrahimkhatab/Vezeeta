@@ -11,9 +11,8 @@ public interface IDoctorService
 {
     Task<ServiceResponse> AdminGetAll(DoctorParameters doctorParameters);
     Task<ServiceResponse> PatientGetAll(DoctorParameters doctorParameters);
-    //Task<IEnumerable<PatientGetDoctorDto>> GetBySpecializeId(int specializeId);
-    //Task<Doctor?> GetById(int id);
-    //Task<Doctor> Create(Doctor doctor);
+    Task<ServiceResponse> GetById(int id);
+    Task<ServiceResponse> CreateAsync(CreateDoctorDto doctorDto, string root);
     //Task Update(Doctor doctor);
     //Task Delete(Doctor doctor);
     //Task<int> GetDoctorId(int userId);

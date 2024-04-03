@@ -21,39 +21,39 @@ public class BookingService : IBookingService
         _mapper = mapper;
     }
 
-    public async Task Book(Booking booking, Coupon? coupon)
-    {
-        if (booking.AppointmentTime?.Appointment?.Day.ToString() != booking.AppointmentRealTime.DayOfWeek.ToString())
-        {
-            throw new InvalidOperationException("There is a mismatch between doctor's appointment day and the day you requested");
-        }
-        if (booking.AppointmentTime.Time.ToString() != booking.AppointmentRealTime.ToShortTimeString())
-        {
-            throw new InvalidOperationException("There is a mismatch between doctor's appointment time and the time you requested");
-        }
-        Booking? checkBooking = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e =>
-                                e.AppointmentTimeId == booking.AppointmentTimeId &&
-                                e.AppointmentRealTime == booking.AppointmentRealTime &&
-                                e.BookingStatus.Equals(BookingStatus.Pending));
-        if (checkBooking != null)
-        {
-            throw new InvalidOperationException("appointment time is already booked by another Patient");
-        }
-        Doctor? doctor = await _unitOfWork.Doctors.GetByIdAsync(booking.AppointmentTime.Appointment.DoctorId);
-        if (doctor == null)
-        {
-            throw new InvalidOperationException("doctor doesn't exist");
-        }
-        if (doctor.Price == null)
-        {
-            throw new InvalidOperationException("doctor didn't set the price");
-        }
-        booking.FinalPrice = await GetFinalPrice(booking.PatientId, (decimal)doctor.Price, coupon);
-        booking.BookingStatus = BookingStatus.Pending;
-        booking.DoctorId = doctor.Id;
-        await _unitOfWork.Bookings.AddAsync(booking);
-        await _unitOfWork.Bookings.SaveChanges();
-    }
+    //public async Task Book(Booking booking, Coupon? coupon)
+    //{
+    //    if (booking.AppointmentTime?.Appointment?.Day.ToString() != booking.AppointmentRealTime.DayOfWeek.ToString())
+    //    {
+    //        throw new InvalidOperationException("There is a mismatch between doctor's appointment day and the day you requested");
+    //    }
+    //    if (booking.AppointmentTime.Time.ToString() != booking.AppointmentRealTime.ToShortTimeString())
+    //    {
+    //        throw new InvalidOperationException("There is a mismatch between doctor's appointment time and the time you requested");
+    //    }
+    //    Booking? checkBooking = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e =>
+    //                            e.AppointmentTimeId == booking.AppointmentTimeId &&
+    //                            e.AppointmentRealTime == booking.AppointmentRealTime &&
+    //                            e.BookingStatus.Equals(BookingStatus.Pending));
+    //    if (checkBooking != null)
+    //    {
+    //        throw new InvalidOperationException("appointment time is already booked by another Patient");
+    //    }
+    //    Doctor? doctor = await _unitOfWork.Doctors.GetByIdAsync(booking.AppointmentTime.Appointment.DoctorId);
+    //    if (doctor == null)
+    //    {
+    //        throw new InvalidOperationException("doctor doesn't exist");
+    //    }
+    //    if (doctor.Price == null)
+    //    {
+    //        throw new InvalidOperationException("doctor didn't set the price");
+    //    }
+    //    booking.FinalPrice = await GetFinalPrice(booking.PatientId, (decimal)doctor.Price, coupon);
+    //    booking.BookingStatus = BookingStatus.Pending;
+    //    booking.DoctorId = doctor.Id;
+    //    await _unitOfWork.Bookings.AddAsync(booking);
+    //    await _unitOfWork.Bookings.SaveChanges();
+    //}
 
     private async Task<decimal> GetFinalPrice(int patientId, decimal price, Coupon? coupon)
     {

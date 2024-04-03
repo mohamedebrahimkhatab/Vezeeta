@@ -43,43 +43,43 @@ public class BookingsController : ControllerBase
     //    return Ok(await _bookingService.GetDoctorBookings(doctorId, day, pageSize ?? 10, pageNumber ?? 1));
     //}
 
-    [HttpPost]
-    [Authorize(Roles = UserRoles.Patient)]
-    public async Task<IActionResult> Book(BookBookingDto bookingDto)
-    {
-        try
-        {
-            var validator = new BookBookingDtoValidator();
-            var validate = await validator.ValidateAsync(bookingDto);
-            if(!validate.IsValid)
-            {
-                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
-            }
-            AppointmentTime? appointmentTime = await _bookingService.GetAppointmentTime(bookingDto.AppointmentTimeId);
-            if (appointmentTime == null)
-            {
-                return NotFound("this time doesn't exist");
-            }
-            Coupon? coupon = null;
-            if (!string.IsNullOrEmpty(bookingDto.DiscountCode))
-            {
-                coupon = await _bookingService.GetCoupon(bookingDto.DiscountCode);
-                if (coupon == null)
-                {
-                    return NotFound("this Discount code coupon doesn't exist");
-                }
-            }
-            Booking booking = _mapper.Map<Booking>(bookingDto);
-            booking.AppointmentTime = appointmentTime;
-            booking.PatientId = int.Parse(User.FindFirstValue(MyClaims.Id)??"");
-            await _bookingService.Book(booking, coupon);
-            return Created();
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
-        }
-    }
+    //[HttpPost]
+    //[Authorize(Roles = UserRoles.Patient)]
+    //public async Task<IActionResult> Book(BookBookingDto bookingDto)
+    //{
+    //    try
+    //    {
+    //        var validator = new BookBookingDtoValidator();
+    //        var validate = await validator.ValidateAsync(bookingDto);
+    //        if(!validate.IsValid)
+    //        {
+    //            return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+    //        }
+    //        AppointmentTime? appointmentTime = await _bookingService.GetAppointmentTime(bookingDto.AppointmentTimeId);
+    //        if (appointmentTime == null)
+    //        {
+    //            return NotFound("this time doesn't exist");
+    //        }
+    //        Coupon? coupon = null;
+    //        if (!string.IsNullOrEmpty(bookingDto.DiscountCode))
+    //        {
+    //            coupon = await _bookingService.GetCoupon(bookingDto.DiscountCode);
+    //            if (coupon == null)
+    //            {
+    //                return NotFound("this Discount code coupon doesn't exist");
+    //            }
+    //        }
+    //        Booking booking = _mapper.Map<Booking>(bookingDto);
+    //        booking.AppointmentTime = appointmentTime;
+    //        booking.PatientId = int.Parse(User.FindFirstValue(MyClaims.Id)??"");
+    //        await _bookingService.Book(booking, coupon);
+    //        return Created();
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+    //    }
+    //}
 
     [HttpPut]
     [Authorize(Roles = UserRoles.Doctor)]

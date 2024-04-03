@@ -6,5 +6,5 @@ namespace Vezeeta.Data.Repositories.Interfaces;
 
 public interface IDoctorRepository : IBaseRepository<Doctor>
 {
-    Task<PaginationResponse<Doctor>> GetAllDoctorWithPagination(DoctorParameters doctorParameters);
+    Task<PaginationResponse<Doctor>> SearchDoctorsWithPagination(DoctorParameters doctorParameters, params string[] includes);
 }

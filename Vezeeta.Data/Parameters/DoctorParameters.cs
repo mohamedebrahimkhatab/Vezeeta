@@ -9,4 +9,5 @@ public class DoctorParameters : QueryStringParameters
 
     public string FirstName { get; set; } = "";
     public string LastName { get; set; } = "";
+    public int SpecializeId { get; set; }
 }

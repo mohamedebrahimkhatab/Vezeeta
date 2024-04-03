@@ -1,4 +1,5 @@
-﻿using Vezeeta.Data.Repositories.Implementation;
+﻿using Vezeeta.Core.Models;
+using Vezeeta.Data.Repositories.Implementation;
 using Vezeeta.Data.Repositories.Interfaces;
 using Vezeeta.Data.Repositories.UnitOfWork;
 using Vezeeta.Services.DomainServices.Interfaces;
@@ -19,5 +20,6 @@ public static class ServicesExtentions
         services.AddTransient<IDashboardService, DashboardService>();
         services.AddTransient<IAppointmentService, AppointmentService>();
         services.AddTransient<ISpecializationService, SpecializationService>();
+        services.AddTransient<IBaseRepository<Specialization>,  BaseRepository<Specialization>>();
     }
 }

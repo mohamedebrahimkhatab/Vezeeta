@@ -1,8 +1,11 @@
-﻿using Vezeeta.Data.Repositories.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using Vezeeta.Core.Models;
+using Vezeeta.Data.Repositories.Interfaces;
 
 namespace Vezeeta.Data.Repositories.Implementation;
 
-public class BaseRepository<T> : IBaseRepository<T> where T : class
+public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 {
     protected readonly ApplicationDbContext _context;
 
@@ -10,28 +13,47 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         _context = context;
     }
-    public IQueryable<T> GetAll()
-    {
-        return _context.Set<T>().AsQueryable();
-    }
 
-    public async Task<T?> GetByIdAsync(int id)
+    public async Task<T?> GetByIdAsync(int id, params string[] includes)
     {
-        return await _context.Set<T>().FindAsync(id);
+        var query = ApplyIncludes(GetAll(), includes);
+        return await ApplyCondition(query, e => e.Id == id).FirstOrDefaultAsync();
     }
 
     public async Task AddAsync(T entity)
     {
         await _context.Set<T>().AddAsync(entity);
+        await _context.SaveChangesAsync();
     }
 
-    public void Update(T entity)
+    public async Task UpdateAsync(T entity)
     {
         _context.Update(entity);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(T entity)
+    public async Task DeleteAsync(T entity)
     {
-        _context.Update(entity);
+        _context.Remove(entity);
+        await _context.SaveChangesAsync();
+    }
+
+    protected IQueryable<T> GetAll()
+    {
+        return _context.Set<T>().AsQueryable();
+    }
+
+    protected IQueryable<T> ApplyIncludes(IQueryable<T> query,params string[] includes)
+    {
+        foreach (string include in includes)
+        {
+            query = query.Include(include);
+        }
+        return query;
+    }
+
+    protected IQueryable<T> ApplyCondition(IQueryable<T> query, Expression<Func<T, bool>> condition)
+    {
+        return query.Where(condition);
     }
 }
