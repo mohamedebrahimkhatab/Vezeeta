@@ -1,18 +1,12 @@
 ﻿using AutoMapper;
 using Vezeeta.Core.Consts;
-using Vezeeta.Core.Models;
 using Vezeeta.Api.Validators;
-using Vezeeta.Core.Contracts;
 using Vezeeta.Data.Parameters;
 using Microsoft.AspNetCore.Mvc;
 using Vezeeta.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Vezeeta.Core.Contracts.DoctorDtos;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore.Storage.Json;
-using System.Text.Json.Serialization;
-using System.Net.Http.Json;
-using Newtonsoft.Json;
 using Vezeeta.Services.DomainServices.Interfaces;
 using Vezeeta.Services.Utilities;
 
@@ -24,8 +18,6 @@ public class DoctorsController : ControllerBase
 {
     private readonly IDoctorService _doctorService;
     private readonly IMapper _mapper;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly ISpecializationService _specializationService;
     private readonly IWebHostEnvironment _hostingEnvironment;
     //private readonly IEmailSender _emailSender;
 
@@ -37,8 +29,6 @@ public class DoctorsController : ControllerBase
     {
         _doctorService = doctorService;
         _mapper = mapper;
-        _userManager = userManager;
-        _specializationService = specializationService;
         _hostingEnvironment = hostingEnvironment;
         //_emailSender = emailSender;
     }
@@ -79,8 +69,8 @@ public class DoctorsController : ControllerBase
             {
                 return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
             }
-            await _doctorService.CreateAsync(doctorDto, _hostingEnvironment.WebRootPath);
-            return Created();
+            var result = await _doctorService.CreateAsync(doctorDto, _hostingEnvironment.WebRootPath);
+            return StatusCode(result.StatusCode, result.Body);
         }
         catch (Exception e)
         {
@@ -88,47 +78,30 @@ public class DoctorsController : ControllerBase
         }
     }
 
-    
 
-    //[HttpPut]
-    //[Authorize(Roles = UserRoles.Admin)]
-    //public async Task<IActionResult> Edit([FromForm] UpdateDoctorDto doctorDto)
-    //{
-    //    try
-    //    {
-    //        var validator = new UpdateDoctorDtoValidator();
-    //        var validate = await validator.ValidateAsync(doctorDto);
-    //        if (!validate.IsValid)
-    //        {
-    //            return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
-    //        }
-    //        Doctor? doctor = await _doctorService.GetById(doctorDto.DoctorId);
-    //        if (doctor == null)
-    //        {
-    //            return NotFound("this doctor is not found");
-    //        }
 
-    //        if (doctorDto.Image != null)
-    //        {
-    //            if (doctorDto.PhotoPath != null)
-    //            {
-    //                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "images", doctorDto.PhotoPath);
-    //                System.IO.File.Delete(filePath);
-    //            }
-    //            doctorDto.PhotoPath = ProcessUploadedFile(doctorDto.Image);
-    //        }
+    [HttpPut]
+    [Authorize(Roles = UserRoles.Admin)]
+    public async Task<IActionResult> Edit([FromForm] UpdateDoctorDto doctorDto)
+    {
+        try
+        {
+            var validator = new UpdateDoctorDtoValidator();
+            var validate = await validator.ValidateAsync(doctorDto);
+            if (!validate.IsValid)
+            {
+                return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
+            }
+            
+            var result = await _doctorService.UpdateAsync(doctorDto, _hostingEnvironment.WebRootPath);
 
-    //        _mapper.Map(doctorDto, doctor);
-
-    //        await _doctorService.Update(doctor);
-
-    //        return NoContent();
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
-    //    }
-    //}
+            return StatusCode(result.StatusCode, result.Body);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
 
     //[HttpDelete("{id}")]
     //[Authorize(Roles = UserRoles.Admin)]

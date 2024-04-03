@@ -11,15 +11,22 @@ public static class ServicesExtentions
 {
     public static void AddLocalServices(this IServiceCollection services)
     {
-        services.AddTransient<IUnitOfWork, UnitOfWork>();
-        services.AddTransient<ICouponService, CouponService>();
-        services.AddTransient<IDoctorService, DoctorService>();
-        services.AddTransient<IDoctorRepository, DoctorRepository>();
-        services.AddTransient<IBookingService, BookingService>();
-        services.AddTransient<IPatientService, PatientService>();
-        services.AddTransient<IDashboardService, DashboardService>();
-        services.AddTransient<IAppointmentService, AppointmentService>();
-        services.AddTransient<ISpecializationService, SpecializationService>();
-        services.AddTransient<IBaseRepository<Specialization>,  BaseRepository<Specialization>>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ICouponService, CouponService>();
+
+        services.AddScoped<IDoctorService, DoctorService>();
+
+        services.AddScoped<IBookingService, BookingService>();
+
+        services.AddScoped<IPatientService, PatientService>();
+
+
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IAppointmentService, AppointmentService>();
+
+        services.AddScoped<ISpecializationService, SpecializationService>();
+
+        services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+        services.AddScoped(typeof(IPaginationRepository<>), typeof(PaginationRepository<>));
     }
 }

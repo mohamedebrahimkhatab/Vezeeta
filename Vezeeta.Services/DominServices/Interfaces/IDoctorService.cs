@@ -13,7 +13,7 @@ public interface IDoctorService
     Task<ServiceResponse> PatientGetAll(DoctorParameters doctorParameters);
     Task<ServiceResponse> GetById(int id);
     Task<ServiceResponse> CreateAsync(CreateDoctorDto doctorDto, string root);
-    //Task Update(Doctor doctor);
+    Task<ServiceResponse> UpdateAsync(UpdateDoctorDto doctorDto, string root);
     //Task Delete(Doctor doctor);
     //Task<int> GetDoctorId(int userId);
 

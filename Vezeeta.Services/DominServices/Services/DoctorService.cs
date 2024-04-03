@@ -1,33 +1,35 @@
 ﻿using AutoMapper;
-using Vezeeta.Core.Models;
-using Vezeeta.Core.Contracts;
-using Vezeeta.Data.Parameters;
-using Vezeeta.Core.Contracts.DoctorDtos;
-using Vezeeta.Services.DomainServices.Interfaces;
-using Vezeeta.Data.Repositories.UnitOfWork;
-using Vezeeta.Data.Utilities;
-using Vezeeta.Services.Utilities;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Vezeeta.Data.Repositories.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using Vezeeta.Core.Models.Identity;
-using Vezeeta.Data.Repositories.Implementation;
-using Vezeeta.Services.Utilities.FileService;
-using Vezeeta.Core.Consts;
+using System.Linq.Expressions;
 
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+
+using Vezeeta.Core.Models;
+using Vezeeta.Core.Consts;
+using Vezeeta.Core.Models.Identity;
+using Vezeeta.Core.Contracts.DoctorDtos;
+
+using Vezeeta.Data.Utilities;
+using Vezeeta.Data.Parameters;
+using Vezeeta.Data.Repositories.Interfaces;
+
+using Vezeeta.Services.Utilities;
+
+using Vezeeta.Services.Utilities.FileService;
+using Vezeeta.Services.DomainServices.Interfaces;
 
 namespace Vezeeta.Services.DomainServices.Services;
 
 public class DoctorService : IDoctorService
 {
-    private readonly IDoctorRepository _repository;
+    private readonly IPaginationRepository<Doctor> _repository;
     private readonly IBaseRepository<Specialization> _specializationRepository;
     private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public DoctorService(IDoctorRepository repository,
+    public DoctorService(IPaginationRepository<Doctor> repository,
                          IBaseRepository<Specialization> specializationRepository,
                          IMapper mapper,
                          IHttpContextAccessor httpContextAccessor,
@@ -44,7 +46,8 @@ public class DoctorService : IDoctorService
     {
         try
         {
-            PaginationResponse<Doctor> result = await _repository.SearchDoctorsWithPagination(doctorParameters, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
+            PaginationResponse<Doctor> result = await _repository.SearchWithPagination(doctorParameters.PaginationParameters, 
+                                                              GetDoctorCondition(doctorParameters), nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
             _httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
             return new ServiceResponse(StatusCodes.Status200OK, _mapper.Map<IEnumerable<AdminGetDoctorDto>>(result.Data));
         }
@@ -59,7 +62,7 @@ public class DoctorService : IDoctorService
     {
         try
         {
-            PaginationResponse<Doctor> result = await _repository.SearchDoctorsWithPagination(doctorParameters, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser), nameof(Doctor.Appointments), $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
+            PaginationResponse<Doctor> result = await _repository.SearchWithPagination(doctorParameters.PaginationParameters, GetDoctorCondition(doctorParameters), nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser), nameof(Doctor.Appointments), $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
             _httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
             return new(StatusCodes.Status200OK, _mapper.Map<IEnumerable<PatientGetDoctorDto>>(result.Data));
         }
@@ -88,46 +91,70 @@ public class DoctorService : IDoctorService
 
     public async Task<ServiceResponse> CreateAsync(CreateDoctorDto doctorDto, string root)
     {
-        if (string.IsNullOrEmpty(doctorDto.Email))
-            return new(StatusCodes.Status400BadRequest, "This Email is invalid!");
+        try
+        {
+            if (string.IsNullOrEmpty(doctorDto.Email))
+                return new(StatusCodes.Status400BadRequest, "This Email is invalid!");
 
-        var user = await _userManager.FindByEmailAsync(doctorDto.Email);
-        if (user is not null)
-            return new(StatusCodes.Status400BadRequest, "This Email is already registered");
+            var user = await _userManager.FindByEmailAsync(doctorDto.Email);
+            if (user is not null)
+                return new(StatusCodes.Status400BadRequest, "This Email is already registered");
 
-        var specialization = await _specializationRepository.GetByIdAsync(doctorDto.SpecializationId);
-        if (specialization is null)
-            return new(StatusCodes.Status404NotFound, "This Specialization is not found");
+            var specialization = await _specializationRepository.GetByIdAsync(doctorDto.SpecializationId);
+            if (specialization is null)
+                return new(StatusCodes.Status404NotFound, "This Specialization is not found");
 
-        Doctor doctor = _mapper.Map<Doctor>(doctorDto);
+            Doctor doctor = _mapper.Map<Doctor>(doctorDto);
 
-        doctor.SpecializationId = specialization.Id;
+            doctor.SpecializationId = specialization.Id;
 
-        if (doctorDto.Image != null)
-            doctor.ApplicationUser.PhotoPath = FileUploader.Upload(doctorDto.Image, root);
+            if (doctorDto.Image != null)
+                doctor.ApplicationUser.PhotoPath = FileUploader.Upload(doctorDto.Image, root);
 
-        IdentityResult result = await _userManager.CreateAsync(doctor.ApplicationUser, "Doc*1234");
+            IdentityResult result = await _userManager.CreateAsync(doctor.ApplicationUser, "Doc*1234");
 
-        if(!result.Succeeded)
-            return new(StatusCodes.Status500InternalServerError, result.Errors.ToString());
+            if (!result.Succeeded)
+                return new(StatusCodes.Status500InternalServerError, result.Errors.ToString());
 
-        await _userManager.AddToRoleAsync(doctor.ApplicationUser, UserRoles.Doctor);
+            await _userManager.AddToRoleAsync(doctor.ApplicationUser, UserRoles.Doctor);
 
-        await _repository.AddAsync(doctor);
+            await _repository.AddAsync(doctor);
 
-        //var message = new Message(new string[] { doctorDto.Email }, "Your Pass", "Doc*1234");
-        //await _emailSender.SendEmailAsync(message);
+            //var message = new Message(new string[] { doctorDto.Email }, "Your Pass", "Doc*1234");
+            //await _emailSender.SendEmailAsync(message);
 
-        return new(StatusCodes.Status201Created, doctor);
+            return new(StatusCodes.Status201Created, _mapper.Map<GetIdDoctorDto>(doctor));
+
+        }
+        catch (Exception e)
+        {
+            return new(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
 
-    //public async Task Update(Doctor doctor)
-    //{
-    //    _unitOfWork.Doctors.Update(doctor);
-    //    await _unitOfWork.Doctors.SaveChanges();
-    //}
+    public async Task<ServiceResponse> UpdateAsync(UpdateDoctorDto doctorDto, string root)
+    {
+        try
+        {
+            var doctor = await _repository.GetByIdAsync(doctorDto.DoctorId, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
+            if (doctor == null)
+            {
+                return new(StatusCodes.Status404NotFound, "this doctor is not found");
+            }
+            doctorDto.PhotoPath = FileUploader.Update(doctorDto.Image, doctorDto.PhotoPath, root);
 
-    //public async Task Delete(Doctor doctor)
+            _mapper.Map(doctorDto, doctor);
+
+            await _repository.UpdateAsync(doctor);
+            return new(StatusCodes.Status204NoContent, _mapper.Map<GetIdDoctorDto>(doctor));
+        }
+        catch (Exception e)
+        {
+            return new(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
+
+    //public async Task Delete(int id)
     //{
     //    Booking? bookings = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e => e.DoctorId == doctor.Id);
     //    if (bookings != null)
@@ -138,9 +165,10 @@ public class DoctorService : IDoctorService
     //    await _unitOfWork.Doctors.SaveChanges();
     //}
 
-    //public async Task<int> GetDoctorId(int userId)
-    //{
-    //    var doctor = await _unitOfWork.Doctors.FindWithCriteriaAndIncludesAsync(e => e.ApplicationUserId == userId) ?? new();
-    //    return doctor.Id;
-    //}
+    Expression<Func<Doctor, bool>> GetDoctorCondition(DoctorParameters doctorParameters)
+    {
+        return e => (doctorParameters.SpecializeId != 0 ? e.SpecializationId == doctorParameters.SpecializeId : true) &&
+                                                                        (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).ToLower().Contains(doctorParameters.NameParameters.NameQuery.ToLower());
+
+    }
 }

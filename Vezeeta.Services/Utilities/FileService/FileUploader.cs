@@ -15,4 +15,18 @@ internal class FileUploader
         }
         return uniqueFileName;
     }
+
+    public static string? Update(IFormFile? image, string? photoPath, string root)
+    {
+        if (image != null)
+        {
+            if (photoPath != null)
+            {
+                string filePath = Path.Combine(root, "images", photoPath);
+                File.Delete(filePath);
+            }
+            return Upload(image, root);
+        }
+        return photoPath;
+    }
 }

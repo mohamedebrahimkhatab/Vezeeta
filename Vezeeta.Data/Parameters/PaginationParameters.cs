@@ -1,6 +1,6 @@
 ﻿namespace Vezeeta.Data.Parameters;
 
-public class QueryStringParameters
+public class PaginationParameters
 {
     const int maxPageSize = 50;
     public int PageNumber { get; set; } = 1;

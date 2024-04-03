@@ -1,13 +1,8 @@
 ﻿namespace Vezeeta.Data.Parameters;
 
-public class DoctorParameters : QueryStringParameters
+public class DoctorParameters
 {
-    //public int MinYearOfBirth { get; set; }
-    //public int MaxYearOfBirth { get; set; } = DateTime.Now.Year;
-
-    //public bool ValidYearRange => MaxYearOfBirth >= MinYearOfBirth;
-
-    public string FirstName { get; set; } = "";
-    public string LastName { get; set; } = "";
+    public PaginationParameters PaginationParameters { get; set; } = new();
+    public NameParameters NameParameters { get; set; } = new();
     public int SpecializeId { get; set; }
 }
