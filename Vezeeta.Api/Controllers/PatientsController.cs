@@ -10,6 +10,7 @@ using Vezeeta.Core.Contracts.PatientDtos;
 using Vezeeta.Core.Contracts.BookingDtos;
 using Microsoft.AspNetCore.Authorization;
 using Vezeeta.Services.DomainServices.Interfaces;
+using Vezeeta.Data.Parameters;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -30,9 +31,25 @@ public class PatientsController : ControllerBase
         _hostingEnvironment = hostingEnvironment;
     }
 
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAll([FromQuery] PatientParameters patientParameters)
+    {
+        var result = await _patientService.GetAll(patientParameters);
+        return StatusCode(result.StatusCode, result.Body);
+    }
+
+    [HttpGet("{id}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var result = await _patientService.GetById(id);
+        return StatusCode(result.StatusCode, result.Body);
+    }
+
     [HttpPost]
     [AllowAnonymous]
-    public async Task<IActionResult> Register([FromForm]RegisterPatientDto patientDto)
+    public async Task<IActionResult> Register([FromForm] RegisterPatientDto patientDto)
     {
         try
         {
@@ -42,25 +59,7 @@ public class PatientsController : ControllerBase
             {
                 return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
             }
-            ApplicationUser? user = await _userManager.FindByEmailAsync(patientDto.Email ?? "");
-            if (user != null)
-            {
-                return BadRequest("this email is already taken");
-            }
-
-            ApplicationUser patient = _mapper.Map<ApplicationUser>(patientDto);
-            if(patientDto.Image is not null )
-            {
-                patient.PhotoPath = ProcessUploadedFile(patientDto.Image);
-            }
-            IdentityResult result = await _userManager.CreateAsync(patient, patientDto.Password ?? "");
-
-            if (!result.Succeeded)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, result.Errors.ToString());
-            }
-
-            await _userManager.AddToRoleAsync(patient, UserRoles.Patient);
+            var result = _patientService.Register(patientDto, _hostingEnvironment.WebRootPath);
 
             return Created();
         }
@@ -70,43 +69,4 @@ public class PatientsController : ControllerBase
         }
     }
 
-    private string ProcessUploadedFile(IFormFile photo)
-    {
-        string uniqueFileName = "";
-        if (photo != null)
-        {
-
-            string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
-            uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                photo.CopyTo(fileStream);
-            }
-        }
-
-        return uniqueFileName;
-    }
-
-    [HttpGet]
-    [AllowAnonymous]
-    public async Task<ActionResult<PaginationResult<GetPatientDto>>> GetAll(int? page, int? pageSize, string? search) 
-        => Ok(await _patientService.GetAll(page ?? 1, pageSize ?? 10, search ?? ""));
-
-    [HttpGet("{id}")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetById(int id)
-    {
-        ApplicationUser? patient = await _patientService.GetById(id);
-        if(patient == null)
-        {
-            return NotFound("Patient not found");
-        }
-        GetPatientDto patientDto = _mapper.Map<GetPatientDto>(patient);
-        IEnumerable<Booking> bookings = await _patientService.GetPatientBookings(id);
-        return Ok(new GetByIdPatientDto { 
-            Details = _mapper.Map<GetPatientDto>(patient),
-            Bookings = _mapper.Map<List<PatientGetBookingDto>>(bookings)
-        });
-    }
 }

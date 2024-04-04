@@ -7,7 +7,7 @@ namespace Vezeeta.Data.Repositories.UnitOfWork;
 public interface IUnitOfWork : IDisposable
 {
     public IBaseRepositoryBig<Coupon> Coupons { get; }
-    public IDoctorRepository Doctors { get; set; }
+    public IBaseRepository<Doctor> Doctors { get; set; }
     public IBaseRepositoryBig<Booking> Bookings { get; }
     public IBaseRepositoryBig<Appointment> Appointments { get; }
     public IBaseRepositoryBig<Specialization> Specializations { get; }

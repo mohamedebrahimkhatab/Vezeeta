@@ -6,12 +6,8 @@ using Vezeeta.Data.Utilities;
 
 namespace Vezeeta.Data.Repositories.Implementation;
 
-public class PaginationRepository<T> : BaseRepository<T>, IPaginationRepository<T> where T : BaseEntity
+public class PaginationRepository<T>(ApplicationDbContext context) : BaseRepository<T>(context), IPaginationRepository<T> where T : class
 {
-    public PaginationRepository(ApplicationDbContext context) : base(context)
-    {
-    }
-
     public async Task<PaginationResponse<T>> SearchWithPagination(PaginationParameters parameters, Expression<Func<T, bool>> condition, params string[] includes)
     {
         var query = ApplyCondition(GetAll(), condition);

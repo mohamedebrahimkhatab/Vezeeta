@@ -62,7 +62,9 @@ public class DoctorService : IDoctorService
     {
         try
         {
-            PaginationResponse<Doctor> result = await _repository.SearchWithPagination(doctorParameters.PaginationParameters, GetDoctorCondition(doctorParameters), nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser), nameof(Doctor.Appointments), $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
+            PaginationResponse<Doctor> result = await _repository.SearchWithPagination(doctorParameters.PaginationParameters, 
+                                                        GetDoctorCondition(doctorParameters), nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser),
+                                                        nameof(Doctor.Appointments), $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
             _httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
             return new(StatusCodes.Status200OK, _mapper.Map<IEnumerable<PatientGetDoctorDto>>(result.Data));
         }
@@ -77,7 +79,7 @@ public class DoctorService : IDoctorService
     {
         try
         {
-            var doctor = await _repository.GetByIdAsync(id, nameof(Doctor.ApplicationUser), nameof(Doctor.Specialization));
+            var doctor = await _repository.GetByConditionAsync(e => e.Id == id, nameof(Doctor.ApplicationUser), nameof(Doctor.Specialization));
             if (doctor == null)
                 return new(StatusCodes.Status404NotFound, "This Id is not found");
             return new(StatusCodes.Status200OK, _mapper.Map<GetIdDoctorDto>(doctor));
@@ -100,7 +102,7 @@ public class DoctorService : IDoctorService
             if (user is not null)
                 return new(StatusCodes.Status400BadRequest, "This Email is already registered");
 
-            var specialization = await _specializationRepository.GetByIdAsync(doctorDto.SpecializationId);
+            var specialization = await _specializationRepository.GetByConditionAsync(e => e.Id == doctorDto.SpecializationId);
             if (specialization is null)
                 return new(StatusCodes.Status404NotFound, "This Specialization is not found");
 
@@ -136,7 +138,7 @@ public class DoctorService : IDoctorService
     {
         try
         {
-            var doctor = await _repository.GetByIdAsync(doctorDto.DoctorId, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
+            var doctor = await _repository.GetByConditionAsync(e => e.Id == doctorDto.DoctorId, nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
             if (doctor == null)
             {
                 return new(StatusCodes.Status404NotFound, "this doctor is not found");
@@ -167,8 +169,8 @@ public class DoctorService : IDoctorService
 
     Expression<Func<Doctor, bool>> GetDoctorCondition(DoctorParameters doctorParameters)
     {
-        return e => (doctorParameters.SpecializeId != 0 ? e.SpecializationId == doctorParameters.SpecializeId : true) &&
-                                                                        (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).ToLower().Contains(doctorParameters.NameParameters.NameQuery.ToLower());
+        return e => (doctorParameters.SpecializeId == 0 || e.SpecializationId == doctorParameters.SpecializeId) &&
+                                    (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).ToLower().Contains(doctorParameters.NameParameters.NameQuery.ToLower());
 
     }
 }

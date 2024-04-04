@@ -5,7 +5,7 @@ using Vezeeta.Data.Repositories.Interfaces;
 
 namespace Vezeeta.Data.Repositories.Implementation;
 
-public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
+public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
     protected readonly ApplicationDbContext _context;
 
@@ -14,10 +14,10 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         _context = context;
     }
 
-    public async Task<T?> GetByIdAsync(int id, params string[] includes)
+    public async Task<T?> GetByConditionAsync(Expression<Func<T, bool>> condition, params string[] includes)
     {
         var query = ApplyIncludes(GetAll(), includes);
-        return await ApplyCondition(query, e => e.Id == id).FirstOrDefaultAsync();
+        return await ApplyCondition(query, condition).FirstOrDefaultAsync();
     }
 
     public async Task AddAsync(T entity)

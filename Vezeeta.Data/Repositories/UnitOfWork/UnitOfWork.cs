@@ -13,7 +13,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly ApplicationDbContext _context;
 
     public IBaseRepositoryBig<Coupon> Coupons { get; private set; }
-    public IDoctorRepository Doctors { get; set; }
+    public IBaseRepository<Doctor> Doctors { get; set; }
     public IBaseRepositoryBig<Booking> Bookings { get; private set; }
     public IBaseRepositoryBig<Appointment> Appointments { get; private set; }
     public IBaseRepositoryBig<Specialization> Specializations { get; private set; }
@@ -34,7 +34,7 @@ public class UnitOfWork : IUnitOfWork
         Specializations = new BaseRepositoryBig<Specialization>(_context);
         AppointmentTimes = new BaseRepositoryBig<AppointmentTime>(_context);
         ApplicationUsers = new BaseRepositoryBig<ApplicationUser>(_context);
-        Doctors = new DoctorRepository(_context);
+        Doctors = new BaseRepository<Doctor>(_context);
     }
 
     public async Task BeginTransaction() => _transaction = await _context.Database.BeginTransactionAsync();
