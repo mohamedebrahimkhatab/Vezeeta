@@ -17,8 +17,8 @@ public class DashboardController : ControllerBase
         _dashboardService = dashboardService;
     }
 
-    //[HttpGet]
-    //public async Task<ActionResult<int>> NumOfDoctors(SearchBy? search) => Ok(await _dashboardService.GetNumOfDoctors(search));
+    [HttpGet]
+    public async Task<ActionResult<int>> NumOfDoctors(SearchBy? search) => Ok(await _dashboardService.GetNumOfDoctors(search));
 
     [HttpGet]
     public async Task<ActionResult<int>> NumOfPatients(SearchBy? search) => Ok(await _dashboardService.GetNumOfPatients(search));

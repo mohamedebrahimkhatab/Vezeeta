@@ -25,14 +25,14 @@ public class BookingsController : ControllerBase
         _bookingService = bookingService;
     }
 
-    [HttpGet]
-    [Authorize(Roles = UserRoles.Patient)]
-    public async Task<IActionResult> PatientGetAll()
-    {
-        int patientId = int.Parse(User.FindFirstValue("Id") ?? "");
-        IEnumerable<Booking> bookings = await _bookingService.GetPatientBookings(patientId);
-        return Ok(_mapper.Map<List<PatientGetBookingDto>>(bookings));
-    }
+    //[HttpGet]
+    //[Authorize(Roles = UserRoles.Patient)]
+    //public async Task<IActionResult> PatientGetAll()
+    //{
+    //    int patientId = int.Parse(User.FindFirstValue("Id") ?? "");
+    //    IEnumerable<Booking> bookings = await _bookingService.GetPatientBookings(patientId);
+    //    return Ok(_mapper.Map<List<PatientGetBookingDto>>(bookings));
+    //}
 
     //[HttpGet]
     //[Authorize(Roles = UserRoles.Doctor)]
@@ -81,44 +81,44 @@ public class BookingsController : ControllerBase
     //    }
     //}
 
-    [HttpPut]
-    [Authorize(Roles = UserRoles.Doctor)]
-    public async Task<IActionResult> ConfirmCheckUp(int id)
-    {
-        try
-        {
-            Booking? booking = await _bookingService.GetById(id);
-            if (booking == null)
-            {
-                return NotFound();
-            }
-            await _bookingService.ConfirmCheckUp(booking);
-            return NoContent();
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
-        }
-    }
+    //[HttpPut]
+    //[Authorize(Roles = UserRoles.Doctor)]
+    //public async Task<IActionResult> ConfirmCheckUp(int id)
+    //{
+    //    try
+    //    {
+    //        Booking? booking = await _bookingService.GetById(id);
+    //        if (booking == null)
+    //        {
+    //            return NotFound();
+    //        }
+    //        await _bookingService.ConfirmCheckUp(booking);
+    //        return NoContent();
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+    //    }
+    //}
 
-    [HttpPut]
-    [Authorize(Roles = UserRoles.Patient)]
-    public async Task<IActionResult> Cancel(int id)
-    {
-        try
-        {
-            Booking? booking = await _bookingService.GetById(id);
-            if (booking == null)
-            {
-                return NotFound();
-            }
-            await _bookingService.Cancel(booking);
-            return NoContent();
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
-        }
-    }
+    //[HttpPut]
+    //[Authorize(Roles = UserRoles.Patient)]
+    //public async Task<IActionResult> Cancel(int id)
+    //{
+    //    try
+    //    {
+    //        Booking? booking = await _bookingService.GetById(id);
+    //        if (booking == null)
+    //        {
+    //            return NotFound();
+    //        }
+    //        await _bookingService.Cancel(booking);
+    //        return NoContent();
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+    //    }
+    //}
 
 }

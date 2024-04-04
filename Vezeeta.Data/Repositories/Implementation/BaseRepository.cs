@@ -14,7 +14,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         _context = context;
     }
 
-    public async Task<IEnumerable<T>> FindByCondition(Expression<Func<T, bool>> condition, params string[] includes)
+    public async Task<IEnumerable<T>> FindByConditionAsync(Expression<Func<T, bool>> condition, params string[] includes)
     {
         var query = ApplyCondition(GetAll(), condition);
         return await ApplyIncludes(query, includes).ToListAsync();

@@ -55,7 +55,7 @@ public class SpecializationService : ISpecializationService
     {
         try
         {
-            var result = await _repository.FindByCondition(getCondition(parameters));
+            var result = await _repository.FindByConditionAsync(getCondition(parameters));
             return new(StatusCodes.Status200OK, _mapper.Map<IEnumerable<SpecializationDto>>(result));
         }
         catch (Exception e)

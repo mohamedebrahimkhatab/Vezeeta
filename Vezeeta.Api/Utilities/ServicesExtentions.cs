@@ -28,5 +28,6 @@ public static class ServicesExtentions
 
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped(typeof(IPaginationRepository<>), typeof(PaginationRepository<>));
+        services.AddScoped<IDashboardRepository, DashboardRepository>();
     }
 }

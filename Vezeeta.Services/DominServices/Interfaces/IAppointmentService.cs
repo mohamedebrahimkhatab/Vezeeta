@@ -1,14 +1,14 @@
-﻿using Vezeeta.Core.Models;
+﻿using Vezeeta.Core.Contracts.AppointmentDtos;
+using Vezeeta.Core.Models;
+using Vezeeta.Services.Utilities;
 
 namespace Vezeeta.Services.DomainServices.Interfaces;
 
 public interface IAppointmentService
 {
-    //Task AddAppointmentsAndPrice(int doctorId, decimal price, List<Appointment> appointments);
+    Task<ServiceResponse> AddAppointmentsAndPrice(DoctorAppointmentDto dto);
 
-    Task<AppointmentTime?> GetAppointmentTime(int id);
-    Task UpdateAppointmentTime(AppointmentTime appointmentTime);
-    Task DeleteAppointmentTime(AppointmentTime appointmentTime);
-    //Task<int> GetDoctorId(int userId);
+    Task<ServiceResponse> UpdateAppointmentTime(UpdateTimeDto timeDto);
+    Task<ServiceResponse> DeleteAppointmentTime(int id);
 
 }
