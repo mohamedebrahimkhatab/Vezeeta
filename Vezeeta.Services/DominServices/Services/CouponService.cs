@@ -30,7 +30,7 @@ public class CouponService : ICouponService
     public async Task<Coupon> Create(Coupon coupon)
     {
         var checkCoupon = await GetByDiscountCode(coupon.DiscountCode);
-        if (checkCoupon != null)    
+        if (checkCoupon != null)
         {
             throw new InvalidOperationException("this code already exist");
         }

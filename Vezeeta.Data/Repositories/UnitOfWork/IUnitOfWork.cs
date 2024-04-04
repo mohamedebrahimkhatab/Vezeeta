@@ -6,13 +6,13 @@ namespace Vezeeta.Data.Repositories.UnitOfWork;
 
 public interface IUnitOfWork : IDisposable
 {
-    public IBaseRepositoryBig<Coupon> Coupons { get; }
+    public IBaseRepository<Coupon> Coupons { get; }
     public IBaseRepository<Doctor> Doctors { get; set; }
-    public IBaseRepositoryBig<Booking> Bookings { get; }
-    public IBaseRepositoryBig<Appointment> Appointments { get; }
-    public IBaseRepositoryBig<Specialization> Specializations { get; }
-    public IBaseRepositoryBig<AppointmentTime> AppointmentTimes { get; }
-    public IBaseRepositoryBig<ApplicationUser> ApplicationUsers { get; }
+    public IBaseRepository<Booking> Bookings { get; }
+    public IBaseRepository<Appointment> Appointments { get; }
+    public IBaseRepository<Specialization> Specializations { get; }
+    public IBaseRepository<AppointmentTime> AppointmentTimes { get; }
+    public IBaseRepository<ApplicationUser> ApplicationUsers { get; }
     Task BeginTransaction();
     Task CommitTransaction();
     Task RollbackTransaction();

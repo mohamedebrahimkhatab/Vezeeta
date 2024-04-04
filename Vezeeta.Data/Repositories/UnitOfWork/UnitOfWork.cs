@@ -12,29 +12,36 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
 
-    public IBaseRepositoryBig<Coupon> Coupons { get; private set; }
+    public IBaseRepository<Coupon> Coupons { get; private set; }
     public IBaseRepository<Doctor> Doctors { get; set; }
-    public IBaseRepositoryBig<Booking> Bookings { get; private set; }
-    public IBaseRepositoryBig<Appointment> Appointments { get; private set; }
-    public IBaseRepositoryBig<Specialization> Specializations { get; private set; }
-    public IBaseRepositoryBig<ApplicationUser> ApplicationUsers { get; private set; }
-    public IBaseRepositoryBig<AppointmentTime> AppointmentTimes { get; private set; }
+    public IBaseRepository<Booking> Bookings { get; private set; }
+    public IBaseRepository<Appointment> Appointments { get; private set; }
+    public IBaseRepository<Specialization> Specializations { get; private set; }
+    public IBaseRepository<ApplicationUser> ApplicationUsers { get; private set; }
+    public IBaseRepository<AppointmentTime> AppointmentTimes { get; private set; }
 
 
 
 
     private IDbContextTransaction _transaction = null!;
 
-    public UnitOfWork(ApplicationDbContext context)
+    public UnitOfWork(ApplicationDbContext context,
+        IBaseRepository<Coupon> coupons,
+        IBaseRepository<Doctor> doctors,
+        IBaseRepository<Booking> bookings,
+        IBaseRepository<Appointment> appointments,
+        IBaseRepository<Specialization> specializations,
+        IBaseRepository<ApplicationUser> applicationUsers,
+        IBaseRepository<AppointmentTime> appointmentTimes)
     {
         _context = context;
-        Coupons = new BaseRepositoryBig<Coupon>(_context);
-        Bookings = new BaseRepositoryBig<Booking>(_context);
-        Appointments = new BaseRepositoryBig<Appointment>(_context);
-        Specializations = new BaseRepositoryBig<Specialization>(_context);
-        AppointmentTimes = new BaseRepositoryBig<AppointmentTime>(_context);
-        ApplicationUsers = new BaseRepositoryBig<ApplicationUser>(_context);
-        Doctors = new BaseRepository<Doctor>(_context);
+        Coupons = coupons;
+        Doctors = doctors;
+        Bookings = bookings;
+        Appointments = appointments;
+        Specializations = specializations;
+        AppointmentTimes = appointmentTimes;
+        ApplicationUsers = applicationUsers;
     }
 
     public async Task BeginTransaction() => _transaction = await _context.Database.BeginTransactionAsync();
