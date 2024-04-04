@@ -1,11 +1,13 @@
 ﻿using Vezeeta.Core.Contracts;
+using Vezeeta.Data.Parameters;
+using Vezeeta.Services.Utilities;
 
 namespace Vezeeta.Services.DomainServices.Interfaces;
 
 public interface ISpecializationService
 {
-    Task<IEnumerable<SpecializationDto>> GetAll();
-    Task<SpecializationDto?> GetById(int id);
-    Task<SpecializationDto?> GetByName(string name);
-    Task<IEnumerable<SpecializationDto>> FindBySearch(string search);
+    Task<ServiceResponse> GetAll(SpecializationParameters parameters);
+    Task<ServiceResponse> GetById(int id);
+    Task<ServiceResponse> GetByName(SpecializationParameters parameters);
+    Task<ServiceResponse> FindByName(SpecializationParameters parameters);
 }
