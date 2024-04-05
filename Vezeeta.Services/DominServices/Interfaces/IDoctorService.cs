@@ -1,9 +1,6 @@
-﻿using Vezeeta.Core.Contracts.DoctorDtos;
-using Vezeeta.Core.Contracts;
-using Vezeeta.Core.Models;
-using Vezeeta.Data.Parameters;
-using Vezeeta.Data.Utilities;
+﻿using Vezeeta.Data.Parameters;
 using Vezeeta.Services.Utilities;
+using Vezeeta.Core.Contracts.DoctorDtos;
 
 namespace Vezeeta.Services.DomainServices.Interfaces;
 
@@ -14,7 +11,5 @@ public interface IDoctorService
     Task<ServiceResponse> GetById(int id);
     Task<ServiceResponse> CreateAsync(CreateDoctorDto doctorDto, string root);
     Task<ServiceResponse> UpdateAsync(UpdateDoctorDto doctorDto, string root);
-    //Task Delete(Doctor doctor);
-    //Task<int> GetDoctorId(int userId);
-
+    Task<ServiceResponse> Delete(int id);
 }

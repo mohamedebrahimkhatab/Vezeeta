@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
-using Vezeeta.Core.Contracts.AppointmentDtos;
+using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
-using Vezeeta.Data.Repositories.Interfaces;
-using Vezeeta.Services.DomainServices.Interfaces;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Vezeeta.Services.Utilities;
+using Vezeeta.Data.Repositories.Interfaces;
+using Vezeeta.Core.Contracts.AppointmentDtos;
+using Vezeeta.Services.DomainServices.Interfaces;
 
 namespace Vezeeta.Services.DomainServices.Services;
 
@@ -14,18 +15,21 @@ public class AppointmentService : IAppointmentService
     private readonly IBaseRepository<Appointment> _appointmentRepository;
     private readonly IBaseRepository<AppointmentTime> _timeRepository;
     private readonly IBaseRepository<Doctor> _doctorRepository;
+    private readonly IBaseRepository<Booking> _bookingRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
 
     public AppointmentService(IBaseRepository<Appointment> appointmentRepository,
         IBaseRepository<AppointmentTime> timeRepository,
         IBaseRepository<Doctor> doctorRepository,
+        IBaseRepository<Booking> bookingRepository,
         IHttpContextAccessor httpContextAccessor,
         IMapper mapper)
     {
         _appointmentRepository = appointmentRepository;
         _timeRepository = timeRepository;
         _doctorRepository = doctorRepository;
+        _bookingRepository = bookingRepository;
         _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
     }
@@ -92,22 +96,18 @@ public class AppointmentService : IAppointmentService
                 return new(StatusCodes.Status404NotFound, "Doctor is not found");
 
             if (time.Appointment.DoctorId != doctor.Id)
-            {
                 return new(StatusCodes.Status401Unauthorized, "You are unauthorized to change other doctors' appointments");
-            }
 
             time = _mapper.Map(timeDto, time);
 
-            var check = await _timeRepository.GetByConditionAsync(e => e.AppointmentId == time.AppointmentId && e.Time == time.Time);
-            if (check != null)
-            {
+            var checkTime = await _timeRepository.GetByConditionAsync(e => e.AppointmentId == time.AppointmentId && e.Time == time.Time);
+            if (checkTime != null)
                 return new(StatusCodes.Status400BadRequest, "There is another appointment time in this time");
-            }
-            //check = await _unitOfWork.Bookings.CountAsync(e => e.AppointmentTimeId == appointmentTime.Id && (e.BookingStatus.Equals(BookingStatus.Completed) || e.BookingStatus.Equals(BookingStatus.Pending)));
-            //if (check != 0)
-            //{
-            //    throw new InvalidOperationException("there is Comleted or Pending Booking/s in this time");
-            //}
+
+            var booking = await _bookingRepository.GetByConditionAsync(e => e.AppointmentTimeId == time.Id && (e.BookingStatus.Equals(BookingStatus.Completed) || e.BookingStatus.Equals(BookingStatus.Pending)));
+            if (booking != null)
+                return new(StatusCodes.Status400BadRequest, "there is Comleted or Pending Booking/s in this time");
+
             await _timeRepository.UpdateAsync(time);
             return new(StatusCodes.Status204NoContent, null);
         }
@@ -139,11 +139,11 @@ public class AppointmentService : IAppointmentService
                 return new(StatusCodes.Status401Unauthorized, "You are unauthorized to delete other doctors' appointments");
             }
 
-            //var check = await _unitOfWork.Bookings.CountAsync(e => e.AppointmentTimeId == appointmentTime.Id && (e.BookingStatus.Equals(BookingStatus.Completed) || e.BookingStatus.Equals(BookingStatus.Pending)));
-            //if (check != 0)
-            //{
-            //    throw new InvalidOperationException("there is Comleted or Pending Booking/s in this time");
-            //}
+            var check = await _bookingRepository.GetByConditionAsync(e => e.AppointmentTimeId == time.Id && (e.BookingStatus.Equals(BookingStatus.Completed) || e.BookingStatus.Equals(BookingStatus.Pending)));
+            if (check != null)
+            {
+                return new(StatusCodes.Status400BadRequest, "there is Comleted or Pending Booking/s in this time");
+            }
             await _timeRepository.DeleteAsync(time);
             return new(StatusCodes.Status204NoContent, null);
         }

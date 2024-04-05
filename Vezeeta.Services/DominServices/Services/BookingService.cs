@@ -1,43 +1,43 @@
 ﻿using AutoMapper;
+using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
-using Vezeeta.Services.DomainServices.Interfaces;
-using Vezeeta.Data.Repositories.Interfaces;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Vezeeta.Data.Parameters;
+using Microsoft.AspNetCore.Http;
 using Vezeeta.Services.Utilities;
 using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Contracts.BookingDtos;
-using Vezeeta.Data.Parameters;
 using Vezeeta.Core.Contracts.PatientDtos;
-using Vezeeta.Core.Enums;
+using Vezeeta.Data.Repositories.Interfaces;
+using Vezeeta.Services.DomainServices.Interfaces;
 
 namespace Vezeeta.Services.DomainServices.Services;
 
 public class BookingService : IBookingService
 {
     private readonly IMapper _mapper;
-    private readonly IPaginationRepository<Booking> _repository;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IBaseRepository<ApplicationUser> _patients;
     private readonly IBaseRepository<Doctor> _doctors;
-    private readonly IBaseRepository<AppointmentTime> _times;
     private readonly IBaseRepository<Coupon> _coupons;
+    private readonly IBaseRepository<AppointmentTime> _times;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IPaginationRepository<Booking> _repository;
+    private readonly IBaseRepository<ApplicationUser> _patients;
 
     public BookingService(IMapper mapper, IPaginationRepository<Booking> repository,
+                        IBaseRepository<Doctor> doctors,
                         IHttpContextAccessor httpContextAccessor,
                         IBaseRepository<ApplicationUser> patients,
-                        IBaseRepository<Doctor> doctors,
                         IBaseRepository<AppointmentTime> times,
                         IBaseRepository<Coupon> coupons)
     {
 
+        _times = times;
         _mapper = mapper;
+        _coupons = coupons;
+        _doctors = doctors;
+        _patients = patients;
         _repository = repository;
         _httpContextAccessor = httpContextAccessor;
-        _patients = patients;
-        _doctors = doctors;
-        _times = times;
-        _coupons = coupons;
     }
 
     public async Task<ServiceResponse> GetPatientBookings()

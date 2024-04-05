@@ -9,7 +9,7 @@ namespace Vezeeta.Api.Helpers;
 
 public static class ServicesExtentions
 {
-    public static void AddLocalServices(this IServiceCollection services)
+    public static void AddDomainServices(this IServiceCollection services)
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICouponService, CouponService>();

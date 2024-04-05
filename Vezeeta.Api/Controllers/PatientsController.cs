@@ -1,16 +1,11 @@
-﻿using AutoMapper;
-using Vezeeta.Core.Consts;
-using Vezeeta.Core.Models;
-using Vezeeta.Api.Validators;
-using Vezeeta.Core.Contracts;
+﻿using Vezeeta.Api.Validators;
+using Vezeeta.Data.Parameters;
 using Microsoft.AspNetCore.Mvc;
 using Vezeeta.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Vezeeta.Core.Contracts.PatientDtos;
-using Vezeeta.Core.Contracts.BookingDtos;
 using Microsoft.AspNetCore.Authorization;
 using Vezeeta.Services.DomainServices.Interfaces;
-using Vezeeta.Data.Parameters;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -18,14 +13,12 @@ namespace Vezeeta.Api.Controllers;
 [ApiController]
 public class PatientsController : ControllerBase
 {
-    private readonly IMapper _mapper;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IPatientService _patientService;
     private readonly IWebHostEnvironment _hostingEnvironment;
 
-    public PatientsController(IMapper mapper, UserManager<ApplicationUser> userManager, IPatientService patientService, IWebHostEnvironment hostingEnvironment)
+    public PatientsController(UserManager<ApplicationUser> userManager, IPatientService patientService, IWebHostEnvironment hostingEnvironment)
     {
-        _mapper = mapper;
         _userManager = userManager;
         _patientService = patientService;
         _hostingEnvironment = hostingEnvironment;

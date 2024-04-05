@@ -1,6 +1,5 @@
-﻿using Vezeeta.Core.Contracts.CouponDtos;
-using Vezeeta.Core.Models;
-using Vezeeta.Services.Utilities;
+﻿using Vezeeta.Services.Utilities;
+using Vezeeta.Core.Contracts.CouponDtos;
 
 namespace Vezeeta.Services.DomainServices.Interfaces;
 

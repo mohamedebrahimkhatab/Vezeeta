@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Vezeeta.Core.Consts;
+﻿using Vezeeta.Core.Consts;
 using Vezeeta.Api.Validators;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -13,12 +12,10 @@ namespace Vezeeta.Api.Controllers;
 [Authorize(Roles = UserRoles.Admin)]
 public class CouponsController : ControllerBase
 {
-    private readonly IMapper _mapper;
     private readonly ICouponService _couponService;
 
-    public CouponsController(ICouponService couponService, IMapper mapper)
+    public CouponsController(ICouponService couponService)
     {
-        _mapper = mapper;
         _couponService = couponService;
     }
 

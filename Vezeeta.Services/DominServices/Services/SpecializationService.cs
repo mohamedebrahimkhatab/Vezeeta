@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using System.Linq.Expressions;
-using Vezeeta.Core.Contracts;
 using Vezeeta.Core.Models;
+using Vezeeta.Core.Contracts;
+using System.Linq.Expressions;
 using Vezeeta.Data.Parameters;
+using Microsoft.AspNetCore.Http;
+using Vezeeta.Services.Utilities;
 using Vezeeta.Data.Repositories.Interfaces;
 using Vezeeta.Services.DomainServices.Interfaces;
-using Vezeeta.Services.Utilities;
 
 namespace Vezeeta.Services.DomainServices.Services;
 

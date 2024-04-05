@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Vezeeta.Core.Contracts.CouponDtos;
 using Vezeeta.Core.Models;
+using Microsoft.AspNetCore.Http;
+using Vezeeta.Services.Utilities;
+using Vezeeta.Core.Contracts.CouponDtos;
 using Vezeeta.Data.Repositories.Interfaces;
 using Vezeeta.Services.DomainServices.Interfaces;
-using Vezeeta.Services.Utilities;
 
 namespace Vezeeta.Services.DomainServices.Services;
 
@@ -12,11 +12,13 @@ public class CouponService : ICouponService
 {
     private readonly IMapper _mapper;
     private readonly IBaseRepository<Coupon> _repository;
+    private readonly IBaseRepository<Booking> _bookings;
 
-    public CouponService(IMapper mapper, IBaseRepository<Coupon> repository)
+    public CouponService(IMapper mapper, IBaseRepository<Coupon> repository, IBaseRepository<Booking> Bookings)
     {
         _mapper = mapper;
         _repository = repository;
+        _bookings = Bookings;
     }
 
     public async Task<ServiceResponse> GetAll()
@@ -66,7 +68,11 @@ public class CouponService : ICouponService
             {
                 return new(StatusCodes.Status404NotFound, "This coupon not found");
             }
-            //await CheckIfCouponApplied(coupon.DiscountCode);
+
+            var booking = await _bookings.GetByConditionAsync(e => e.DiscountCode ==  couponDto.DiscountCode);
+
+            if (booking == null)
+                return new(StatusCodes.Status406NotAcceptable, "This Coupon is applied to booking/s");
 
             _mapper.Map(couponDto, coupon);
             await _repository.UpdateAsync(coupon);
@@ -78,14 +84,6 @@ public class CouponService : ICouponService
         }
     }
 
-    //public async Task CheckIfCouponApplied(string? discountCode)
-    //{
-    //    Booking? booking = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e => e.DiscountCode == discountCode);
-    //    if (booking != null)
-    //    {
-    //        throw new InvalidOperationException("this Coupon is applied to booking/s");
-    //    }
-    //}
     public async Task<ServiceResponse> Deactivate(int id)
     {
         try

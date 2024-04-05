@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Vezeeta.Core.Consts;
+﻿using Vezeeta.Core.Consts;
 using Vezeeta.Api.Validators;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -13,12 +12,10 @@ namespace Vezeeta.Api.Controllers;
 [Authorize(Roles = UserRoles.Doctor)]
 public class AppointmentsController : ControllerBase
 {
-    private readonly IMapper _mapper;
     private readonly IAppointmentService _appointmentService;
 
-    public AppointmentsController(IMapper mapper, IAppointmentService appointmentService)
+    public AppointmentsController(IAppointmentService appointmentService)
     {
-        _mapper = mapper;
         _appointmentService = appointmentService;
     }
 

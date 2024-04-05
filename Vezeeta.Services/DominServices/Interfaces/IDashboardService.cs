@@ -1,7 +1,6 @@
-﻿using Vezeeta.Core.Contracts.DashboardDtos;
+﻿using Vezeeta.Core.Enums;
+using Vezeeta.Core.Contracts.DashboardDtos;
 using Vezeeta.Core.Contracts.DoctorDtos;
-using Vezeeta.Core.Enums;
-using Vezeeta.Core.Models;
 
 namespace Vezeeta.Services.DomainServices.Interfaces;
 

@@ -1,10 +1,10 @@
 ﻿using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
+using Vezeeta.Core.Models.Identity;
 using Vezeeta.Core.Contracts.DoctorDtos;
+using Vezeeta.Data.Repositories.Interfaces;
 using Vezeeta.Core.Contracts.DashboardDtos;
 using Vezeeta.Services.DomainServices.Interfaces;
-using Vezeeta.Data.Repositories.Interfaces;
-using Vezeeta.Core.Models.Identity;
 
 namespace Vezeeta.Services.DomainServices.Services;
 

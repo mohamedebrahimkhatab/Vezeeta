@@ -1,6 +1,6 @@
-﻿using Vezeeta.Core.Contracts.BookingDtos;
-using Vezeeta.Data.Parameters;
+﻿using Vezeeta.Data.Parameters;
 using Vezeeta.Services.Utilities;
+using Vezeeta.Core.Contracts.BookingDtos;
 
 namespace Vezeeta.Services.DomainServices.Interfaces;
 

@@ -1,5 +1,4 @@
-﻿using Vezeeta.Core.Contracts;
-using Vezeeta.Data.Parameters;
+﻿using Vezeeta.Data.Parameters;
 using Vezeeta.Services.Utilities;
 
 namespace Vezeeta.Services.DomainServices.Interfaces;

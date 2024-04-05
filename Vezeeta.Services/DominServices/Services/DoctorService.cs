@@ -25,18 +25,21 @@ public class DoctorService : IDoctorService
 {
     private readonly IPaginationRepository<Doctor> _repository;
     private readonly IBaseRepository<Specialization> _specializationRepository;
+    private readonly IBaseRepository<Booking> _bookings;
     private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public DoctorService(IPaginationRepository<Doctor> repository,
                          IBaseRepository<Specialization> specializationRepository,
+                         IBaseRepository<Booking> bookings,
                          IMapper mapper,
                          IHttpContextAccessor httpContextAccessor,
                          UserManager<ApplicationUser> userManager)
     {
         _repository = repository;
         _specializationRepository = specializationRepository;
+        _bookings = bookings;
         _mapper = mapper;
         _httpContextAccessor = httpContextAccessor;
         _userManager = userManager;
@@ -156,16 +159,29 @@ public class DoctorService : IDoctorService
         }
     }
 
-    //public async Task Delete(int id)
-    //{
-    //    Booking? bookings = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e => e.DoctorId == doctor.Id);
-    //    if (bookings != null)
-    //    {
-    //        throw new InvalidOperationException("Can not delete this doctor, doctor has bookings");
-    //    }
-    //    _unitOfWork.Doctors.Delete(doctor);
-    //    await _unitOfWork.Doctors.SaveChanges();
-    //}
+    public async Task<ServiceResponse> Delete(int id)
+    {
+        try
+        {
+            Doctor? doctor = await _repository.GetByConditionAsync(e => e.Id == id, nameof(doctor.ApplicationUser));
+            if (doctor == null)
+                return new(StatusCodes.Status404NotFound, "Doctor is not exist");
+
+            Booking? bookings = await _bookings.GetByConditionAsync(e => e.DoctorId == doctor.Id);
+            if (bookings != null)
+                return new(StatusCodes.Status406NotAcceptable, "Can not delete this doctor, doctor has bookings");
+
+            await _repository.DeleteAsync(doctor);
+
+            await _userManager.DeleteAsync(doctor.ApplicationUser);
+
+            return new(StatusCodes.Status204NoContent, null);
+        }
+        catch (Exception e)
+        {
+            return new(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
 
     Expression<Func<Doctor, bool>> GetDoctorCondition(DoctorParameters doctorParameters)
     {

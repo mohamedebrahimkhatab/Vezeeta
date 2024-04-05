@@ -1,10 +1,10 @@
 ﻿using Vezeeta.Core.Consts;
 using Vezeeta.Api.Validators;
+using Vezeeta.Data.Parameters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Vezeeta.Core.Contracts.BookingDtos;
 using Vezeeta.Services.DomainServices.Interfaces;
-using Vezeeta.Data.Parameters;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -30,7 +30,7 @@ public class BookingsController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = UserRoles.Doctor)]
-    public async Task<IActionResult> DoctorGetAll(BookingParameters parameters)
+    public async Task<IActionResult> DoctorGetAll([FromQuery]BookingParameters parameters)
     {
         var result = await _bookingService.GetDoctorBookings(parameters);
         return StatusCode(result.StatusCode, result.Body);

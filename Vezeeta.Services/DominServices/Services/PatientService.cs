@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json;
 using Vezeeta.Core.Enums;
-using Vezeeta.Core.Models.Identity;
-using Vezeeta.Core.Contracts.PatientDtos;
-using Vezeeta.Services.DomainServices.Interfaces;
-using Vezeeta.Data.Repositories.Interfaces;
+using Vezeeta.Core.Consts;
+using Vezeeta.Data.Utilities;
+using System.Linq.Expressions;
 using Vezeeta.Data.Parameters;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using Vezeeta.Data.Utilities;
 using Vezeeta.Services.Utilities;
-using System.Linq.Expressions;
+using Vezeeta.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
+using Vezeeta.Core.Contracts.PatientDtos;
+using Vezeeta.Data.Repositories.Interfaces;
 using Vezeeta.Services.Utilities.FileService;
-using Vezeeta.Core.Consts;
+using Vezeeta.Services.DomainServices.Interfaces;
 
 namespace Vezeeta.Services.DomainServices.Services;
 
@@ -96,11 +96,6 @@ public class PatientService : IPatientService
             return new(StatusCodes.Status500InternalServerError, e.Message);
         }
     }
-
-    //public async Task<IEnumerable<Booking>> GetPatientBookings(int patientId)
-    //{
-    //    return await _bookingService.GetPatientBookings(patientId);
-    //}
 
     private Expression<Func<ApplicationUser, bool>> GetPatientCondition(PatientParameters patientParameters)
     {
