@@ -13,6 +13,8 @@ using Vezeeta.Core.Contracts.PatientDtos;
 using Vezeeta.Data.Repositories.Interfaces;
 using Vezeeta.Services.Utilities.FileService;
 using Vezeeta.Services.DomainServices.Interfaces;
+using Vezeeta.Core.Models;
+using Vezeeta.Core.Contracts.BookingDtos;
 
 namespace Vezeeta.Services.DomainServices.Services;
 
@@ -21,14 +23,16 @@ public class PatientService : IPatientService
     private readonly IMapper _mapper;
     private readonly IPaginationRepository<ApplicationUser> _repository;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IBaseRepository<Booking> _bookings;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public PatientService(IMapper mapper, IPaginationRepository<ApplicationUser> repository, 
-                            IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager)
+                            IHttpContextAccessor httpContextAccessor, IBaseRepository<Booking> bookings, UserManager<ApplicationUser> userManager)
     {
         _mapper = mapper;
         _repository = repository;
         _httpContextAccessor = httpContextAccessor;
+        _bookings = bookings;
         _userManager = userManager;
     }
 
@@ -55,7 +59,19 @@ public class PatientService : IPatientService
             var patient = await _repository.GetByConditionAsync(e => e.Id == id && e.UserType.Equals(UserType.Patient));
             if (patient == null)
                 return new(StatusCodes.Status404NotFound, "This Id is not found");
-            return new(StatusCodes.Status200OK, _mapper.Map<GetByIdPatientDto>(patient));
+
+            var bookings = await _bookings.FindByConditionAsync(e => e.PatientId == id, nameof(Booking.Doctor), $"{nameof(Booking.Doctor)}.{nameof(Doctor.Specialization)}",
+                                                            $"{nameof(Booking.Doctor)}.{nameof(Doctor.ApplicationUser)}",
+                                                            nameof(Booking.AppointmentTime), $"{nameof(Booking.AppointmentTime)}.{nameof(AppointmentTime.Appointment)}");
+
+            var dto = new GetByIdPatientDto
+            {
+                Details = _mapper.Map<GetPatientDto>(patient),
+                Bookings = _mapper.Map<IEnumerable<PatientGetBookingDto>>(bookings)
+            };
+
+
+            return new(StatusCodes.Status200OK, dto);
         }
         catch (Exception e)
         {
