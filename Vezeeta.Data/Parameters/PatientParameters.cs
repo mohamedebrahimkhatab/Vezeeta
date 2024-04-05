@@ -1,7 +1,6 @@
 ﻿namespace Vezeeta.Data.Parameters;
 
-public class PatientParameters
+public class PatientParameters : PaginationParameters
 {
-    public PaginationParameters PaginationParameters { get; set; } = new();
-    public NameParameters NameParameters { get; set; } = new();
+    public string NameQuery { get; set; } = "";
 }

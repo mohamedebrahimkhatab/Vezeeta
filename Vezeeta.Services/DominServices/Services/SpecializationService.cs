@@ -79,6 +79,6 @@ public class SpecializationService : ISpecializationService
 
     private static Expression<Func<Specialization, bool>> getCondition(SpecializationParameters parameters)
     {
-        return e => e.Name.ToLower().Contains(parameters.NameParameters.NameQuery.ToLower());
+        return e => e.Name.ToLower().Contains(parameters.NameQuery.ToLower());
     }
 }

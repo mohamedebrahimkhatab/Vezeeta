@@ -73,7 +73,7 @@ public class BookingService : IBookingService
             if (doctor == null)
                 return new(StatusCodes.Status404NotFound, "Doctor is not found");
 
-            var result = await _repository.SearchWithPagination(parameters.paginationParameters,
+            var result = await _repository.SearchWithPagination(parameters,
                                                         e => e.DoctorId == doctor.Id && e.AppointmentTime.Appointment.Day == parameters.Day,
                                                         nameof(Booking.Patient),
                                                         nameof(Booking.AppointmentTime),

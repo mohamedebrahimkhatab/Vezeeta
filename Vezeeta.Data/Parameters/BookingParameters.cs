@@ -2,8 +2,7 @@
 
 namespace Vezeeta.Data.Parameters;
 
-public class BookingParameters
+public class BookingParameters : PaginationParameters
 {
-    public PaginationParameters paginationParameters {  get; set; } = new PaginationParameters();
     public Days Day { get; set; }
 }

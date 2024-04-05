@@ -49,7 +49,7 @@ public class DoctorService : IDoctorService
     {
         try
         {
-            PaginationResponse<Doctor> result = await _repository.SearchWithPagination(doctorParameters.PaginationParameters, 
+            PaginationResponse<Doctor> result = await _repository.SearchWithPagination(doctorParameters, 
                                                               GetDoctorCondition(doctorParameters), nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
             _httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
             return new ServiceResponse(StatusCodes.Status200OK, _mapper.Map<IEnumerable<AdminGetDoctorDto>>(result.Data));
@@ -65,7 +65,7 @@ public class DoctorService : IDoctorService
     {
         try
         {
-            PaginationResponse<Doctor> result = await _repository.SearchWithPagination(doctorParameters.PaginationParameters, 
+            PaginationResponse<Doctor> result = await _repository.SearchWithPagination(doctorParameters, 
                                                         GetDoctorCondition(doctorParameters), nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser),
                                                         nameof(Doctor.Appointments), $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
             _httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
@@ -186,7 +186,7 @@ public class DoctorService : IDoctorService
     Expression<Func<Doctor, bool>> GetDoctorCondition(DoctorParameters doctorParameters)
     {
         return e => (doctorParameters.SpecializeId == 0 || e.SpecializationId == doctorParameters.SpecializeId) &&
-                                    (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).ToLower().Contains(doctorParameters.NameParameters.NameQuery.ToLower());
+                                    (e.ApplicationUser.FirstName + " " + e.ApplicationUser.LastName).ToLower().Contains(doctorParameters.NameQuery.ToLower());
 
     }
 }

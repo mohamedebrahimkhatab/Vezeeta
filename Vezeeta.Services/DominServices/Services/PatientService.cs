@@ -37,7 +37,7 @@ public class PatientService : IPatientService
     {
         try
         {
-            PaginationResponse<ApplicationUser> result = await _repository.SearchWithPagination(patientParameters.PaginationParameters, GetPatientCondition(patientParameters));
+            PaginationResponse<ApplicationUser> result = await _repository.SearchWithPagination(patientParameters, GetPatientCondition(patientParameters));
             _httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
             return new ServiceResponse(StatusCodes.Status200OK, _mapper.Map<IEnumerable<GetPatientDto>>(result.Data));
         }
@@ -99,6 +99,6 @@ public class PatientService : IPatientService
 
     private Expression<Func<ApplicationUser, bool>> GetPatientCondition(PatientParameters patientParameters)
     {
-        return e => e.UserType.Equals(UserType.Patient) && (e.FirstName + " " + e.LastName).ToLower().Contains(patientParameters.NameParameters.NameQuery.ToLower());
+        return e => e.UserType.Equals(UserType.Patient) && (e.FirstName + " " + e.LastName).ToLower().Contains(patientParameters.NameQuery.ToLower());
     }
 }
