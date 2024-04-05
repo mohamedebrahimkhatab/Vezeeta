@@ -1,161 +1,226 @@
 ﻿using AutoMapper;
-using Vezeeta.Core.Enums;
 using Vezeeta.Core.Models;
-using Vezeeta.Core.Contracts;
-using Vezeeta.Core.Contracts.PatientDtos;
 using Vezeeta.Services.DomainServices.Interfaces;
-using Vezeeta.Data.Repositories.UnitOfWork;
+using Vezeeta.Data.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using Vezeeta.Services.Utilities;
+using Vezeeta.Core.Models.Identity;
+using Vezeeta.Core.Contracts.BookingDtos;
+using Vezeeta.Data.Parameters;
+using Vezeeta.Core.Contracts.PatientDtos;
+using Vezeeta.Core.Enums;
 
 namespace Vezeeta.Services.DomainServices.Services;
 
 public class BookingService : IBookingService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IDoctorService _doctorService;
     private readonly IMapper _mapper;
+    private readonly IPaginationRepository<Booking> _repository;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IBaseRepository<ApplicationUser> _patients;
+    private readonly IBaseRepository<Doctor> _doctors;
+    private readonly IBaseRepository<AppointmentTime> _times;
+    private readonly IBaseRepository<Coupon> _coupons;
 
-    public BookingService(IUnitOfWork unitOfWork, IDoctorService doctorService, IMapper mapper)
+    public BookingService(IMapper mapper, IPaginationRepository<Booking> repository,
+                        IHttpContextAccessor httpContextAccessor,
+                        IBaseRepository<ApplicationUser> patients,
+                        IBaseRepository<Doctor> doctors,
+                        IBaseRepository<AppointmentTime> times,
+                        IBaseRepository<Coupon> coupons)
     {
-        _unitOfWork = unitOfWork;
-        _doctorService = doctorService;
+
         _mapper = mapper;
+        _repository = repository;
+        _httpContextAccessor = httpContextAccessor;
+        _patients = patients;
+        _doctors = doctors;
+        _times = times;
+        _coupons = coupons;
     }
 
-    //public async Task Book(Booking booking, Coupon? coupon)
-    //{
-    //    if (booking.AppointmentTime?.Appointment?.Day.ToString() != booking.AppointmentRealTime.DayOfWeek.ToString())
-    //    {
-    //        throw new InvalidOperationException("There is a mismatch between doctor's appointment day and the day you requested");
-    //    }
-    //    if (booking.AppointmentTime.Time.ToString() != booking.AppointmentRealTime.ToShortTimeString())
-    //    {
-    //        throw new InvalidOperationException("There is a mismatch between doctor's appointment time and the time you requested");
-    //    }
-    //    Booking? checkBooking = await _unitOfWork.Bookings.FindWithCriteriaAndIncludesAsync(e =>
-    //                            e.AppointmentTimeId == booking.AppointmentTimeId &&
-    //                            e.AppointmentRealTime == booking.AppointmentRealTime &&
-    //                            e.BookingStatus.Equals(BookingStatus.Pending));
-    //    if (checkBooking != null)
-    //    {
-    //        throw new InvalidOperationException("appointment time is already booked by another Patient");
-    //    }
-    //    Doctor? doctor = await _unitOfWork.Doctors.GetByIdAsync(booking.AppointmentTime.Appointment.DoctorId);
-    //    if (doctor == null)
-    //    {
-    //        throw new InvalidOperationException("doctor doesn't exist");
-    //    }
-    //    if (doctor.Price == null)
-    //    {
-    //        throw new InvalidOperationException("doctor didn't set the price");
-    //    }
-    //    booking.FinalPrice = await GetFinalPrice(booking.PatientId, (decimal)doctor.Price, coupon);
-    //    booking.BookingStatus = BookingStatus.Pending;
-    //    booking.DoctorId = doctor.Id;
-    //    await _unitOfWork.Bookings.AddAsync(booking);
-    //    await _unitOfWork.Bookings.SaveChanges();
-    //}
+    public async Task<ServiceResponse> GetPatientBookings()
+    {
+        try
+        {
+            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+                return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
-    //private async Task<decimal> GetFinalPrice(int patientId, decimal price, Coupon? coupon)
-    //{
-    //    if (coupon == null)
-    //    {
-    //        return price;
-    //    }
-    //    int patientReqs = await _unitOfWork.Bookings.CountAsync(e =>
-    //                    e.PatientId == patientId && e.BookingStatus.Equals(BookingStatus.Completed));
-    //    if (patientReqs < coupon.NumOfRequests)
-    //    {
-    //        throw new InvalidOperationException($"you must have {coupon.NumOfRequests} completed requests to apply this discount code");
-    //    }
-    //    if (coupon.DiscountType.Equals(DiscountType.Percentage))
-    //    {
-    //        return price - price * (coupon.Value / 100);
-    //    }
-    //    return price - coupon.Value;
-    //}
+            var patient = await _patients.GetByConditionAsync(e => e.Id == userId);
+            if (patient == null)
+                return new(StatusCodes.Status404NotFound, "Patient is not found");
 
-    //public async Task<AppointmentTime?> GetAppointmentTime(int appointmentTimeId)
-    //{
-    //    return await _unitOfWork.AppointmentTimes.FindWithCriteriaAndIncludesAsync(e => e.Id == appointmentTimeId, nameof(AppointmentTime.Appointment));
-    //}
 
-    //public async Task<Coupon?> GetCoupon(string discountCode)
-    //{
-    //    return await _unitOfWork.Coupons.FindWithCriteriaAndIncludesAsync(e => e.DiscountCode == discountCode);
-    //}
+            var result = await _repository.FindByConditionAsync(e => e.PatientId == patient.Id,
+                                                    "Doctor", "Doctor.Specialization", "Doctor.ApplicationUser",
+                                                    "AppointmentTime", "AppointmentTime.Appointment");
+            return new(StatusCodes.Status200OK, _mapper.Map<PatientGetBookingDto>(result));
+        }
+        catch (Exception e)
+        {
+            return new(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
+    public async Task<ServiceResponse> GetDoctorBookings(BookingParameters parameters)
+    {
+        try
+        {
+            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+                return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
-    //public async Task<Booking?> GetById(int id)
-    //{
-    //    return await _unitOfWork.Bookings.GetByIdAsync(id);
-    //}
+            var doctor = await _doctors.GetByConditionAsync(e => e.ApplicationUserId == userId);
+            if (doctor == null)
+                return new(StatusCodes.Status404NotFound, "Doctor is not found");
 
-    //public async Task ConfirmCheckUp(Booking booking)
-    //{
-    //    if (booking.BookingStatus.Equals(BookingStatus.Cancelled))
-    //    {
-    //        throw new InvalidOperationException("can not confirm check up for cancelled bookings");
-    //    }
-    //    if (booking.BookingStatus.Equals(BookingStatus.Completed))
-    //    {
-    //        throw new InvalidOperationException("this booking is already checked app");
-    //    }
-    //    booking.BookingStatus = BookingStatus.Completed;
-    //    await UpdateBooking(booking);
-    //}
-    //public async Task Cancel(Booking booking)
-    //{
-    //    if (booking.BookingStatus.Equals(BookingStatus.Cancelled))
-    //    {
-    //        throw new InvalidOperationException("this booking is already Cancelled");
-    //    }
-    //    if (booking.BookingStatus.Equals(BookingStatus.Completed))
-    //    {
-    //        throw new InvalidOperationException("can not Cancel for completed bookings");
-    //    }
-    //    booking.BookingStatus = BookingStatus.Cancelled;
-    //    await UpdateBooking(booking);
-    //}
+            var result = await _repository.SearchWithPagination(parameters.paginationParameters,
+                                                        e => e.DoctorId == doctor.Id && e.AppointmentTime.Appointment.Day == parameters.Day,
+                                                        nameof(Booking.Patient),
+                                                        nameof(Booking.AppointmentTime),
+                                                        $"{nameof(Booking.AppointmentTime)}.{nameof(AppointmentTime.Appointment)}");
+            return new(StatusCodes.Status200OK, _mapper.Map<DoctorGetPatientDto>(result));
+        }
+        catch (Exception e)
+        {
+            return new(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
 
-    //private async Task UpdateBooking(Booking booking)
-    //{
-    //    _unitOfWork.Bookings.Update(booking);
-    //    await _unitOfWork.Bookings.SaveChanges();
-    //}
+    public async Task<ServiceResponse> Book(BookBookingDto bookingDto)
+    {
+        try
+        {
+            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+                return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
-    //public async Task<IEnumerable<Booking>> GetPatientBookings(int patientId)
-    //{
-    //    return await _unitOfWork.Bookings.FindAllWithCriteriaAndIncludesAsync(e => e.PatientId == patientId,
-    //                                            "Doctor", "Doctor.Specialization", "Doctor.ApplicationUser",
-    //                                            "AppointmentTime", "AppointmentTime.Appointment");
-    //}
+            var patient = await _patients.GetByConditionAsync(e => e.Id == userId);
+            if (patient == null)
+                return new(StatusCodes.Status404NotFound, "Patient is not found");
 
-    //public async Task<PaginationResult<DoctorGetPatientDto>> GetDoctorBookings(int doctorId, Days day, int pageSize, int pageNumber)
-    //{
-    //    var totalCount = await _unitOfWork.Bookings.CountAsync(e => e.DoctorId == doctorId);
-    //    var totalPages = totalCount / pageSize;
-    //    if (totalCount % pageSize != 0)
-    //    {
-    //        totalPages++;
-    //    }
-    //    if (pageNumber > totalPages)
-    //    {
-    //        pageNumber = totalPages;
-    //    }
-    //    int skip = (pageNumber - 1) * pageSize;
-    //    var query = await _unitOfWork.Bookings.FindAllWithCriteriaPagenationAndIncludesAsync(e => e.DoctorId == doctorId && e.AppointmentTime.Appointment.Day == day, skip, pageSize, nameof(Booking.Patient),
-    //                                                                nameof(Booking.AppointmentTime), $"{nameof(Booking.AppointmentTime)}.Appointment");
-    //    return new PaginationResult<DoctorGetPatientDto>
-    //    {
-    //        TotalCount = totalCount,
-    //        TotalPages = totalPages,
-    //        CurrentPage = pageNumber,
-    //        PageSize = pageSize,
-    //        Data = _mapper.Map<IEnumerable<DoctorGetPatientDto>>(query)
-    //    };
+            AppointmentTime? appointmentTime = await _times.GetByConditionAsync(e => e.Id == bookingDto.AppointmentTimeId, nameof(appointmentTime.Appointment));
+            if (appointmentTime == null)
+                return new(StatusCodes.Status404NotFound, "this time doesn't exist");
 
-    //}
-    //public async Task<int> GetDoctorId(int userId)
-    //{
-    //    return await _doctorService.GetDoctorId(userId);
-    //}
+            var booking = _mapper.Map<Booking>(bookingDto);
+
+            var coupon = await _coupons.GetByConditionAsync(e => e.DiscountCode == booking.DiscountCode);
+            if (coupon == null && !string.IsNullOrEmpty(bookingDto.DiscountCode))
+                return new(StatusCodes.Status404NotFound, "this Discount code coupon doesn't exist");
+
+
+            booking.AppointmentTime = appointmentTime;
+
+            if (booking.AppointmentTime.Appointment.Day.ToString() != booking.AppointmentRealTime.DayOfWeek.ToString())
+                throw new InvalidOperationException("There is a mismatch between doctor's appointment day and the day you requested");
+
+            if (booking.AppointmentTime.Time.ToString() != booking.AppointmentRealTime.ToShortTimeString())
+                throw new InvalidOperationException("There is a mismatch between doctor's appointment time and the time you requested");
+
+            Booking? checkBooking = await _repository.GetByConditionAsync(e =>
+                                    e.AppointmentRealTime == booking.AppointmentRealTime &&
+                                    e.BookingStatus.Equals(BookingStatus.Pending));
+            if (checkBooking != null)
+            {
+                return new(StatusCodes.Status400BadRequest, "This time is already booked");
+            }
+
+            Doctor? doctor = await _doctors.GetByConditionAsync(e => e.Id == booking.AppointmentTime.Appointment.DoctorId);
+            if (doctor == null)
+                return new(StatusCodes.Status404NotFound, "Doctor is not found");
+
+            if (doctor.Price == null || doctor.Price == 0)
+                return new(StatusCodes.Status406NotAcceptable, "doctor didn't set the price");
+
+            if (coupon == null)
+                booking.FinalPrice = (decimal)doctor.Price;
+            else
+            {
+                int patientReqs = (await _repository.FindByConditionAsync(e =>
+                                e.PatientId == booking.PatientId && e.BookingStatus.Equals(BookingStatus.Completed))).Count();
+                if (patientReqs < coupon.NumOfRequests)
+                    return new(StatusCodes.Status406NotAcceptable, $"you must have {coupon.NumOfRequests} completed requests to apply this discount code");
+
+                if (coupon.DiscountType.Equals(DiscountType.Percentage))
+                    booking.FinalPrice = (decimal)(doctor.Price - doctor.Price * (coupon.Value / 100));
+                else
+                    booking.FinalPrice = (decimal)doctor.Price - coupon.Value;
+            }
+
+            booking.BookingStatus = BookingStatus.Pending;
+            booking.DoctorId = doctor.Id;
+            await _repository.AddAsync(booking);
+            return new(StatusCodes.Status201Created, _mapper.Map<BookBookingDto>(booking));
+        }
+        catch (Exception e)
+        {
+            return new(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
+
+    public async Task<ServiceResponse> ConfirmCheckUp(int id)
+    {
+        try
+        {
+            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+                return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
+
+            var doctor = await _doctors.GetByConditionAsync(e => e.ApplicationUserId == userId);
+            if (doctor == null)
+                return new(StatusCodes.Status404NotFound, "Doctor is not found");
+
+            Booking? booking = await _repository.GetByConditionAsync(e => e.Id == id);
+            if (booking == null)
+                return new(StatusCodes.Status404NotFound, "This booking is not found");
+            
+            if (booking.BookingStatus.Equals(BookingStatus.Cancelled))
+                return new(StatusCodes.Status406NotAcceptable, "Can not confirm check up for cancelled bookings");
+            
+            if (booking.BookingStatus.Equals(BookingStatus.Completed))
+                return new(StatusCodes.Status406NotAcceptable, "This booking is already checked app");
+            
+            if (booking.DoctorId != doctor.Id)
+                return new(StatusCodes.Status401Unauthorized, "Your not authrized to confirm other doctos' bookings");
+            
+            booking.BookingStatus = BookingStatus.Completed;
+            await _repository.UpdateAsync(booking);
+            return new(StatusCodes.Status204NoContent, null);
+        }
+        catch (Exception e)
+        {
+            return new(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
+    public async Task<ServiceResponse> Cancel(int id)
+    {
+        try
+        {
+            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+                return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
+
+            var doctor = await _doctors.GetByConditionAsync(e => e.ApplicationUserId == userId);
+            if (doctor == null)
+                return new(StatusCodes.Status404NotFound, "Doctor is not found");
+
+            Booking? booking = await _repository.GetByConditionAsync(e => e.Id == id);
+            if (booking == null)
+                return new(StatusCodes.Status404NotFound, "This booking is not found");
+            
+            if (booking.BookingStatus.Equals(BookingStatus.Cancelled))
+                return new(StatusCodes.Status406NotAcceptable, "This booking is already Cancelled");
+            
+            if (booking.BookingStatus.Equals(BookingStatus.Completed))
+                return new(StatusCodes.Status406NotAcceptable, "Can not Cancel for completed bookings");
+            
+            if (booking.DoctorId != doctor.Id)
+                return new(StatusCodes.Status401Unauthorized, "Your not authrized to confirm other doctos' bookings");
+            
+            booking.BookingStatus = BookingStatus.Cancelled;
+            await _repository.UpdateAsync(booking);
+            return new(StatusCodes.Status204NoContent, null);
+        }
+        catch (Exception e)
+        {
+            return new(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
 }
