@@ -197,9 +197,9 @@ public class BookingService : IBookingService
             if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
                 return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
-            var doctor = await _doctors.GetByConditionAsync(e => e.ApplicationUserId == userId);
-            if (doctor == null)
-                return new(StatusCodes.Status404NotFound, "Doctor is not found");
+            var patient = await _patients.GetByConditionAsync(e => e.Id == userId);
+            if (patient == null)
+                return new(StatusCodes.Status404NotFound, "Patient is not found");
 
             Booking? booking = await _repository.GetByConditionAsync(e => e.Id == id);
             if (booking == null)
@@ -211,8 +211,8 @@ public class BookingService : IBookingService
             if (booking.BookingStatus.Equals(BookingStatus.Completed))
                 return new(StatusCodes.Status406NotAcceptable, "Can not Cancel for completed bookings");
             
-            if (booking.DoctorId != doctor.Id)
-                return new(StatusCodes.Status401Unauthorized, "Your not authrized to confirm other doctos' bookings");
+            if (booking.DoctorId != patient.Id)
+                return new(StatusCodes.Status401Unauthorized, "Your not authrized to confirm other patients' bookings");
             
             booking.BookingStatus = BookingStatus.Cancelled;
             await _repository.UpdateAsync(booking);

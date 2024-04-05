@@ -2,6 +2,7 @@
 
 public class PatientGetBookingDto
 {
+    public int Id { get; set; }
     public string? PhotoPath { get; set; }
     public string? DoctorName { get; set; }
     public string? Specialize { get; set; }

@@ -16,7 +16,7 @@ public class SpecializationsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(SpecializationParameters parameters)
+    public async Task<IActionResult> GetAll([FromQuery] SpecializationParameters parameters)
     {
         var result = await _service.GetAll(parameters);
         return StatusCode(result.StatusCode, result.Body);
@@ -30,14 +30,14 @@ public class SpecializationsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetByName(SpecializationParameters parameters)
+    public async Task<IActionResult> GetByName([FromQuery] SpecializationParameters parameters)
     {
         var result = await _service.GetByName(parameters);
         return StatusCode(result.StatusCode, result.Body);
     }
 
     [HttpGet]
-    public async Task<IActionResult> FindByName(SpecializationParameters parameters)
+    public async Task<IActionResult> FindByName([FromQuery] SpecializationParameters parameters)
     {
         var result = await _service.FindByName(parameters);
         return StatusCode(result.StatusCode, result.Body);
