@@ -151,7 +151,7 @@ public class DoctorService : IDoctorService
             _mapper.Map(doctorDto, doctor);
 
             await _repository.UpdateAsync(doctor);
-            return new(StatusCodes.Status204NoContent, _mapper.Map<GetIdDoctorDto>(doctor));
+            return new(StatusCodes.Status204NoContent, null);
         }
         catch (Exception e)
         {
