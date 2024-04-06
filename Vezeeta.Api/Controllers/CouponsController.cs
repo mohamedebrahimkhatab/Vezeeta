@@ -58,8 +58,8 @@ public class CouponsController : ControllerBase
             {
                 return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
             }            
-            await _couponService.Update(couponDto);
-            return NoContent();
+            var result = await _couponService.Update(couponDto);
+            return StatusCode(result.StatusCode, result.Body);
         }
         catch (Exception e)
         {

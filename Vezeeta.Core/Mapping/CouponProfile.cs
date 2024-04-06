@@ -9,6 +9,7 @@ public class CouponProfile :Profile
     public CouponProfile()
     {
         CreateMap<CouponDto, Coupon>().ReverseMap();
+        CreateMap<Coupon, GetCouponDto>().ReverseMap();
 
         CreateMap<UpdateCouponDto, Coupon>();
     }

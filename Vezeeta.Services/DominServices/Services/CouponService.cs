@@ -26,7 +26,7 @@ public class CouponService : ICouponService
         try
         {
             var result = await _repository.FindByConditionAsync(e => true);
-            return new(StatusCodes.Status200OK, _mapper.Map<IEnumerable<CouponDto>>(result));
+            return new(StatusCodes.Status200OK, _mapper.Map<IEnumerable<GetCouponDto>>(result));
         }
         catch (Exception e)
         {
@@ -46,7 +46,7 @@ public class CouponService : ICouponService
 
             coupon.Active = true;
             await _repository.AddAsync(coupon);
-            return new(StatusCodes.Status201Created, coupon);
+            return new(StatusCodes.Status201Created, _mapper.Map<GetCouponDto>(coupon));
         }
         catch (Exception e)
         {
@@ -71,7 +71,7 @@ public class CouponService : ICouponService
 
             var booking = await _bookings.GetByConditionAsync(e => e.DiscountCode ==  couponDto.DiscountCode);
 
-            if (booking == null)
+            if (booking != null)
                 return new(StatusCodes.Status406NotAcceptable, "This Coupon is applied to booking/s");
 
             _mapper.Map(couponDto, coupon);
