@@ -52,9 +52,9 @@ public class PatientsController : ControllerBase
             {
                 return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
             }
-            var result = _patientService.Register(patientDto, _hostingEnvironment.WebRootPath);
+            var result = await _patientService.Register(patientDto, _hostingEnvironment.WebRootPath);
 
-            return Created();
+            return StatusCode(result.StatusCode, result.Body);
         }
         catch (Exception e)
         {

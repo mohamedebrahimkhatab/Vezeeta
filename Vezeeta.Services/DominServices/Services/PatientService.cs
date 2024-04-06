@@ -26,7 +26,8 @@ public class PatientService : IPatientService
     private readonly IBaseRepository<Booking> _bookings;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public PatientService(IMapper mapper, IPaginationRepository<ApplicationUser> repository, 
+    public PatientService(IMapper mapper,
+                            IPaginationRepository<ApplicationUser> repository,
                             IHttpContextAccessor httpContextAccessor, IBaseRepository<Booking> bookings, UserManager<ApplicationUser> userManager)
     {
         _mapper = mapper;
@@ -87,15 +88,15 @@ public class PatientService : IPatientService
                 return new(StatusCodes.Status400BadRequest, "This Email is invalid!");
 
             ApplicationUser? user = await _userManager.FindByEmailAsync(patientDto.Email);
-            if (user != null)
-                return new(StatusCodes.Status400BadRequest,"this email is already taken");
+            if (user is not null)
+                return new(StatusCodes.Status400BadRequest, "this email is already taken");
 
             ApplicationUser patient = _mapper.Map<ApplicationUser>(patientDto);
 
             if (patientDto.Image is not null)
                 patient.PhotoPath = FileUploader.Upload(patientDto.Image, root);
 
-            if(string.IsNullOrEmpty(patientDto.Password))
+            if (string.IsNullOrEmpty(patientDto.Password))
                 return new(StatusCodes.Status400BadRequest, "This Password is invalid!");
 
             IdentityResult result = await _userManager.CreateAsync(patient, patientDto.Password);
@@ -105,7 +106,7 @@ public class PatientService : IPatientService
 
             await _userManager.AddToRoleAsync(patient, UserRoles.Patient);
 
-            return new(StatusCodes.Status201Created, _mapper.Map<GetByIdPatientDto>(patient));
+            return new(StatusCodes.Status201Created, _mapper.Map<GetPatientDto>(patient));
         }
         catch (Exception e)
         {
