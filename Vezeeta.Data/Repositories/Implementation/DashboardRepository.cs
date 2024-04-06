@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Linq.Expressions;
 using System.Security.Cryptography;
 using Vezeeta.Core.Contracts.DashboardDtos;
@@ -58,13 +59,13 @@ public class DashboardRepository : IDashboardRepository
                      on doctor.ApplicationUserId equals user.Id
                      join specialization in specializations
                      on doctor.SpecializationId equals specialization.Id
-                    select new {doctor, booking.Id};
+                    select new { doctor, specialization, user , booking.Id};
 
         var result = query.GroupBy(e => e.doctor).Select(e => new SimpleDoctorDto
         {
-            FullName = e.Key.ApplicationUser.FirstName + " " + e.Key.ApplicationUser.LastName,
-            PhotoPath = e.Key.ApplicationUser.PhotoPath,
-            Specialize = e.Key.Specialization.Name,
+            FullName = e.Select(e => e.user).First().FirstName + " " + e.Select(e => e.user).First().LastName,
+            PhotoPath = e.Select(e => e.user).First().PhotoPath,
+            Specialize = e.Select(e => e.specialization).First().Name,
             Num = e.Count()
         });
         return await result.OrderByDescending(e => e.Num).ToListAsync();
