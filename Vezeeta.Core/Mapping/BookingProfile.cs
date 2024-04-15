@@ -23,7 +23,7 @@ public class BookingProfile : Profile
                                                  .ForMember(e => e.PhotoPath, act => act.MapFrom(e => e.Patient.PhotoPath))
                                                  .ForMember(e => e.Email, act => act.MapFrom(e => e.Patient.Email))
                                                  .ForMember(e => e.Gender, act => act.MapFrom(e => e.Patient.Gender))
-                                                 .ForMember(e => e.Appointment, act => act.MapFrom(e => e.AppointmentTime.Appointment.Day + " " + e.AppointmentTime.Time))
+                                                 .ForMember(e => e.Appointment, act => act.MapFrom(e => e.AppointmentRealTime))
                                                  .ForMember(e => e.Age, act => act.MapFrom(e
                                                  => e.Patient.DateOfBirth.AddYears(DateTime.Now.Year - e.Patient.DateOfBirth.Year) > DateTime.Now ?
                                                         DateTime.Now.Year - e.Patient.DateOfBirth.Year - 1 : DateTime.Now.Year - e.Patient.DateOfBirth.Year));

@@ -38,7 +38,7 @@ public class AppointmentService : IAppointmentService
     {
         try
         {
-            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+            if (!int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
                 return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
             var doctor = await _doctorRepository.GetByConditionAsync(e => e.ApplicationUser.Id == userId, nameof(Doctor.ApplicationUser));
@@ -88,7 +88,7 @@ public class AppointmentService : IAppointmentService
             if (time == null)
                 return new(StatusCodes.Status404NotFound, "This Time is not found");
 
-            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+            if (!int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
                 return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
             var doctor = await _doctorRepository.GetByConditionAsync(e => e.ApplicationUser.Id == userId, nameof(Doctor.ApplicationUser));
@@ -127,7 +127,7 @@ public class AppointmentService : IAppointmentService
                 return new(StatusCodes.Status404NotFound, "This time is not Found");
             }
 
-            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+            if (!int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
                 return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
             var doctor = await _doctorRepository.GetByConditionAsync(e => e.ApplicationUser.Id == userId, nameof(Doctor.ApplicationUser));

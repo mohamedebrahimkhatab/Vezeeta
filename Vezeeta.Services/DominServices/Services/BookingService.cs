@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
-using Vezeeta.Core.Enums;
-using Vezeeta.Core.Models;
-using System.Security.Claims;
-using Vezeeta.Data.Parameters;
 using Microsoft.AspNetCore.Http;
-using Vezeeta.Services.Utilities;
-using Vezeeta.Core.Models.Identity;
+using System.Security.Claims;
 using Vezeeta.Core.Contracts.BookingDtos;
 using Vezeeta.Core.Contracts.PatientDtos;
+using Vezeeta.Core.Enums;
+using Vezeeta.Core.Models;
+using Vezeeta.Core.Models.Identity;
+using Vezeeta.Data.Parameters;
 using Vezeeta.Data.Repositories.Interfaces;
 using Vezeeta.Services.DomainServices.Interfaces;
+using Vezeeta.Services.Utilities;
 
 namespace Vezeeta.Services.DomainServices.Services;
 
@@ -44,7 +44,7 @@ public class BookingService : IBookingService
     {
         try
         {
-            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+            if (!int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
                 return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
             var patient = await _patients.GetByConditionAsync(e => e.Id == userId);
@@ -55,7 +55,7 @@ public class BookingService : IBookingService
             var result = await _repository.FindByConditionAsync(e => e.PatientId == patient.Id,
                                                     "Doctor", "Doctor.Specialization", "Doctor.ApplicationUser",
                                                     "AppointmentTime", "AppointmentTime.Appointment");
-            return new(StatusCodes.Status200OK, _mapper.Map<PatientGetBookingDto>(result));
+            return new(StatusCodes.Status200OK, _mapper.Map<IEnumerable<PatientGetBookingDto>>(result));
         }
         catch (Exception e)
         {
@@ -66,7 +66,7 @@ public class BookingService : IBookingService
     {
         try
         {
-            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+            if (!int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
                 return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
             var doctor = await _doctors.GetByConditionAsync(e => e.ApplicationUserId == userId);
@@ -78,7 +78,7 @@ public class BookingService : IBookingService
                                                         nameof(Booking.Patient),
                                                         nameof(Booking.AppointmentTime),
                                                         $"{nameof(Booking.AppointmentTime)}.{nameof(AppointmentTime.Appointment)}");
-            return new(StatusCodes.Status200OK, _mapper.Map<DoctorGetPatientDto>(result));
+            return new(StatusCodes.Status200OK, _mapper.Map<IEnumerable<DoctorGetPatientDto>>(result.Data));
         }
         catch (Exception e)
         {
@@ -90,7 +90,7 @@ public class BookingService : IBookingService
     {
         try
         {
-            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+            if (!int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
                 return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
             var patient = await _patients.GetByConditionAsync(e => e.Id == userId);
@@ -148,8 +148,9 @@ public class BookingService : IBookingService
 
             booking.BookingStatus = BookingStatus.Pending;
             booking.DoctorId = doctor.Id;
+            booking.PatientId = patient.Id;
             await _repository.AddAsync(booking);
-            return new(StatusCodes.Status201Created, _mapper.Map<BookBookingDto>(booking));
+            return new(StatusCodes.Status201Created, booking.AppointmentRealTime);
         }
         catch (Exception e)
         {
@@ -161,7 +162,7 @@ public class BookingService : IBookingService
     {
         try
         {
-            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+            if (!int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
                 return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
             var doctor = await _doctors.GetByConditionAsync(e => e.ApplicationUserId == userId);
@@ -194,7 +195,7 @@ public class BookingService : IBookingService
     {
         try
         {
-            if (int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
+            if (!int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("Id"), out int userId))
                 return new(StatusCodes.Status400BadRequest, "Token is invalid : Invalid Id");
 
             var patient = await _patients.GetByConditionAsync(e => e.Id == userId);
@@ -211,7 +212,7 @@ public class BookingService : IBookingService
             if (booking.BookingStatus.Equals(BookingStatus.Completed))
                 return new(StatusCodes.Status406NotAcceptable, "Can not Cancel for completed bookings");
             
-            if (booking.DoctorId != patient.Id)
+            if (booking.PatientId != patient.Id)
                 return new(StatusCodes.Status401Unauthorized, "Your not authrized to confirm other patients' bookings");
             
             booking.BookingStatus = BookingStatus.Cancelled;

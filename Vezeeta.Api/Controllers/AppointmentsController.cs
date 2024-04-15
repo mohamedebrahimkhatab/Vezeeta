@@ -30,8 +30,8 @@ public class AppointmentsController : ControllerBase
             {
                 return BadRequest(validate.Errors.Select(e => e.ErrorMessage));
             }
-            await _appointmentService.AddAppointmentsAndPrice(dto);
-            return Created();
+            var result = await _appointmentService.AddAppointmentsAndPrice(dto);
+            return StatusCode(result.StatusCode, result.Body);
 
         }
         catch (Exception e)
