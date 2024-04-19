@@ -82,10 +82,11 @@ public class DoctorService : IDoctorService
     {
         try
         {
-            var doctor = await _repository.GetByConditionAsync(e => e.Id == id, nameof(Doctor.ApplicationUser), nameof(Doctor.Specialization));
+            var doctor = await _repository.GetByConditionAsync(e => e.Id == id, nameof(Doctor.ApplicationUser), nameof(Doctor.Specialization), nameof(Doctor.Appointments), 
+                                        $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
             if (doctor == null)
                 return new(StatusCodes.Status404NotFound, "This Id is not found");
-            return new(StatusCodes.Status200OK, _mapper.Map<GetIdDoctorDto>(doctor));
+            return new(StatusCodes.Status200OK, _mapper.Map<PatientGetDoctorDto>(doctor));
         }
         catch (Exception e)
         {
