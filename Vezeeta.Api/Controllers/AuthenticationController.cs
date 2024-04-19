@@ -8,6 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Vezeeta.Core.Contracts.Authentication;
+using Vezeeta.Data.Repositories.Interfaces;
+using Vezeeta.Core.Models;
+using Vezeeta.Core.Enums;
 
 namespace Vezeeta.Api.Controllers;
 
@@ -17,12 +20,14 @@ namespace Vezeeta.Api.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly IConfiguration _configuration;
+    private readonly IBaseRepository<Doctor> _doctors;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public AuthenticationController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
+    public AuthenticationController(UserManager<ApplicationUser> userManager, IConfiguration configuration, IBaseRepository<Doctor> doctors)
     {
         _userManager = userManager;
         _configuration = configuration;
+        _doctors = doctors;
     }
 
     [HttpPost]
@@ -48,6 +53,14 @@ public class AuthenticationController : ControllerBase
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Role, userRoles.First())
             };
+
+            if(user.UserType.Equals(UserType.Doctor))
+            {
+                var doctor = await _doctors.GetByConditionAsync(e => e.ApplicationUserId == user.Id);
+                if (doctor == null)
+                    return NotFound("doctor not found");
+                authClaims.Add(new("DoctorId", doctor.Id.ToString()));
+            }
 
             SymmetricSecurityKey authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]??""));
 
