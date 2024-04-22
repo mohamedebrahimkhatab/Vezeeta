@@ -136,7 +136,7 @@ public class BookingService : IBookingService
             else
             {
                 int patientReqs = (await _repository.FindByConditionAsync(e =>
-                                e.PatientId == booking.PatientId && e.BookingStatus.Equals(BookingStatus.Completed))).Count();
+                                e.PatientId == patient.Id && e.BookingStatus.Equals(BookingStatus.Completed))).Count();
                 if (patientReqs < coupon.NumOfRequests)
                     return new(StatusCodes.Status406NotAcceptable, $"you must have {coupon.NumOfRequests} completed requests to apply this discount code");
 
