@@ -36,8 +36,7 @@ public class DoctorProfile : Profile
                                          .ForMember(e => e.Phone, act => act.MapFrom(e => e.ApplicationUser.PhoneNumber))
                                          .ForMember(e => e.Gender, act => act.MapFrom(e => e.ApplicationUser.Gender));
 
-        CreateMap<Doctor, GetIdDoctorDto>().ForMember(e => e.FirstName, act => act.MapFrom(e => e.ApplicationUser.FirstName))
-                                         .ForMember(e => e.LastName, act => act.MapFrom(e => e.ApplicationUser.LastName))
+        CreateMap<Doctor, GetIdDoctorDto>().ForMember(e => e.FullName, act => act.MapFrom(e => e.ApplicationUser.FirstName + ' ' + e.ApplicationUser.LastName))
                                          .ForMember(e => e.Specialize, act => act.MapFrom(e => e.Specialization.Name))
                                          .ForMember(e => e.Email, act => act.MapFrom(e => e.ApplicationUser.Email))
                                          .ForMember(e => e.PhotoPath, act => act.MapFrom(e => e.ApplicationUser.PhotoPath))

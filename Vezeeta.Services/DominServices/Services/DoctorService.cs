@@ -86,7 +86,7 @@ public class DoctorService : IDoctorService
                                         $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
             if (doctor == null)
                 return new(StatusCodes.Status404NotFound, "This Id is not found");
-            return new(StatusCodes.Status200OK, _mapper.Map<PatientGetDoctorDto>(doctor));
+            return new(StatusCodes.Status200OK, _mapper.Map<GetIdDoctorDto>(doctor));
         }
         catch (Exception e)
         {
