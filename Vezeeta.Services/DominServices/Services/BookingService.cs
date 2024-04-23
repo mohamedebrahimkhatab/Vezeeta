@@ -18,6 +18,7 @@ public class BookingService : IBookingService
     private readonly IMapper _mapper;
     private readonly IBaseRepository<Doctor> _doctors;
     private readonly IBaseRepository<Coupon> _coupons;
+    private readonly IBookingRepositoryExt _repositoryExt;
     private readonly IBaseRepository<AppointmentTime> _times;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IPaginationRepository<Booking> _repository;
@@ -28,12 +29,14 @@ public class BookingService : IBookingService
                         IHttpContextAccessor httpContextAccessor,
                         IBaseRepository<ApplicationUser> patients,
                         IBaseRepository<AppointmentTime> times,
-                        IBaseRepository<Coupon> coupons)
+                        IBaseRepository<Coupon> coupons,
+                        IBookingRepositoryExt repositoryExt)
     {
 
         _times = times;
         _mapper = mapper;
         _coupons = coupons;
+        _repositoryExt = repositoryExt;
         _doctors = doctors;
         _patients = patients;
         _repository = repository;
@@ -84,6 +87,12 @@ public class BookingService : IBookingService
         {
             return new(StatusCodes.Status500InternalServerError, e.Message);
         }
+    }
+
+    public async Task<ServiceResponse> GetReserved()
+    {
+        var result = await _repositoryExt.GetReserved();
+        return new(StatusCodes.Status200OK, result);
     }
 
     public async Task<ServiceResponse> Book(BookBookingDto bookingDto)

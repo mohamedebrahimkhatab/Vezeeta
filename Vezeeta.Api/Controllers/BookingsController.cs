@@ -29,6 +29,13 @@ public class BookingsController : ControllerBase
     }
 
     [HttpGet]
+    public async Task<IActionResult> GetReserved()
+    {
+        var result = await _bookingService.GetReserved();
+        return StatusCode(result.StatusCode, result.Body);
+    }
+
+    [HttpGet]
     [Authorize(Roles = UserRoles.Doctor)]
     public async Task<IActionResult> DoctorGetAll([FromQuery]BookingParameters parameters)
     {
