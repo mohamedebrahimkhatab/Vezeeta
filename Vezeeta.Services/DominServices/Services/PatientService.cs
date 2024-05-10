@@ -15,6 +15,7 @@ using Vezeeta.Services.Utilities.FileService;
 using Vezeeta.Services.DomainServices.Interfaces;
 using Vezeeta.Core.Models;
 using Vezeeta.Core.Contracts.BookingDtos;
+using Vezeeta.Core.Contracts.DoctorDtos;
 
 namespace Vezeeta.Services.DomainServices.Services;
 
@@ -43,8 +44,8 @@ public class PatientService : IPatientService
         try
         {
             PaginationResponse<ApplicationUser> result = await _repository.SearchWithPagination(patientParameters, GetPatientCondition(patientParameters));
-            _httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
-            return new ServiceResponse(StatusCodes.Status200OK, _mapper.Map<IEnumerable<GetPatientDto>>(result.Data));
+            //_httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
+            return new ServiceResponse(StatusCodes.Status200OK, new { result.Pagination, Data = _mapper.Map<IEnumerable<GetPatientDto>>(result.Data) });
         }
         catch (Exception e)
         {
