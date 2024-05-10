@@ -121,7 +121,7 @@ public class AppointmentService : IAppointmentService
     {
         try
         {
-            var time = await _timeRepository.GetByConditionAsync(e => e.Id == id, nameof(AppointmentTime.Appointment));
+            var time = await _timeRepository.GetByConditionAsync(e => e.Id == id, nameof(AppointmentTime.Appointment), $"{nameof(AppointmentTime.Appointment)}.{nameof(AppointmentTime.Appointment.AppointmentTimes)}");
             if (time == null)
             {
                 return new(StatusCodes.Status404NotFound, "This time is not Found");
@@ -145,6 +145,10 @@ public class AppointmentService : IAppointmentService
                 return new(StatusCodes.Status400BadRequest, "there is Comleted or Pending Booking/s in this time");
             }
             await _timeRepository.DeleteAsync(time);
+            if(time.Appointment.AppointmentTimes.Count == 0)
+            {
+                await _appointmentRepository.DeleteAsync(time.Appointment);
+            }
             return new(StatusCodes.Status204NoContent, null);
         }
         catch (Exception e)
