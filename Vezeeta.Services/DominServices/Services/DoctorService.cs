@@ -51,8 +51,8 @@ public class DoctorService : IDoctorService
         {
             PaginationResponse<Doctor> result = await _repository.SearchWithPagination(doctorParameters, 
                                                               GetDoctorCondition(doctorParameters), nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser));
-            _httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
-            return new ServiceResponse(StatusCodes.Status200OK, _mapper.Map<IEnumerable<AdminGetDoctorDto>>(result.Data));
+            //_httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
+            return new ServiceResponse(StatusCodes.Status200OK, new { result.Pagination, Data = _mapper.Map<IEnumerable<AdminGetDoctorDto>>(result.Data) });
         }
         catch (Exception e)
         {
@@ -68,8 +68,8 @@ public class DoctorService : IDoctorService
             PaginationResponse<Doctor> result = await _repository.SearchWithPagination(doctorParameters, 
                                                         GetDoctorCondition(doctorParameters), nameof(Doctor.Specialization), nameof(Doctor.ApplicationUser),
                                                         nameof(Doctor.Appointments), $"{nameof(Doctor.Appointments)}.{nameof(Appointment.AppointmentTimes)}");
-            _httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
-            return new(StatusCodes.Status200OK, _mapper.Map<IEnumerable<PatientGetDoctorDto>>(result.Data));
+            //_httpContextAccessor.HttpContext.Response.Headers.Append(nameof(result.Pagination), JsonConvert.SerializeObject(result.Pagination));
+            return new(StatusCodes.Status200OK, new { result.Pagination, Data = _mapper.Map<IEnumerable<PatientGetDoctorDto>>(result.Data) });
         }
         catch (Exception e)
         {
